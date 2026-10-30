@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0f">
+<title>Training · Noah</title>
+<style>
+:root{
+  --bg:#0b0b0f;--surface:#15151b;--surface2:#1c1c24;--line:rgba(255,255,255,.06);--line2:rgba(255,255,255,.1);
+  --text:#f4f4f6;--muted:#8b8b98;--faint:#5d5d69;--accent:#7b8cff;--accent-soft:rgba(123,140,255,.14);
+  --good:#3ddc84;--good-soft:rgba(61,220,132,.13);--bad:#ff7a70;--bad-soft:rgba(255,122,112,.12);
+  --amber:#f5c451;--amber-soft:rgba(245,196,81,.12);--cls:var(--accent);--cls-soft:var(--accent-soft);--rg:var(--good);--ry:var(--amber);--rr:var(--bad);
+  --r:20px;--r-sm:12px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input{font:inherit;color:inherit}
+.app{max-width:1120px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) 20px 48px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;margin:4px 2px 18px}
+.eyebrow{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.06em}
+h1{font-size:32px;line-height:1.1;margin:2px 0 0;font-weight:750;letter-spacing:-.025em}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{color:var(--text)}
+.seg{display:inline-flex;background:var(--surface);border-radius:12px;padding:3px;margin-bottom:18px}
+.seg button{padding:7px 18px;border-radius:9px;font-size:14px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--surface2);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.card{background:var(--surface);border-radius:var(--r);padding:18px}
+.stack>*+*{margin-top:12px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+main,.aside{min-width:0}
+@media(min-width:960px){.grid{grid-template-columns:minmax(0,1fr) 340px;gap:24px}.aside{position:sticky;top:20px;align-self:start}}
+/* week strip */
+.wk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.wk-head .lbl{font-size:14px;font-weight:600;color:var(--muted)}
+.chev{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.chev:hover{background:var(--surface2);color:var(--text)}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 8px;border-radius:14px}
+.day .dn{font-size:12px;font-weight:600;color:var(--faint)}
+.day .num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:600;color:var(--muted)}
+.day.has .num,.day.hascl .num{color:var(--text)}
+.day.today .num{color:var(--accent)}
+.day.sel .num{background:var(--text);color:var(--bg)}
+.day .dots{display:flex;gap:3px;height:5px}
+.day .dot{width:5px;height:5px;border-radius:50%;background:transparent}
+.day .dot.cl{background:var(--cls)}
+.day .rec{font-size:10px;font-weight:600;height:12px;line-height:12px;opacity:.75;font-variant-numeric:tabular-nums}
+.rec.g{color:var(--rg)}.rec.y{color:var(--ry)}.rec.r{color:var(--rr)}
+.recdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 4px 1px 6px;vertical-align:middle}
+.recdot.g{background:var(--rg)}.recdot.y{background:var(--ry)}.recdot.r{background:var(--rr)}
+.cls{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);padding:14px 18px;position:relative;overflow:hidden}
+.cls::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--cls)}
+.cls .tm{width:52px;flex:none;text-align:center;line-height:1.1}
+.cls .tm b{display:block;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.cls .tm span{font-size:11px;color:var(--muted);font-weight:600}
+.cls .x{flex:1;min-width:0}.cls .x div{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cls .x span{font-size:13px;color:var(--muted)}
+.cls .src{font-size:11px;color:var(--cls);font-weight:650;letter-spacing:.07em;margin-bottom:2px}
+.bdg{font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:7px;flex:none}
+.bdg.res{background:var(--cls-soft);color:var(--cls)}
+.wh{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}.wh b{color:var(--text,#e8ecf3);font-weight:650}.wh .wl{color:var(--rg);font-weight:700;letter-spacing:.06em;font-size:10.5px}
+.bdg.done{background:rgba(61,220,132,.13);color:var(--rg)}.bdg.cx{background:transparent;color:var(--rr);border:1px solid var(--line2)}
+.cc.past{opacity:.85}.cc .b.done{background:rgba(61,220,132,.13);color:var(--rg)}.cc .b.cx{background:transparent;color:var(--rr)}.cc .w{font-size:10.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.bdg.wait{background:transparent;color:var(--muted);border:1px solid var(--line2)}
+.day.has .dot{background:var(--accent)}
+.day.has.completed .dot{background:var(--good)}
+.day.has.skipped .dot{background:var(--bad)}
+/* hero */
+.hero{display:flex;gap:16px;align-items:center}
+.hero .t{flex:1;min-width:0}
+.hero h2{font-size:26px;margin:2px 0 6px;font-weight:720;letter-spacing:-.02em}
+.date{font-size:14px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.completed{background:var(--good-soft);color:var(--good)}.pill.skipped{background:var(--bad-soft);color:var(--bad)}
+.pill.progress{background:var(--amber-soft);color:var(--amber)}
+.ring{position:relative;width:76px;height:76px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.05}
+.ring .c b{font-size:18px;font-weight:700}.ring .c span{font-size:11px;color:var(--muted)}
+.stats{display:flex;gap:22px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.stat b{display:block;font-size:17px;font-weight:650}.stat span{font-size:12px;color:var(--muted)}
+/* exercises */
+.sec-title{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin:24px 4px 10px}
+.group{background:var(--surface);border-radius:var(--r);overflow:hidden}
+.group .tag{font-size:11px;font-weight:600;color:var(--faint);letter-spacing:.08em;padding:12px 18px 0}
+.ex{padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:2px 14px;align-items:start}
+.ex+.ex{border-top:1px solid var(--line)}
+.lab{grid-row:span 3;width:30px;height:30px;border-radius:9px;background:var(--surface2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.ex.done .lab{background:var(--good-soft);color:var(--good)}
+.name{font-weight:600;font-size:16px;display:flex;align-items:center;gap:6px;min-width:0}
+.name .nm{overflow:hidden;text-overflow:ellipsis}
+.info{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;color:var(--faint);flex:none}
+.info:hover,.info.on{color:var(--accent)}
+.rx{grid-column:2;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rx .dash{color:var(--faint)}
+.note{grid-column:2/4;font-size:13px;color:var(--text);background:var(--accent-soft);border-radius:10px;padding:8px 11px;margin-top:8px;display:none}
+.note.on{display:block}
+.chips{grid-column:2/4;display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--good-soft);color:var(--good);font-variant-numeric:tabular-nums}
+.chip.local{background:transparent;border:1px dashed rgba(61,220,132,.45)}
+.chip.best{background:var(--good);color:#06210f}
+.ex .add{grid-row:1/3;grid-column:3;width:32px;height:32px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;color:var(--muted)}
+.ex .add:hover{color:var(--text)}
+.chip .cx{margin-left:6px;opacity:.7;cursor:pointer;background:none;border:0;color:inherit;font-weight:700}
+.exnotes{grid-column:2/4;margin-top:8px;font-size:13px;color:var(--muted,#9aa)}
+.exnotes button{font-size:12px;margin-left:8px;background:var(--surface2);border-radius:8px;padding:2px 8px}
+.logrow textarea{flex:1;min-width:0;min-height:44px;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:8px 11px;outline:none;color:inherit;font:inherit}
+.bwrow{grid-column:2/4;margin-top:8px;display:flex;gap:8px}
+.bwrow button,.gset,.tbtn{background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:7px 12px;font-weight:650;color:inherit;cursor:pointer}
+.bwrow button.on,.gset.on{background:var(--good-soft);color:var(--good)}
+.gset{display:block;width:100%;margin-top:8px}
+.timer{display:flex;align-items:center;gap:10px;margin-top:12px}.timer b{font-variant-numeric:tabular-nums;font-size:18px}
+.clsrun{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.clsrun textarea{width:100%;min-height:40px;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:6px 10px;color:inherit;font:inherit}
+.syncbar{font-size:12px;opacity:.75;margin-top:6px}
+.logfor{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+.warnbox{background:var(--amber-soft);border:1px solid rgba(245,196,81,.45);color:var(--amber);border-radius:12px;padding:10px 12px;margin:12px 0;font-size:13px}.warnbox ul{margin:6px 0 0 18px;padding:0}
+.skiprow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}.chip.skipc{background:var(--bad-soft);color:var(--bad);font-weight:700;border-radius:999px;padding:3px 10px}.ex.skipped{opacity:.55}.ex.skipped .nm{text-decoration:line-through}.skip-btn{display:block;width:100%;margin-top:8px;padding:12px;border-radius:14px;border:1px solid var(--line2);background:transparent;color:var(--bad);font-size:15px;font-weight:600}.skip-btn.on{background:var(--bad-soft)}
+.sbadge{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--surface2);color:var(--muted);margin-right:14px;white-space:nowrap}.sbadge.ok{color:var(--good)}.sbadge.wait{color:var(--amber)}.sbadge.err{color:var(--bad)}
+.gundo{margin-top:6px;font-size:13px;opacity:.8}
+.syncform input{width:100%;box-sizing:border-box;margin-top:10px;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--surface2);color:var(--text)}.syncform p{font-size:13px;color:var(--muted)}
+.logrow{grid-column:2/4;display:none;gap:8px;margin-top:10px}
+.logrow.on{display:flex}
+.logrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:8px 11px;outline:none}
+.logrow input:focus{border-color:var(--accent)}
+.logrow button{background:var(--accent);color:#0b0b16;font-weight:650;border-radius:10px;padding:0 14px}
+.ex-note{grid-column:2/4;font-size:13px;color:var(--muted);margin-top:6px;font-style:italic}
+details.warm{background:var(--surface);border-radius:var(--r);padding:0}
+details.warm summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;font-weight:600}
+details.warm summary::-webkit-details-marker{display:none}
+details.warm summary .chv{transition:transform .2s}
+details.warm[open] summary .chv{transform:rotate(90deg)}
+details.warm .ex{border-top:1px solid var(--line)}
+.empty{text-align:center;padding:40px 18px;color:var(--muted)}
+.empty b{display:block;color:var(--text);font-size:18px;margin-bottom:4px}
+/* aside */
+.aside h3{font-size:15px;margin:0 0 14px;font-weight:650}
+.wrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.wrow:first-of-type{border-top:0}
+.wrow .d{width:42px;text-align:center;font-size:11px;color:var(--muted);font-weight:600}
+.wrow .d b{display:block;font-size:18px;color:var(--text)}
+.wrow .x{flex:1;min-width:0}.wrow .x div{font-weight:600}.wrow .x span{font-size:13px;color:var(--muted)}
+.mini{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.hsearch{display:flex;gap:8px;margin:4px 0 12px}.hsearch input{flex:1;min-width:0;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text)}
+.hsearch button{font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--muted)}.hsearch button.on{color:var(--text);border-color:var(--accent)}
+.sess .best2{font-size:12px;color:var(--muted);margin-top:4px}.chip.pp{opacity:.8;font-style:italic}
+.lastx{margin:6px 0 2px;font-size:13px;color:var(--muted);line-height:1.5}.lastx b{color:var(--text);font-weight:600}.lastx button{background:none;border:0;color:var(--accent);font-size:13px;font-weight:600;padding:0 0 0 6px;cursor:pointer}
+/* history */
+.hrow{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer}
+.hrow+.hrow,.hdetail+.hrow{border-top:1px solid var(--line)}
+.hrow .x{flex:1;min-width:0}.hrow .x div{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow .x span{font-size:13px;color:var(--muted)}
+.hrow .best{text-align:right;min-width:78px}.hrow .best b{display:block;font-variant-numeric:tabular-nums}
+.hrow .best span{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.hdetail{display:none;padding:0 18px 14px}
+.hdetail.on{display:block}
+.sess{display:flex;gap:12px;align-items:baseline;padding:7px 0;font-size:14px}
+.sess .dd{width:64px;color:var(--muted);flex:none}
+.sess .chips{margin:0}
+.hint2{background:var(--surface2);border-radius:12px;padding:10px 12px;margin:2px 0 10px;font-size:13px;color:var(--muted);line-height:1.6}.hint2 b{color:var(--text);font-variant-numeric:tabular-nums}
+.scard{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:8px;background:var(--surface2)}
+.scard .sh{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.scard .sh .t{font-weight:650;font-size:14px}.scard .sh .t span{color:var(--muted);font-weight:500}
+.scard .sub{font-size:12px;color:var(--muted);margin-top:2px}.scard .sub a{color:var(--accent);text-decoration:none}
+.srow{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px;font-variant-numeric:tabular-nums;border-top:1px solid var(--line)}
+.srow:first-of-type{border-top:0}
+.srow .n{width:20px;height:20px;border-radius:50%;background:var(--surface);color:var(--muted);font-size:11px;display:grid;place-items:center;flex:none}
+.srow .v{flex:1}.srow .v small{color:var(--muted);font-size:12px;margin-left:6px}
+.srow.top .n{background:var(--accent);color:#000}.srow.top .v{font-weight:650}
+.prb{font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:999px;background:var(--accent);color:#000}
+.dlt{font-size:12px;font-weight:600;white-space:nowrap}.dlt.up{color:var(--good,#4ade80)}.dlt.dn{color:var(--bad,#f87171)}.dlt.eq{color:var(--muted)}
+.sfoot{font-size:12px;color:var(--muted);margin-top:6px}
+.cls{flex-wrap:wrap}.cls .posted{flex-basis:100%;font-weight:400}.posted{margin-top:2px;font-size:13px;line-height:1.5;color:var(--text);background:var(--surface2);border-radius:10px;padding:8px 10px;white-space:normal}.posted .ph{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}.posted.none{color:var(--muted);font-style:italic}
+.sempty{font-size:13px;color:var(--muted);margin-top:6px}
+.sgrid{width:100%;border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums;font-size:14px}
+.sgrid th{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:left;padding:0 6px 4px;text-transform:uppercase}
+.sgrid{table-layout:fixed}.sgrid th,.sgrid td{white-space:nowrap}.sgrid td{padding:6px;border-top:1px solid var(--line);color:var(--text)}
+.sgrid th.r,.sgrid td.r{text-align:right}.sgrid .c{width:38px;color:var(--muted)}.sgrid .k{width:52px;text-align:right}
+.sgrid td small{color:var(--muted);font-size:13px}.sgrid th small{text-transform:none;font-weight:500;letter-spacing:0}.sgrid b.dev{color:#d97706}
+.sgrid tr.bst td{background:var(--accent-soft);font-weight:650}.sgrid tr.bst td:first-child{border-radius:8px 0 0 8px}.sgrid tr.bst td:last-child{border-radius:0 8px 8px 0}
+.lastx .sgrid{font-size:13px;margin:4px 0}.hxs{border-left:2px solid var(--surface2);padding-left:8px;margin-top:4px}.hxt{font-size:11px;letter-spacing:.02em}.hx{font-variant-numeric:tabular-nums;color:var(--text)}.hx .d{color:var(--muted)}.hxs{cursor:pointer}.hxm{color:var(--accent);font-size:12px}.hxfull{display:none}.hxs.open .hxfull{display:block}.hxs.open .hxsum{display:none}.hxf{background:var(--surface2);border-radius:10px;padding:8px 10px;margin:6px 0}.hxfh{color:var(--text);font-size:13px}.hxn{font-size:12px;margin-top:4px}.hxall{margin-top:6px;width:100%}
+/* settings */
+.menu{position:absolute;right:20px;top:72px;background:var(--surface2);border:1px solid var(--line2);border-radius:14px;padding:6px;min-width:250px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:none;z-index:10}
+.menu.on{display:block}
+.menu button,.menu a{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:9px;font-size:14px;color:var(--text);text-decoration:none}
+.menu button:hover{background:rgba(255,255,255,.05)}
+.menu .meta{padding:8px 12px 6px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:4px}
+.hide{display:none!important}
+/* ---- week calendar (drag & drop) ---- */
+.grid.full{grid-template-columns:minmax(0,1fr)!important}
+.app.wide{max-width:1480px}
+.wk-top{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.wk-top .lbl{font-weight:650;font-size:15px}
+.wk-top .hint{margin-left:auto;font-size:12px;color:var(--faint)}
+.wkgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.col{background:var(--surface);border-radius:18px;padding:10px;min-height:360px;transition:background .15s,box-shadow .15s;display:flex;flex-direction:column}
+.col-h{display:flex;align-items:baseline;gap:6px;padding:4px 4px 10px;width:100%;text-align:left}
+.col-h .dn{font-size:12px;font-weight:650;color:var(--faint);letter-spacing:.05em}
+.col-h .num{font-size:20px;font-weight:700;color:var(--muted)}
+.col.today .col-h .num{color:var(--accent)}
+.col-h .rec{margin-left:auto;font-size:10.5px;font-weight:650;opacity:.8}
+.col .items{flex:1;display:flex;flex-direction:column;gap:8px;min-height:44px}
+.col .rest{font-size:12px;color:var(--faint);padding:6px 4px}
+.col.over{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.col.over .rest{opacity:0}
+.wc{position:relative;display:flex;gap:6px;align-items:flex-start;background:var(--surface2);border-radius:13px;padding:10px 8px 10px 4px;border-left:3px solid var(--accent);
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;transition:opacity .18s,transform .18s}
+.wc:hover{background:#22222c}
+.wc.completed{border-left-color:var(--good)}.wc.skipped{border-left-color:var(--bad);opacity:.75}
+.wc .grip{flex:none;width:18px;height:22px;display:grid;place-items:center;color:var(--faint);touch-action:none}
+.wc:hover .grip{color:var(--muted)}
+.wc .x{flex:1;min-width:0}
+.wc .tt{font-size:14px;font-weight:650;line-height:1.25}
+.wc .mm{font-size:12px;color:var(--muted);margin-top:2px}
+.wc .from{font-size:11px;color:var(--faint);margin-top:4px}
+.wc .opt{display:inline-block;font-size:10.5px;color:var(--ry);border:1px solid rgba(245,196,81,.3);border-radius:999px;padding:1px 7px;margin-top:6px}
+.wc .more{flex:none;width:22px;height:22px;border-radius:6px;color:var(--faint);display:grid;place-items:center;margin-top:-2px}
+.wc .more:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.wc.placeholder{opacity:.22}
+.wc.lifted{position:fixed;z-index:60;margin:0;pointer-events:none;cursor:grabbing;background:#262631;
+  box-shadow:0 22px 45px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.1);transition:none}
+.wc.landed{animation:land .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes land{0%{transform:scale(1.05);box-shadow:0 0 0 2px var(--accent)}100%{transform:none;box-shadow:none}}
+body.dragging,body.dragging *{cursor:grabbing!important;user-select:none!important}
+.cc{position:relative;border:1px solid var(--line2);border-left:3px solid var(--cls);border-radius:13px;padding:9px 26px 9px 10px;user-select:none}
+.cc .t{font-size:11.5px;font-weight:700;color:var(--cls);font-variant-numeric:tabular-nums}
+.cc .n{font-size:13px;font-weight:650;line-height:1.25;margin-top:1px}
+.cc .m{font-size:11.5px;color:var(--muted);margin-top:2px}
+.cc .lock{position:absolute;right:8px;top:9px;color:var(--faint)}
+.cc .b{display:inline-block;margin-top:6px;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:5px;background:var(--cls-soft);color:var(--cls)}
+.wc .wpill{display:inline-block;margin-top:6px;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:5px}.wc .wpill.done{background:rgba(61,220,132,.13);color:var(--rg)}.wc .wpill.skp{background:var(--bad-soft);color:var(--bad)}.wc .wstartc{display:block;margin-top:6px;font:inherit;font-size:11px;font-weight:700;padding:4px 12px;border-radius:999px;border:0;background:var(--accent,#4f8cff);color:#fff;cursor:pointer}
+.cc .b.wait{background:transparent;color:var(--muted);border:1px solid var(--line2)}
+@media(max-width:760px){
+  .wk-top .hint{display:none}
+  .wkgrid{grid-template-columns:1fr;gap:8px}
+  .col{min-height:0;display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;padding:12px;border-radius:16px}
+  .col-h{flex-direction:column;align-items:center;gap:0;padding:2px 0}
+  .col-h .rec{margin:4px 0 0}
+  .col .items{min-height:40px;justify-content:center}
+}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,140%);opacity:0;z-index:80;
+  background:#262631;border:1px solid var(--line2);border-radius:999px;padding:8px 8px 8px 18px;display:flex;gap:10px;align-items:center;
+  box-shadow:0 16px 40px rgba(0,0,0,.55);font-size:14px;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;white-space:nowrap}
+.toast:not(.on){visibility:hidden}
+.toast:not(.on) #toastUndo{display:none!important}
+.toast.on{transform:translate(-50%,0);opacity:1;visibility:visible}
+.toast button{color:var(--accent);font-weight:700;padding:6px 12px;border-radius:999px}
+.toast button:hover{background:var(--accent-soft)}
+.pop{position:fixed;z-index:70;background:var(--surface2);border:1px solid var(--line2);border-radius:14px;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.55);width:236px}
+.pop .ph{font-size:11px;color:var(--muted);letter-spacing:.06em;font-weight:650;padding:4px 6px 8px}
+.pop .pd{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.pop .pd button{padding:6px 0;border-radius:8px;font-size:11px;color:var(--muted);line-height:1.15}
+.pop .pd button b{display:block;font-size:14px;color:var(--text)}
+.pop .pd button:hover{background:rgba(255,255,255,.07)}
+.pop .pd button.cur{outline:1.5px solid var(--accent)}
+.pop .pl{display:block;width:100%;text-align:left;padding:8px 8px;border-radius:8px;font-size:13px;margin-top:4px}
+.pop .pl:hover{background:rgba(255,255,255,.06)}
+.moved-hint{font-size:12px;color:var(--faint);margin-top:6px}
+.tagchip{display:inline-block;font-size:12px;color:var(--ry);border:1px solid rgba(245,196,81,.32);border-radius:999px;padding:2px 10px;margin-top:8px}
+
+.complete-btn{display:block;width:100%;margin:18px 0 6px;padding:16px;border:0;border-radius:16px;background:var(--accent);color:#0b0b0f;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.2px}
+.cxl{flex:none;font-size:12px;font-weight:600;color:var(--faint);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:none;cursor:pointer}
+.cxl:hover{color:var(--bad);border-color:var(--bad)}
+.cxreq{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--ry);border:1px solid rgba(245,196,81,.35);border-radius:999px;padding:1px 7px;margin-top:5px}
+.cc .cxl{display:inline-block;margin-top:6px;margin-right:8px;padding:2px 8px;font-size:11px}
+.cxl+.bdg{margin-left:8px}
+body.dragging .chev{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+body.dragging .chev.flip{background:var(--accent);color:#0b0b0f}
+.complete-btn.done{background:var(--surface2);color:var(--good)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 20px max(20px,env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 14px}
+.sheet h2{margin:2px 0 2px;font-size:22px}.sheet .sd{color:var(--muted);font-size:13px}
+.sheet .sst{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.sheet .sst div{background:var(--surface2);border-radius:12px;padding:10px;text-align:center}.sheet .sst b{display:block;font-size:18px}.sheet .sst span{font-size:11px;color:var(--muted)}
+.sheet .sx{padding:10px 0;border-top:1px solid var(--line)}.sheet .sx .n{font-weight:600;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.sheet .sx .c{color:var(--muted);font-size:13px;margin-top:3px;font-variant-numeric:tabular-nums}.sheet .pr{color:var(--amber);font-size:11px;font-weight:700;white-space:nowrap}
+.sheet textarea{width:100%;box-sizing:border-box;margin-top:12px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:12px;padding:10px;font:inherit;font-size:14px;min-height:64px}
+.sheet .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.sheet .acts button,.sheet .acts a{padding:14px;border-radius:14px;border:0;font-weight:700;font-size:15px;text-align:center;text-decoration:none;cursor:pointer}
+.sheet .send{background:var(--accent);color:#0b0b0f;grid-column:1/-1}.sheet .sec{background:var(--surface2);color:var(--text)}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <div><div class="eyebrow" id="eyebrow">This Week</div><h1 id="h1">Training</h1></div>
+    <span class="sbadge" id="syncBadge" style="display:none"></span><button class="icon-btn" id="gear" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  </div>
+  <div class="menu" id="menu">
+    <button id="mSync">Online sync (token)…</button>
+    <button id="mExport">Export browser logs (JSON)</button>
+    <button id="mClear">Clear browser logs &amp; moves</button>
+    <div class="meta">Easiest: tell the bot in chat what you lifted, e.g. "RDL 165×10, 165×10, 165×8".<br>Data from TrainingPeaks · built Oct 29, 2026 8:18 PM CT</div>
+  </div>
+  <div class="seg" id="tabs"><button data-tab="week" class="on">Week</button><button data-tab="workout">Day</button><button data-tab="history">History</button></div>
+  <div class="grid" id="grid">
+    <main id="main"></main>
+    <aside class="aside stack" id="aside"></aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
+<script>
+const STORE = {"schema": 1, "workouts": {"2026-10-18|Lower": {"date": "2026-10-18", "title": "Lower Body", "type": "Strength", "status": "completed", "status_note": null, "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"duration_s": 20, "per_plan": true, "src": "sync"}, {"duration_s": 20, "per_plan": true, "src": "sync"}, {"duration_s": 20, "per_plan": true, "src": "sync"}], "sync_notes": "As planned.", "logged_at": "2026-10-26T01:20:59.752Z"}}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 6, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 6, "reps": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 6, "reps": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 6, "reps": 10, "per_plan": true, "src": "sync"}], "sync_notes": "As planned.", "logged_at": "2026-10-26T01:20:59.752Z"}}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 110, "distance_m": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 110, "distance_m": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 110, "distance_m": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 110, "distance_m": 10, "per_plan": true, "src": "sync"}], "sync_notes": "As planned (4 × 110 lb, 10 m).", "logged_at": "2026-10-26T01:20:59.752Z"}}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 155, "reps": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 155, "reps": 10, "per_plan": true, "src": "sync"}, {"weight_lb": 155, "reps": 8, "src": "sync"}], "sync_notes": "Sets 1–2 as planned (155 × 10); last set 155 lb × 8.", "logged_at": "2026-10-26T01:20:59.752Z"}}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "24 in box", "note": null, "warmup": false, "actuals": {"sets": [{"reps": 3, "src": "sync"}, {"reps": 3, "src": "sync"}, {"reps": 3, "src": "sync"}], "sync_notes": "24 in box in warm-up, then 3×3 at 36 in.", "logged_at": "2026-10-26T01:20:59.752Z"}}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 49, "reps": 12, "per_plan": true, "src": "sync"}, {"weight_lb": 49, "reps": 12, "per_plan": true, "src": "sync"}, {"weight_lb": 49, "reps": 12, "per_plan": true, "src": "sync"}], "sync_notes": "49 lb, reps per plan.", "logged_at": "2026-10-26T01:20:59.752Z"}}], "source": "TrainingPeaks", "first_seen": "2026-10-18T23:44:53+00:00", "last_updated": "2026-10-26T01:21:01+00:00", "revisions": [{"date": "2026-10-18", "title": "Lower", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 6, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "24 in box", "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-20T11:03:22+00:00"}, {"date": "2026-10-18", "title": "Lower", "type": "Strength", "status": "completed", "status_note": null, "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 6, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "24 in box", "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-20T16:15:00+00:00", "reason": "log 59146ad8"}, {"date": "2026-10-18", "title": "Lower", "type": "Strength", "status": "planned", "status_note": "Not completed, per Noah 10/20", "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 6, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "24 in box", "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-20T16:15:13+00:00"}], "move_history": [{"at": "2026-10-19T00:03:09+00:00", "from": "2026-10-18", "to": "2026-10-21", "via": "log.py"}, {"at": "2026-10-26T01:19:30+00:00", "from": "2026-10-21", "to": "2026-10-25", "via": "online sync"}], "moved_to": "2026-10-25", "status_locked": true, "completed_date": "2026-10-25", "completion_note": "Rebuilt from Noah's notes 10/25; done Sun 10/25. Notes list only deviations; everything else done as planned.", "sync": {"event": "20261026T012059752Z-workoutbot-fwqgu", "at": "2026-10-26T01:20:59.752Z", "started_at": null, "ended_at": null, "rounds": null}}, "2026-10-20|Upper Body": {"date": "2026-10-20", "title": "Upper Body", "type": "Strength", "status": "completed", "status_note": "TrainingPeaks shows 0/30 sets (red, unlogged in TP); Noah did it 10/21 per dashboard", "exercises": [{"label": "A1", "block": "A Warm Up (10:00, for completion)", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up (10:00, for completion)", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up (10:00, for completion)", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Machine Row", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 104, "reps": 8, "per_plan": true}, {"weight_lb": 104, "reps": 8, "per_plan": true}, {"weight_lb": 91, "reps": 8, "per_plan": true}], "notes": "Note '2x104, 1x91' read as 2 sets @104 lb + 1 set @91 lb (3 sets prescribed). Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": {"sets": [{"weight_lb": 25, "reps": 15, "per_plan": true}, {"weight_lb": 25, "reps": 15, "per_plan": true}, {"weight_lb": 25, "reps": 15, "per_plan": true}], "notes": "Logged '25' = 25 lb; no sets/reps given so done as plan 3x15 @25 (Noah 10/21: no reps = same as plan)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "D", "block": "D", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 180, "reps": 15, "per_plan": true}, {"weight_lb": 180, "reps": 10}, {"weight_lb": 140, "reps": 13}], "notes": "First set 180 lb, reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "E", "block": "E", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Shortest ROM", "warmup": false, "actuals": {"sets": [{"weight_lb": 120, "reps": 10, "per_plan": true}, {"weight_lb": 120, "reps": 10, "per_plan": true}, {"weight_lb": 120, "reps": 10, "per_plan": true}], "notes": "Note '120x3' read as 3 sets @120 lb (3x10 prescribed), not 3 reps. Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 10, "reps": 20, "per_plan": true}, {"weight_lb": 10, "reps": 20, "per_plan": true}, {"weight_lb": 10, "reps": 20, "per_plan": true}], "notes": "Note '3x10' read as 3 sets @10 lb (3x20 prescribed). Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 15, "reps": 15}, {"weight_lb": 12.5, "reps": 13}, {"weight_lb": 10, "reps": 13}], "notes": "3rd set '13x10' = 10 lb x 13 reps (Noah confirmed 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 35, "reps": 12}, {"weight_lb": 20, "reps": 28}, {"weight_lb": 20, "reps": 28}], "notes": "35x17 excluded per Noah (typed on wrong workout). '20x28' kept as 20 lb x 28 reps - confirm; 3rd set 20x28 same as 2nd (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 35, "reps": 17}, {"weight_lb": 20, "reps": 28}, {"weight_lb": 20, "reps": 28}], "notes": "2 of 3 prescribed sets logged; 3rd set 20x28 same as 2nd (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 25}, {"reps": 25}, {"reps": 25}], "notes": "Completed as prescribed (Noah: abs, no weights)", "logged_at": "2026-10-21T16:25:30+00:00"}}], "source": "TrainingPeaks", "first_seen": "2026-10-18T23:44:53+00:00", "last_updated": "2026-10-22T11:09:54+00:00", "revisions": [{"date": "2026-10-20", "title": "Upper Body", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up (10:00, for completion)", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up (10:00, for completion)", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up (10:00, for completion)", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Machine Row", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Shortest ROM", "warmup": false, "actuals": null}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-21T16:25:30+00:00"}, {"date": "2026-10-20", "title": "Upper Body", "type": "Strength", "status": "completed", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up (10:00, for completion)", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up (10:00, for completion)", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up (10:00, for completion)", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Machine Row", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 104, "reps": 8, "per_plan": true}, {"weight_lb": 104, "reps": 8, "per_plan": true}, {"weight_lb": 91, "reps": 8, "per_plan": true}], "notes": "Note '2x104, 1x91' read as 2 sets @104 lb + 1 set @91 lb (3 sets prescribed). Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": {"sets": [{"weight_lb": 25, "reps": 15, "per_plan": true}, {"weight_lb": 25, "reps": 15, "per_plan": true}, {"weight_lb": 25, "reps": 15, "per_plan": true}], "notes": "Logged '25' = 25 lb; no sets/reps given so done as plan 3x15 @25 (Noah 10/21: no reps = same as plan)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "D", "block": "D", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 180, "reps": 15, "per_plan": true}, {"weight_lb": 180, "reps": 10}, {"weight_lb": 140, "reps": 13}], "notes": "First set 180 lb, reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "E", "block": "E", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Shortest ROM", "warmup": false, "actuals": {"sets": [{"weight_lb": 120, "reps": 10, "per_plan": true}, {"weight_lb": 120, "reps": 10, "per_plan": true}, {"weight_lb": 120, "reps": 10, "per_plan": true}], "notes": "Note '120x3' read as 3 sets @120 lb (3x10 prescribed), not 3 reps. Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 10, "reps": 20, "per_plan": true}, {"weight_lb": 10, "reps": 20, "per_plan": true}, {"weight_lb": 10, "reps": 20, "per_plan": true}], "notes": "Note '3x10' read as 3 sets @10 lb (3x20 prescribed). Reinterpreted from note; missing reps = plan (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 15, "reps": 15}, {"weight_lb": 12.5, "reps": 13}, {"weight_lb": 10, "reps": 13}], "notes": "3rd set '13x10' = 10 lb x 13 reps (Noah confirmed 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 35, "reps": 12}, {"weight_lb": 20, "reps": 28}, {"weight_lb": 20, "reps": 28}], "notes": "35x17 excluded per Noah (typed on wrong workout). '20x28' kept as 20 lb x 28 reps - confirm; 3rd set 20x28 same as 2nd (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"weight_lb": 35, "reps": 17}, {"weight_lb": 20, "reps": 28}, {"weight_lb": 20, "reps": 28}], "notes": "2 of 3 prescribed sets logged; 3rd set 20x28 same as 2nd (Noah 10/21)", "logged_at": "2026-10-21T16:25:30+00:00"}}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 25}, {"reps": 25}, {"reps": 25}], "notes": "Completed as prescribed (Noah: abs, no weights)", "logged_at": "2026-10-21T16:25:30+00:00"}}], "replaced_at": "2026-10-22T11:09:54+00:00"}], "tags": [], "move_history": [{"at": "2026-10-21T16:25:30+00:00", "from": "2026-10-20", "to": "2026-10-21", "via": "dashboard export"}], "moved_to": "2026-10-21", "completed_date": "2026-10-21", "rule_notes": ["2026-10-21: weight with no reps filled from prescription (per plan)"]}, "2026-10-23|Upper Body": {"date": "2026-10-23", "title": "Upper Body", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up (10:00, for completion)", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up (10:00, for completion)", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up (10:00, for completion)", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Short ROM", "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Machine Row", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "source": "TrainingPeaks", "first_seen": "2026-10-18T23:44:53+00:00", "last_updated": "2026-10-19T00:03:09+00:00", "revisions": [], "move_history": [{"at": "2026-10-19T00:03:09+00:00", "from": "2026-10-23", "to": "2026-10-22", "via": "log.py"}], "moved_to": "2026-10-22"}, "2026-10-27|Upper Body": {"date": "2026-10-27", "title": "Upper Body", "type": "Strength", "status": "completed", "status_note": "Done Wed 10/28 8:09-8:48 PM CT per dashboard (synced late 10/29). AbMat skipped, pushed to leg day.", "exercises": [{"label": "A1", "block": "A Warm Up", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Machine Row", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 8, "per_plan": true, "round": true, "src": "sync"}, {"reps": 8, "per_plan": true, "round": true, "src": "sync"}, {"reps": 8, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": {"sets": [{"reps": 15, "per_plan": true, "round": true, "src": "sync"}, {"reps": 15, "per_plan": true, "round": true, "src": "sync"}, {"reps": 15, "per_plan": true, "round": true, "src": "sync"}], "sync_notes": "30x15 for set 2 and 3", "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "D", "block": "D", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 15, "per_plan": true, "round": true, "src": "sync"}, {"reps": 15, "per_plan": true, "round": true, "src": "sync"}, {"reps": 15, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "E", "block": "E", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Shortest ROM", "warmup": false, "actuals": {"sets": [{"reps": 10, "per_plan": true, "round": true, "src": "sync"}, {"reps": 10, "per_plan": true, "round": true, "src": "sync"}, {"reps": 10, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [{"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}, {"reps": 20, "per_plan": true, "round": true, "src": "sync"}], "logged_at": "2026-10-29T23:33:03.657Z"}}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": {"sets": [], "sync_notes": "Skipped. Pls push to my leg day tomorrow.", "logged_at": "2026-10-29T23:33:03.657Z"}}], "source": "TrainingPeaks", "first_seen": "2026-10-26T00:56:22+00:00", "last_updated": "2026-10-30T00:38:36+00:00", "revisions": [{"date": "2026-10-27", "title": "Upper Body", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Machine Row", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 20, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-26T11:08:15+00:00"}], "move_history": [{"at": "2026-10-26T01:18:44+00:00", "from": "2026-10-27", "to": "2026-10-26", "via": "online sync"}, {"at": "2026-10-30T00:34:24+00:00", "from": "2026-10-26", "to": "2026-10-28", "via": "online sync"}], "moved_to": "2026-10-28", "completed_date": "2026-10-28", "sync": {"event": "20261029T233303657Z-ywdbvo27-gx6ij", "at": "2026-10-29T23:33:03.657Z", "started_at": "2026-10-29T01:09:43.466Z", "ended_at": "2026-10-29T01:48:11.161Z", "rounds": {"B@B|Machine Row": 3, "C@C|High Incline Press": 3, "D@D|Plate Loaded Lat Pull Down": 3, "E@E|Machine Chest Fly": 3, "F@F1|DB Incline Lateral Raise": 3, "G@G1|Cable Rope Curl": 3}}}, "2026-10-28|Lower": {"date": "2026-10-28", "title": "Lower Body", "type": "Strength", "status": "skipped", "status_note": "Planned by Workout Bot (dashboard only, not in TrainingPeaks). Recreated from TP Lower 10/18 with weights from Noah's 10/25 session.", "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 8.5, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "36 in box", "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": 54, "other_load": null, "note": null, "warmup": false, "actuals": null}], "source": "Workout Bot", "first_seen": "2026-10-26T01:21:43+00:00", "last_updated": "2026-10-30T00:41:25+00:00", "revisions": [{"date": "2026-10-28", "title": "Lower · planned by Workout Bot", "type": "Strength", "status": "planned", "status_note": "Planned by Workout Bot (dashboard only, not in TrainingPeaks). Recreated from TP Lower 10/18 with weights from Noah's 10/25 session.", "exercises": [{"label": "A1", "block": "A", "name": "Alternating Pogo Hops", "sets": 3, "reps": null, "duration_s": 20, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "A2", "block": "A", "name": "Med Ball Crunch Throw", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 8.5, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "B", "block": "B", "name": "Fast Sled Push", "sets": 4, "reps": null, "duration_s": null, "weight_lb": 110, "other_load": "10 m", "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "Barbell RDL", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": 155, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Seated Box Jump", "sets": 3, "reps": 3, "duration_s": null, "weight_lb": null, "other_load": "36 in box", "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Bent Over Cable Rotation", "sets": 3, "reps": 12, "duration_s": null, "weight_lb": 54, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-30T00:41:25+00:00", "reason": "log 8b1aec7b"}], "move_history": [{"at": "2026-10-30T00:34:24+00:00", "from": "2026-10-28", "to": "2026-10-29", "via": "online sync"}], "moved_to": "2026-10-29"}, "2026-10-30|Upper Body": {"date": "2026-10-30", "title": "Upper Body", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": "60° Incline Position", "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": "Short ROM", "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Machine Row", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G2", "block": "G", "name": "Cable Rope Tricep Push Down", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "source": "TrainingPeaks", "first_seen": "2026-10-26T00:56:22+00:00", "last_updated": "2026-10-26T11:08:15+00:00", "revisions": [{"date": "2026-10-30", "title": "Upper Body", "type": "Strength", "status": "planned", "status_note": null, "exercises": [{"label": "A1", "block": "A Warm Up", "name": "Air Bike", "sets": 1, "reps": null, "duration_s": 300, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A2", "block": "A Warm Up", "name": "Band Pull Apart", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "A3", "block": "A Warm Up", "name": "Scapular Push Up", "sets": 1, "reps": 30, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": true, "actuals": null}, {"label": "B", "block": "B", "name": "Plate Loaded Lat Pull Down", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "C", "block": "C", "name": "High Incline Press", "sets": 3, "reps": 6, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "D", "block": "D", "name": "Machine Chest Fly", "sets": 3, "reps": 10, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "E", "block": "E", "name": "Machine Row", "sets": 3, "reps": 15, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F1", "block": "F", "name": "DB Incline Lateral Raise", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "F2", "block": "F", "name": "DB Incline Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G1", "block": "G", "name": "Cable Rope Curl", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "G2", "block": "G", "name": "Tricep Push Down", "sets": 3, "reps": 8, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}, {"label": "H", "block": "H", "name": "AbMat Sit Up", "sets": 3, "reps": 25, "duration_s": null, "weight_lb": null, "other_load": null, "note": null, "warmup": false, "actuals": null}], "replaced_at": "2026-10-26T11:08:15+00:00"}]}}, "merges": [{"at": "2026-10-18T23:44:53+00:00", "batch": "2026-10-18_seed.json", "added": 3, "updated": 0, "unchanged": 0}, {"at": "2026-10-20T11:03:22+00:00", "batch": "2026-10-20_sync.json", "added": 0, "updated": 1, "unchanged": 2}, {"at": "2026-10-20T16:15:13+00:00", "batch": "2026-10-20_sync.json", "added": 0, "updated": 1, "unchanged": 2}, {"at": "2026-10-21T16:25:30+00:00", "batch": "chat paste 10/21 corrected", "kind": "actuals", "updated": 2, "unchanged": 0}, {"at": "2026-10-22T11:09:54+00:00", "batch": "2026-10-22_sync.json", "added": 0, "updated": 1, "unchanged": 1}, {"at": "2026-10-26T00:56:22+00:00", "batch": "2026-10-25_sync.json", "added": 2, "updated": 0, "unchanged": 0}, {"at": "2026-10-26T11:08:15+00:00", "batch": "2026-10-26_sync.json", "added": 0, "updated": 2, "unchanged": 0}], "log": [{"id": "64e84fca", "at": "2026-10-19T00:03:09+00:00", "kind": "move", "workout_key": "2026-10-18|Lower", "prev_moved_to": null, "from": "2026-10-18", "to": "2026-10-21", "prev_status": null, "summary": "Moved Lower from Sun Oct 18 to Wed Oct 21 (TrainingPeaks date Sun Oct 18; 0 logged sets kept)"}, {"id": "24745023", "at": "2026-10-19T00:03:09+00:00", "kind": "move", "workout_key": "2026-10-23|Upper Body", "prev_moved_to": null, "from": "2026-10-23", "to": "2026-10-22", "prev_status": null, "summary": "Moved Upper Body from Fri Oct 23 to Thu Oct 22 (TrainingPeaks date Fri Oct 23; 0 logged sets kept)"}, {"id": "113df3d6", "at": "2026-10-19T00:03:09+00:00", "kind": "tag", "workout_key": "2026-10-20|Upper Body", "tag": "optional, only if recovery is green", "summary": "Tagged Upper Body on 2026-10-20: \"optional, only if recovery is green\"", "prev_status": null}, {"id": "ca717303", "at": "2026-10-19T14:11:03+00:00", "kind": "untag", "workout_key": "2026-10-20|Upper Body", "tag": "optional, only if recovery is green", "summary": "Removed tag Upper Body on 2026-10-20: \"optional, only if recovery is green\"", "prev_status": null}, {"id": "59146ad8", "at": "2026-10-20T16:15:00+00:00", "date": "2026-10-21", "prev_status": "completed", "workout_key": "2026-10-18|Lower", "exercise_key": null, "created_workout": false, "summary": "2026-10-21 Lower: status completed → planned"}, {"id": "8b1aec7b", "at": "2026-10-30T00:41:25+00:00", "date": "2026-10-29", "prev_status": "planned", "workout_key": "2026-10-28|Lower", "exercise_key": null, "created_workout": false, "summary": "2026-10-29 Lower · planned by Workout Bot: status planned → skipped"}], "imported_exports": ["chat-paste:jhf7pkmvibdnk8:corrected"], "email_ingests": [{"msg_id": "chat-paste-2026-10-21", "payload_id": "jhf7pkmvibdnk8", "workout": "2026-10-20|Upper Body", "at": "2026-10-21T16:25:30+00:00", "source": "chat paste, corrected batch"}], "status_flags": [{"at": "2026-10-22T11:09:54+00:00", "workout": "2026-10-20|Upper Body", "tp_status": "skipped", "kept": "completed"}, {"at": "2026-10-23T11:09:46+00:00", "workout": "2026-10-20|Upper Body", "tp_status": "skipped", "kept": "completed"}]};
+const EXTRA = {"features": {"cancel_relay": false}, "classes": [{"class": "THIS STRENGTH", "coach": "Alexa A.", "csv_status": "RESERVED", "date": "2026-10-19", "first_seen": "2026-10-18T18:54:00", "last_seen": "2026-10-19T17:00:00", "source": "Recovered: This Gym Fitness log 10/18 (PushPress reservation, RESERVED)", "status": "COMPLETED", "time": "18:00", "type": "", "posted": "Warm up 6min: Cardio 60s; turf: Walking Quad Pull, Hamstring Sweep, Knee Hugs, Walking Lunges, Bear Crawl (10 yd each); racks: 90/90 x10, Squat Reaches x10, Supermans x10. Up weight from last week. Strength 1 12min: Barbell Deadlift x8 (RPE 7-8), DB Push Press x8, Bulgarian SS Jumps x6 ea. Strength 2 12min: Barbell Bench Press x8 (RPE 7-8), Lateral Lunges x6 ea, TRX Row x10. Finisher 10min: 12 Crunches, 12 Toe Touches, 12 Leg Lifts, 12 Cardio Cal.", "whoop": {"id": "sessions:2", "date": "2026-10-19", "session": "THIS STRENGTH", "source": "This Gym", "time": "18:00", "time_kind": "planned", "activity": "Weightlifting", "strain": "13.9", "duration": "0:41:38", "avg_hr": "144", "max_hr": "190", "cal": "434"}, "whoop_match": {"confidence": "high", "score": 6.5, "reason": "planned time 18:00 within 0 min; activity Weightlifting fits class; Whoop label 'This Gym'; name similar", "whoop_id": "sessions:2"}}, {"cancel_source": "confirmed", "class": "THIS CONDITIONING", "coach": "Zach P.", "csv_status": "RESERVED", "date": "2026-10-23", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-20T21:20:30", "source": "PushPress Reservations tab 2026-10-20", "status": "CANCELLED", "time": "12:00", "type": "THIS HYROX"}, {"class": "APEX", "coach": "Rita L.", "csv_status": "RESERVED", "date": "2026-10-24", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-25T20:09:18", "source": "PushPress Reservations tab 2026-10-23 5:37 AM", "status": "COMPLETED", "time": "10:00", "type": "APEX", "posted": "Warm up: 60s cardio, Lunge w/ OH reach, Reverse lunge w/ twist, World's greatest, Figure 4, Lateral lunge, Hamstring scoops, Toe touches. A: A1 Pogo Hops 2x10, A2 Snap Down to Vertical Jump 2x3, A3 Countermovement Jump 2x3, A4 DB Weighted Jumps 2x3 (1 min rest), A5 Box Jumps 4x1 max (2 min rest). B: Trap Bar Deadlift 10 @RPE6, 8 @RPE7, 6 @RPE8 (2 min rest). C: Sprinter Glute Bridge 3x8ea, Sissy Squats 3x8, Copenhagen Plank 3x20s ea (60-90s rest). D: Med Ball V-Ups 10, Med Ball Toe Touches 20, Med Ball Russian Twist 40 (90s rest).", "posted_coach": "Nadia"}, {"class": "THIS HYROX", "coach": "Paige P.", "csv_status": "RESERVED", "date": "2026-10-27", "first_seen": "2026-10-25T20:09:33", "last_seen": "2026-10-27T06:06:44", "source": "PushPress Reservations tab 2026-10-27 5:35 AM CT", "status": "COMPLETED", "time": "07:15", "type": "class"}, {"cancel_source": "confirmed", "class": "THIS HYROX", "coach": "Paige P.", "csv_status": "RESERVED", "date": "2026-10-29", "first_seen": "2026-10-25T20:09:33", "last_seen": "2026-10-26T06:08:31", "source": "PushPress Reservations tab 2026-10-26 5:31 AM CT", "status": "CANCELLED", "time": "07:15", "type": "class", "posted": ""}, {"class": "Personal Training - Zach Powell", "coach": "Zach Powell", "csv_status": "RESERVED", "date": "2026-10-30", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2026-11-06", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2026-11-20", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2026-12-04", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2026-12-18", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-01-01", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-01-15", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-01-29", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-02-12", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-02-26", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-03-12", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-03-26", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-04-09", "first_seen": "2026-10-20T11:21:10", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}, {"class": "Personal Training 60 min", "coach": "", "csv_status": "RESERVED", "date": "2027-04-23", "first_seen": "2026-10-23T06:09:46", "last_seen": "2026-10-29T16:31:00", "source": "PushPress Reservations tab 2026-10-29 4:31 PM CT", "status": "RESERVED", "time": "09:00", "type": "personal training"}], "recovery": {"2026-09-18": 66, "2026-09-19": 38, "2026-09-20": 27, "2026-09-21": 95, "2026-09-22": 76, "2026-09-23": 89, "2026-09-24": 74, "2026-09-25": 54, "2026-09-26": 34, "2026-09-27": 54, "2026-09-28": 54, "2026-09-29": 95, "2026-09-30": 82, "2026-10-01": 20, "2026-10-02": 29, "2026-10-03": 40, "2026-10-04": 41, "2026-10-05": 31, "2026-10-06": 49, "2026-10-07": 39, "2026-10-08": 10, "2026-10-09": 61, "2026-10-10": 61, "2026-10-12": 55, "2026-10-13": 82, "2026-10-14": 44, "2026-10-15": 36, "2026-10-16": 46, "2026-10-17": 42, "2026-10-19": 65, "2026-10-20": 60, "2026-10-21": 54, "2026-10-22": 24, "2026-10-23": 40, "2026-10-24": 68, "2026-10-25": 51, "2026-10-26": 28, "2026-10-27": 38, "2026-10-28": 46, "2026-10-29": 26}, "workout_whoop": {"2026-10-18|Lower": {"id": "sessions:8", "date": "2026-10-25", "session": "unknown", "source": "TrainingPeaks", "time": "~4:10-4:35 PM (chart)", "time_kind": "planned", "activity": "Weightlifting", "strain": "12.7", "duration": "0:31:44", "match": {"confidence": "medium", "score": 3.0, "reason": "activity Weightlifting fits workout; Whoop label 'TrainingPeaks'", "whoop_id": "sessions:8"}}, "2026-10-20|Upper Body": {"id": "sessions:4", "date": "2026-10-21", "session": "Upper Body", "source": "TrainingPeaks", "time": "11:20", "time_kind": "actual", "activity": "Weightlifting", "strain": "13.8", "duration": "0:58:28", "avg_hr": "136", "max_hr": "165", "cal": "511", "match": {"confidence": "medium", "score": 3.5, "reason": "activity Weightlifting fits workout; Whoop label 'TrainingPeaks'; name similar", "whoop_id": "sessions:4"}}}};
+const CLS=((EXTRA&&EXTRA.classes)||[]).filter(c=>!/CANCEL/i.test(c.status||"")), REC=(EXTRA&&EXTRA.recovery)||{};
+const LS = "tpDash.logs.v2";
+const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const W = Object.entries(STORE.workouts).map(([key,w])=>({key,...w})).sort((a,b)=>(a.date+a.title).localeCompare(b.date+b.title));
+let local={}; try{local=JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){}
+const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(local))}catch(e){}};
+// ---- reschedule overrides (auto-saved in this browser) ----
+const LSM="tpDash.moves.v1"; let moves={}; try{moves=JSON.parse(localStorage.getItem(LSM)||"{}")}catch(e){}
+const saveMoves=(why)=>{try{localStorage.setItem(LSM,JSON.stringify(moves)); localStorage.setItem(LSM+".at",new Date().toISOString())}catch(e){} if(why!=="pull"&&typeof syncPush==="function") syncPush("_moves","move");};
+W.forEach(w=>{w.orig=w.date; w.server=w.moved_to||w.date;});
+function applyMoves(){W.forEach(w=>{w.date=moves[w.key]||w.server; w.localMove=!!moves[w.key];}); W.sort((a,b)=>(a.date+a.title).localeCompare(b.date+b.title));}
+function setMove(key,d){const w=W.find(x=>x.key===key); if(!w||!d) return null; const prev=moves[key]; if(d===w.server) delete moves[key]; else moves[key]=d; saveMoves(); applyMoves(); return {key,prev};}
+function restoreMove(m){if(m.prev==null) delete moves[m.key]; else moves[m.key]=m.prev; saveMoves(); applyMoves();}
+applyMoves();
+
+const pd=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const fd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const add=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return fd(d)};
+const wkStart=s=>{const d=pd(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return fd(d)};  // weeks run Mon–Sun
+const TODAY=fd(new Date());
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=n=>Number(n).toLocaleString();
+const dur=s=>s==null?"":(s>=60?`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`:`${s}s`);
+const ek=e=>`${e.label}|${e.name}`;
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+
+const Q=new URLSearchParams(location.search);
+let tab=Q.get("tab")||"week";
+let sel=Q.get("day")||TODAY;
+const slug=n=>String(n).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+let openHist=null, histQ="", histOnlyLogged=false, scrollHist=false;
+(function(){const hm=/^#history(?:\/([\w-]+))?/.exec(location.hash); const ex=Q.get("ex")||(hm&&hm[1]);
+  if(hm) tab="history"; if(ex&&tab==="history"){openHist=ex; scrollHist=true;}})();
+function setHistURL(){try{const u=new URL(location.href); u.searchParams.set("tab","history"); if(openHist) u.searchParams.set("ex",openHist); else u.searchParams.delete("ex"); u.hash=""; history.replaceState(null,"",u.toString());}catch(e){}}
+
+// ---------- data helpers ----------
+function storeSets(e){
+  const a=e.actuals||{}; if(a.sets) return a.sets;
+  if(a.weight_lb==null&&a.reps==null) return [];
+  const reps=Array.isArray(a.reps)?a.reps:Array(e.sets||1).fill(a.reps);
+  return reps.map(r=>({weight_lb:a.weight_lb,reps:r}));
+}
+const perPlan=(e,s)=>(s.weight_lb!=null&&s.reps==null&&s.duration_s==null&&e.reps&&!e.warmup)?{...s,reps:e.reps,per_plan:true}:s; // Noah 10/21: no reps = plan
+const grpOf=e=>e.extra?"X":e.label.replace(/\d+$/,"");
+function groupKey(w,e){const g=grpOf(e); const first=working(w).find(x=>grpOf(x)===g)||e; return g+"@"+ek(first);}
+const roundsOf=(w,e)=>e.warmup?0:((local[w.key]?.rounds||{})[groupKey(w,e)]||0);
+// Each "Log Set" tap = one planned round for every exercise in the group (Noah 10/25). Typed/parsed sets count first; taps only add the rounds not already typed.
+const localSets=(w,e)=>{const x=local[w.key]?.exercises?.[ek(e)]; const ex=x?[...(x.sets||[]),...(x.parsed||[])].map(s=>perPlan(e,s)):[];
+  const extra=Math.max(0,roundsOf(w,e)-ex.length); if(!extra) return ex;
+  const lastW=[...ex].reverse().find(s=>s.weight_lb!=null)?.weight_lb??e.weight_lb??null;
+  const r={round:true,per_plan:true}; if(lastW!=null) r.weight_lb=lastW; if(e.reps!=null) r.reps=e.reps; else if(e.duration_s!=null) r.duration_s=e.duration_s;
+  return [...ex,...Array.from({length:extra},()=>({...r}))];};
+const allSets=(w,e)=>[...(local[w.key]?storeSets(e).filter(s=>s.src!=="sync"):storeSets(e)),...localSets(w,e)];
+
+const label=s=>{const w=s.weight_lb,r=s.reps,d=s.duration_s,m=s.distance_m;
+  if(w!=null&&r!=null) return `${w}×${r}`; const b=[]; if(s.round&&w==null&&r==null&&d==null&&m==null) return "✓ set"; if(w!=null)b.push(`${w} lb`); if(r!=null)b.push(r); if(d!=null)b.push(dur(d)); if(m!=null)b.push(`${m}m`); return b.join(" · ")||"?"};
+const rank=s=>{const w=s.weight_lb,r=s.reps,d=s.duration_s;
+  if(w!=null&&r!=null) return [3,w*(1+r/30)]; if(w!=null) return [2,w]; if(d!=null) return [1,d]; return [0,r||0]};
+const better=(a,b)=>{const x=rank(a),y=rank(b);return x[0]!==y[0]?x[0]>y[0]:x[1]>y[1]};
+const bestOf=sets=>sets.reduce((b,s)=>!b||better(s,b)?s:b,null);
+const working=w=>w.exercises.filter(e=>!e.warmup);
+const needsWt=e=>e.weight_lb==null&&!e.warmup&&e.reps!=null&&!e.other_load;
+function rxHtml(e){
+  let main;
+  if(e.reps!=null) main=`${e.sets??"?"} × ${e.reps}`;
+  else if(e.duration_s!=null) main=`${e.sets??1} × ${dur(e.duration_s)}`;
+  else if(e.other_load&&/m$/.test(e.other_load)) main=`${e.sets??"?"} × ${e.other_load.replace(" ","")}`;
+  else if(e.sets) main=`${e.sets} sets`; else main="Extra";
+  const bits=[main];
+  if(e.weight_lb!=null) bits.push(`${e.weight_lb} lb`); else if(needsWt(e)) bits.push('<span class="dash">—</span>');
+  if(e.other_load&&!(/m$/.test(e.other_load)&&e.reps==null)) bits.push(esc(e.other_load));
+  return bits.join(" · ");
+}
+function progress(w){
+  let planned=0,done=0,reps=0,vol=0,lvol=0;
+  working(w).forEach(e=>{const s=allSets(w,e).length; const p=e.sets||0; planned+=p||s; done+=p?Math.min(s,p):s;
+    if(e.reps!=null&&e.sets) reps+=e.sets*e.reps; if(e.weight_lb!=null&&e.reps!=null) vol+=e.sets*e.reps*e.weight_lb;
+    allSets(w,e).forEach(x=>lvol+=(x.weight_lb||0)*(x.reps||0));});
+  return {planned,done,reps,vol,lvol};
+}
+const skipOf=(w,e)=>e.warmup?0:(local[w.key]?(LXr(w,e).skipped||0):((e.actuals||{}).skipped_sets||0));
+function statusOf(w){const s=local[w.key]?.status||w.status; if(s==="planned"&&progress(w).done>0) return "progress"; return s}
+const statusText={planned:"Planned",completed:"Completed",skipped:"Skipped",progress:"In progress"};
+
+function ring(done,total,size=76,stroke=7,color){
+  const r=(size-stroke)/2,c=2*Math.PI*r,p=total?Math.min(done/total,1):0;
+  const col=color||(p>=1?"var(--good)":"var(--accent)");
+  return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="rgba(255,255,255,.08)" stroke-width="${stroke}" fill="none"/>
+  <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${col}" stroke-width="${stroke}" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p)}"/></svg>`;
+}
+const ICON={info:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+ plus:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+ l:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+ r:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+ grip:'<svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor"><circle cx="2.5" cy="3" r="1.5"/><circle cx="7.5" cy="3" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13" r="1.5"/><circle cx="7.5" cy="13" r="1.5"/></svg>',
+ lock:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+ more:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'};
+
+const recCls=p=>p>=67?"g":(p>=34?"y":"r");
+const classesOn=d=>CLS.filter(c=>c.date===d);
+const WW=(EXTRA&&EXTRA.workout_whoop)||{};
+const ctitle=c=>{const t=c.class||"",co=(c.coach||"").trim(); if(!co) return t; const r=t.replace(new RegExp("\\s*[-–—·|:]\\s*"+co.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*$","i"),"").trim(); return r||t;};
+const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":"res";
+const tcase=t=>String(t||"").toLowerCase().replace(/\b([a-z])/g,m=>m.toUpperCase()).replace(/\bThis\b(?= (Gym|Strength|Pilates|Hiit|Ride|Row))/g,"This");
+const blbl=st=>/COMPLETED/.test(st)?"Completed":tcase(st); // past, not cancelled = done
+function whoopLine(s,short){if(!s) return ""; const dur=s.duration?s.duration.replace(/^0:/,""):"";
+  if(short) return [s.strain&&`${esc(s.strain)} strain`,s.avg_hr&&`${esc(s.avg_hr)} bpm`].filter(Boolean).join(" · ");
+  const p=[s.strain&&`<b>${esc(s.strain)}</b> strain`,dur&&`<b>${esc(dur)}</b>`,s.avg_hr&&`avg <b>${esc(s.avg_hr)}</b>${s.max_hr?` / max <b>${esc(s.max_hr)}</b>`:""} bpm`,s.cal&&`<b>${esc(s.cal)}</b> cal`].filter(Boolean);
+  return p.length?`<div class="wh"><span class="wl">WHOOP</span>${p.join("")?p.map(x=>`<span>${x}</span>`).join(""):""}</div>`:"";}
+function whoopForWorkout(w){ return /^(completed|done)$/.test(statusOf(w))?(WW[w.key]||null):null;}
+function t12(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||""); if(!m) return {h:esc(t||""),ap:""}; let h=+m[1]; const ap=h>=12?"PM CT":"AM CT"; h=h%12||12; return {h:`${h}:${m[2]}`,ap}}
+const ckey=c=>`${c.date}|${c.time}|${c.class}`;
+const cxReq=c=>!!((EXTRA&&EXTRA.features||{}).cancel_relay)&&(!!(local._cancel&&local._cancel[ckey(c)])||!!c.cancel_requested);
+const canCancel=c=>/RESERV|WAIT/.test(c.status||"")&&`${c.date}T${c.time||"00:00"}`>=NOWISO;
+const NOWISO=(()=>{const n=new Date(),z=x=>String(x).padStart(2,"0");return `${n.getFullYear()}-${z(n.getMonth()+1)}-${z(n.getDate())}T${z(n.getHours())}:${z(n.getMinutes())}`})();
+function cxBits(c,small){if(!canCancel(c)) return ""; return cxReq(c)?`<span class="cxreq" title="Cancel requested · stays booked until done">Pending</span>`:`<button class="cxl" data-cancelcls="${esc(ckey(c))}">${small?"Cancel":"Cancel class"}</button>`;}
+function clsRun(c){if(c.date>TODAY) return ""; const k=ckey(c), r=(local._cls||{})[k]||{};
+  const t=r.started_at&&!r.ended_at?`⏱ <b data-tick="${esc(r.started_at)}">${fmtT((Date.now()-Date.parse(r.started_at))/1000)}</b><button class="tbtn" data-cend="${esc(k)}">End workout</button>`:r.ended_at?`<span>Duration <b>${fmtT((Date.parse(r.ended_at)-Date.parse(r.started_at))/1000)}</b></span>`:`<button class="tbtn" data-cstart="${esc(k)}">Start Workout</button>`;
+  return `<div class="clsrun">${t}<textarea data-cnote="${esc(k)}" placeholder="Post-workout notes">${esc(r.notes||"")}</textarea></div>`;}
+function postedHtml(c){if(c.posted==null) return "";
+  if(!c.posted) return `<div class="posted none">Workout not posted yet</div>`;
+  return `<div class="posted"><div class="ph">Posted workout${c.posted_coach?` · listed coach ${esc(c.posted_coach)}`:""}</div>${esc(c.posted)}</div>`;}
+function classCard(c){const t=t12(c.time); const wait=/WAIT/.test(c.status);
+  const sub=[c.coach,c.type&&c.type.toLowerCase()!==c.class.toLowerCase()?c.type:""].filter(Boolean).map(esc).join(" · ");
+  return `<div class="cls"><div class="tm"><b>${t.h}</b><span>${t.ap}</span></div><div class="x"><div class="src">THIS Gym</div><div>${esc(ctitle(c))}</div><span>${sub}</span>${whoopLine(c.whoop)}${canCancel(c)&&cxReq(c)?cxBits(c):""}${clsRun(c)}</div>${canCancel(c)&&!cxReq(c)?cxBits(c):""}${c.status?`<span class="bdg ${bcls(c.status)}">${esc(blbl(c.status))}</span>`:""}${postedHtml(c)}</div>`;}
+// ---------- workout tab ----------
+function strip(){
+  const ws=wkStart(sel);
+  const end=add(ws,6), f=d=>pd(d).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  let h=`<div class="card"><div class="wk-head"><button class="chev" data-wk="-7" aria-label="Previous week">${ICON.l}</button><div class="lbl">${f(ws)} – ${f(end)}, ${pd(end).getFullYear()}</div><button class="chev" data-wk="7" aria-label="Next week">${ICON.r}</button></div><div class="strip">`;
+  const anyRec=[0,1,2,3,4,5,6].some(i=>REC[add(ws,i)]!=null);
+  for(let i=0;i<7;i++){const d=add(ws,i); const wk=W.filter(w=>w.date===d); const st=wk.length?statusOf(wk[0]):""; const cl=classesOn(d); const r=REC[d];
+    h+=`<button class="day ${wk.length?"has":""} ${st} ${cl.length?"hascl":""} ${d===TODAY?"today":""} ${d===sel?"sel":""}" data-day="${d}"><span class="dn">${DN[pd(d).getDay()][0]}</span><span class="num">${pd(d).getDate()}</span><span class="dots">${wk.length?'<span class="dot"></span>':""}${cl.length?'<span class="dot cl"></span>':""}</span>${anyRec?`<span class="rec ${r!=null?recCls(r):""}" title="Whoop recovery">${r!=null?Number(r).toFixed(1)+"%":""}</span>`:""}</button>`;}
+  return h+`</div></div>`;
+}
+const LXr=(w,e)=>local[w.key]?.exercises?.[ek(e)]||{};
+function exRow(w,e){
+  const sets=allSets(w,e), ss=storeSets(e).length, b=bestOf(sets);
+  const done=sets.length&&(!e.sets||sets.length>=e.sets);
+  const id=esc(w.key+"::"+ek(e));
+  return `<div class="ex ${done?"done":""} ${(!e.warmup&&skipOf(w,e)&&e.sets&&sets.length+skipOf(w,e)>=e.sets)?"skipped":""}">
+    <div class="lab">${esc(e.label)}</div>
+    <div class="name"><span class="nm">${esc(e.name)}</span>${e.note?`<button class="info" data-note="${id}" aria-label="Coach note">${ICON.info}</button>`:""}</div>
+    ${statusOf(w)==="skipped"?"":`<button class="add" data-add="${id}" aria-label="Log a set">${ICON.plus}</button>`}
+    <div class="rx">${rxHtml(e)}</div>
+    ${e.note?`<div class="note" data-note-body="${id}">${esc(e.note)}</div>`:""}
+    ${lastTimeHtml(w,e)}
+    ${sets.length?`<div class="chips">${sets.map((s,i)=>`<span class="chip ${i>=ss?"local":""} ${sets.length>1&&s===b&&s.weight_lb!=null?"best":""}" ${i>=ss&&i-ss<(LXr(w,e).sets||[]).length?`data-editset="${id}" data-i="${i-ss}"`:""}>${esc(label(s))}${i>=ss&&i-ss<(LXr(w,e).sets||[]).length?`<button class="cx" data-delset="${id}" data-i="${i-ss}" aria-label="Delete set">×</button>`:""}</span>`).join("")}</div>`:""}
+    ${LXr(w,e).notes?`<div class="exnotes">📝 ${esc(LXr(w,e).notes)}${(LXr(w,e).unclear||[]).length?` <i>(unclear: ${esc(LXr(w,e).unclear.join(", "))})</i>`:""}<button data-editnote="${id}">Edit</button><button data-delnote="${id}">Delete</button></div>`:""}
+    ${e.warmup?"":(()=>{const n=skipOf(w,e), full=e.sets&&sets.length+n>=e.sets; return `<div class="skiprow">${n?Array.from({length:n},()=>`<span class="chip skipc">Skipped</span>`).join(""):""}${statusOf(w)==="skipped"?"":`<button class="tbtn" data-skipset="${id}" ${full?"disabled":""}>Skip Set</button>${n?`<button class="tbtn" data-unskip="${id}" aria-label="Undo last skipped set">Undo</button>`:""}`}</div>`;})()}
+    ${isBW(e)?`<div class="bwrow"><button class="${LXr(w,e).done?"on":""}" data-bwdone="${id}">${LXr(w,e).done?"Done":"Mark Done"}</button></div>`:""}
+    ${e.actuals?.notes?`<div class="ex-note">${esc(e.actuals.notes)}</div>`:""}
+    <div class="logrow" data-log="${id}"><textarea placeholder="${isBW(e)?"Optional notes":"Weights × reps, any order: 35x12, 12x40 lbs, 3 sets of 10 @ 50"}" data-w="${esc(w.key)}" data-e="${esc(ek(e))}">${esc(LXr(w,e).notes||"")}</textarea><button data-save>Save</button></div>
+  </div>`;
+}
+function workoutView(){
+  const list=W.filter(w=>w.date===sel), cls=classesOn(sel);
+  let h=strip();
+  if(cls.length){h+=`<div class="sec-title">Classes</div><div class="stack">${cls.map(classCard).join("")}</div>`;}
+  if(!list.length&&cls.length){ return h; }
+  if(!list.length){
+    const next=W.find(w=>w.date>sel);
+    h+=`<div class="card empty" style="margin-top:16px"><b>Rest day</b>${next?`Next up: ${DN[pd(next.date).getDay()]} · ${esc(next.title)} <br><br><button class="pill" data-day="${next.date}">Open ${esc(next.title)}</button>`:"Nothing scheduled."}</div>`;
+    return h;
+  }
+  list.forEach(w=>{
+    const st=statusOf(w), p=progress(w);
+    h+=`<div class="card" style="margin-top:16px"><div class="hero"><div class="t">
+      <div class="date">${pd(w.date).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"})}</div>
+      <h2>${esc(w.title)}</h2><div style="display:flex;align-items:center;gap:6px"><span class="pill ${st}">${statusText[st]||st}</span><button class="icon-btn" style="width:28px;height:28px;background:var(--surface2)" data-more="${esc(w.key)}" aria-label="More">${ICON.more}</button></div>
+      ${w.date!==w.orig?`<div class="moved-hint">Moved from ${DN[pd(w.orig).getDay()]}</div>`:""}${(w.tags||[]).map(t=>`<span class="tagchip">${esc(t)}</span>`).join(" ")}${whoopLine(whoopForWorkout(w))}</div>
+      <div class="ring">${ring(p.done,p.planned)}<div class="c"><div><b>${p.done}/${p.planned}</b><br><span>sets</span></div></div></div></div>
+      <div class="stats"><div class="stat"><b>${working(w).length}</b><span>exercises</span></div><div class="stat"><b>${p.reps?num(p.reps):"—"}</b><span>reps</span></div>
+      <div class="stat"><b>${p.lvol?num(p.lvol):(p.vol?num(p.vol):"—")}</b><span>${p.lvol?"Volume (lb)":"Planned Volume (lb)"}</span></div></div></div>`;
+    {const L1=local[w.key]||{}; if(st==="skipped"){} else if(!validT(L1.started_at)) h+=`<div class="timer"><button class="tbtn" data-wstart="${esc(w.key)}">Start Workout</button></div>`; else if(!L1.ended_at) h+=`<div class="timer">⏱ <b data-tick="${esc(L1.started_at)}">${fmtT((Date.now()-Date.parse(L1.started_at))/1000)}</b><button class="tbtn" data-wend="${esc(w.key)}">End workout</button></div>`;}
+    const warm=w.exercises.filter(e=>e.warmup);
+    if(warm.length){ const title=(warm[0].block||"Warm-up").replace(/^A\s+/,"");
+      h+=`<div style="margin-top:12px"><details class="warm"><summary><span>${esc(title)} · ${warm.length} movements</span><span class="chv">${ICON.r}</span></summary>${warm.map(e=>exRow(w,e)).join("")}</details></div>`;}
+    h+=`<div class="sec-title">Exercises</div><div class="stack">`;
+    const groups=[]; working(w).forEach(e=>{const g=e.extra?"X":e.label.replace(/\d+$/,""); const last=groups[groups.length-1]; if(last&&last.g===g) last.items.push(e); else groups.push({g,items:[e]});});
+    groups.forEach(g=>{h+=`<div class="group">${g.items.length>1&&g.g!=="X"?`<div class="tag">Superset</div>`:""}${g.g==="X"?`<div class="tag">Extra</div>`:""}${g.items.map(e=>exRow(w,e)).join("")}${(()=>{const n=(local[w.key]?.rounds||{})[g.g+"@"+ek(g.items[0])]||0; if(st==="skipped") return ""; return `<button class="gset ${n?"on":""}" data-gset="${esc(w.key)}" data-g="${esc(g.g+"@"+ek(g.items[0]))}">Log Set${n?` · ${n} done`:""}</button>${n?`<button class="tbtn gundo" data-gundo="${esc(w.key)}" data-g="${esc(g.g+"@"+ek(g.items[0]))}" aria-label="Undo last logged set">Undo</button>`:""}`;})()}</div>`;});
+    h+=`</div>`;
+    const L0=local[w.key]||{};
+    const wt=durT(L0.started_at,L0.ended_at); if(st!=="skipped") h+=`<div class="timer">${validT(L0.started_at)&&!L0.ended_at?`<b data-tick="${esc(L0.started_at)}">${fmtT((Date.now()-Date.parse(L0.started_at))/1000)}</b><button class="tbtn" data-wend="${esc(w.key)}">End workout</button>`:wt!=null?`<span>Workout time <b>${fmtT(wt)}</b></span>`:L0.ended_at?"":`<button class="tbtn" data-wstart="${esc(w.key)}">Start Workout</button>`}</div>`;
+    h+=`<div class="logfor">Logging for <b>${esc(pd(w.date).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"}))}</b>${w.date!==w.orig?` · Moved from ${esc(shortDate(w.orig))}`:""}</div>`;
+    if(st!=="skipped") h+=`<button class="complete-btn ${st==="completed"?"done":""}" data-complete="${esc(w.key)}">${st==="completed"?"Completed · Summary":"Finish Workout"}</button>`;
+    if(st==="skipped") h+=`<button class="skip-btn on" data-wunskip="${esc(w.key)}">Undo Skip</button>`; else if(st!=="completed") h+=`<button class="skip-btn" data-wskip="${esc(w.key)}">Skip Workout</button>`;
+  });
+  return h;
+}
+
+// ---------- week calendar ----------
+function wcard(w){const st=statusOf(w),p=progress(w);
+  return `<div class="wc ${st==="completed"?"completed":st==="skipped"?"skipped":""}" data-wkey="${esc(w.key)}" title="Drag to another day · tap to open">
+    <span class="grip" aria-hidden="true">${ICON.grip}</span>
+    <div class="x"><div class="tt">${esc(w.title)}</div><div class="mm">${working(w).length} exercises<br>${p.done?p.done+"/":""}${p.planned} sets</div>
+      ${w.date!==w.orig?`<div class="from">Moved from ${DN[pd(w.orig).getDay()]}</div>`:""}${(w.tags||[]).length?`<span class="opt" title="${esc(w.tags.join(" · "))}">optional</span>`:""}
+    ${st==="completed"?`<span class="wpill done">Completed</span>`:st==="skipped"?`<span class="wpill skp">Skipped</span>`:(w.date===todayCT()?`<button class="wstartc" data-wkstart="${esc(w.key)}">Start</button>`:"")}</div>
+    <button class="more" data-more="${esc(w.key)}" aria-label="More options">${ICON.more}</button></div>`;}
+function ccard(c){const t=t12(c.time),wait=/WAIT/.test(c.status);
+  return `<div class="cc${c.status==="COMPLETED"?" past":""}" title="THIS Gym booking · not movable here"><span class="lock">${ICON.lock}</span><div class="t">${t.h} ${t.ap}</div><div class="n">${esc(ctitle(c))}</div>${c.coach?`<div class="m">${esc(c.coach)}</div>`:""}${c.posted!=null?`<div class="m">${c.posted?"Posted":"Not posted"}</div>`:""}${c.whoop?`<div class="w">${whoopLine(c.whoop,1)}</div>`:""}${cxBits(c,1)}${cxBits(c,1)&&c.status?" ":""}${c.status?`<span class="b ${wait?"wait":bcls(c.status)==="res"?"":bcls(c.status)}">${esc(blbl(c.status))}</span>`:""}</div>`;}
+function weekView(){
+  const ws=wkStart(sel), f=d=>pd(d).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  let h=`<div class="wk-top"><button class="chev" data-wk="-7" aria-label="Previous week">${ICON.l}</button><div class="lbl">${f(ws)} – ${f(add(ws,6))}, ${pd(add(ws,6)).getFullYear()}</div><button class="chev" data-wk="7" aria-label="Next week">${ICON.r}</button><span class="hint">Drag workouts to reschedule · hold over ‹ › to change week</span></div><div class="wkgrid">`;
+  for(let i=0;i<7;i++){const d=add(ws,i), wk=W.filter(w=>w.date===d), cl=classesOn(d), r=REC[d];
+    h+=`<section class="col ${d===TODAY?"today":""}" data-dropday="${d}"><button class="col-h" data-day="${d}"><span class="dn">${DN[pd(d).getDay()]}</span><span class="num">${pd(d).getDate()}</span>${r!=null?`<span class="rec ${recCls(r)}" title="Whoop recovery">${Number(r).toFixed(1)}% Recovery</span>`:""}</button>
+      <div class="items">${wk.map(wcard).join("")}${cl.map(ccard).join("")}${!wk.length&&!cl.length?(()=>{const mv=W.filter(x=>x.orig===d&&x.date!==d);return `<div class="rest">${mv.length?`Nothing planned: ${esc(mv.map(x=>x.title+" moved to "+DN[pd(x.date).getDay()]).join(", "))}.`:"Rest day: nothing planned."}</div>`})():""}</div></section>`;}
+  return h+`</div>`;
+}
+
+// ---------- drag & drop (pointer events: mouse + touch) ----------
+let drag=null, justDragged=false, toastTimer=null, lastMove=null;
+function showToast(msg,undo){const t=document.getElementById("toast"); document.getElementById("toastMsg").textContent=msg; lastMove=undo; const ub=document.getElementById("toastUndo"); ub.hidden=!undo; ub.setAttribute("aria-label",msg+" · Undo"); t.classList.add("on");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{t.classList.remove("on"); document.getElementById("toastUndo").hidden=true; lastMove=null;},5000);}
+function doMove(key,d,animateIn=true){const w=W.find(x=>x.key===key); if(!w||w.date===d) return; const m=setMove(key,d); render();
+  if(animateIn){const el=document.querySelector(`.wc[data-wkey="${CSS.escape(key)}"]`); el?.classList.add("landed");}
+  showToast(`Moved · ${w.title} → ${DN[pd(d).getDay()]} ${pd(d).getDate()}`,m);}
+document.getElementById("toastUndo").addEventListener("click",()=>{if(!lastMove) return; if(lastMove.type==="skip"){const k=lastMove.key; lastMove=null; document.getElementById("toast").classList.remove("on"); document.getElementById("toastUndo").hidden=true; const L=LW(k); L.status=(L.prev_status&&L.prev_status!=="skipped")?L.prev_status:"planned"; delete L.prev_status; touch(k,"unskip"); render(); return;} const k=lastMove.key; restoreMove(lastMove); lastMove=null; render();
+  document.querySelector(`.wc[data-wkey="${CSS.escape(k)}"]`)?.classList.add("landed"); document.getElementById("toast").classList.remove("on");});
+function dragStart(){
+  const d=drag; d.started=true; const r=d.el.getBoundingClientRect(); d.rect=r;
+  const g=d.el.cloneNode(true); g.classList.add("lifted"); g.style.left=r.left+"px"; g.style.top=r.top+"px"; g.style.width=r.width+"px";
+  document.body.appendChild(g); d.ghost=g; d.el.classList.add("placeholder"); document.body.classList.add("dragging");
+  try{d.el.setPointerCapture(d.pid)}catch(e){}
+  if(d.type!=="mouse"&&navigator.vibrate) try{navigator.vibrate(8)}catch(e){}
+  dragMove(); autoScroll();
+}
+function dragMove(){const d=drag; if(!d||!d.ghost) return;
+  d.ghost.style.transform=`translate(${d.x-d.sx}px,${d.y-d.sy+(window.scrollY-d.scroll0)*0}px) scale(1.04) rotate(-1.2deg)`;
+  const el=document.elementFromPoint(d.x,d.y), chev=el?.closest(".chev[data-wk]");
+  if(chev!==d.chev){d.chev?.classList.remove("flip"); clearTimeout(d.flipT); d.chev=chev||null;
+    if(chev){chev.classList.add("flip"); const step=+chev.dataset.wk; d.flipT=setTimeout(()=>{if(drag!==d) return; d.nflip=(d.nflip||0)+1; sel=add(wkStart(sel),step); d.flipped=true; d.over=null; d.chev=null; render();
+      const ph=document.querySelector(`.wc[data-wkey="${CSS.escape(d.key)}"]`); if(ph){d.el=ph; ph.classList.add("placeholder");} dragMove();},d.nflip?900:450);}}
+  const hit=el?.closest("[data-dropday]");
+  if(hit!==d.over){d.over?.classList.remove("over"); d.over=hit||null; d.over?.classList.add("over");}
+}
+function autoScroll(){if(!drag||!drag.started) return; const y=drag.y,H=innerHeight,e=70; let v=0;
+  if(y<e) v=-Math.ceil((e-y)/6); else if(y>H-e) v=Math.ceil((y-(H-e))/6);
+  if(v){window.scrollBy(0,v); dragMove();} requestAnimationFrame(autoScroll);}
+function dragEnd(commit){
+  const d=drag; drag=null; clearTimeout(d.timer); clearTimeout(d.flipT); d.chev?.classList.remove("flip"); if(!d.started) return;
+  justDragged=true; setTimeout(()=>justDragged=false,350);
+  document.body.classList.remove("dragging"); d.over?.classList.remove("over");
+  const target=commit&&d.over?d.over.dataset.dropday:null, w=W.find(x=>x.key===d.key);
+  const g=d.ghost; g.style.transition="transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s";
+  if(target&&w&&target!==w.date){
+    const items=d.over.querySelector(".items").getBoundingClientRect();
+    g.style.transform=`translate(${items.left-d.rect.left}px,${items.top-d.rect.top}px) scale(1)`; g.style.width=items.width+"px";
+    setTimeout(()=>{g.remove(); doMove(d.key,target);},200);
+  }else{
+    g.style.transform="translate(0,0) scale(1)";
+    setTimeout(()=>{g.remove(); d.el.classList.remove("placeholder"); if(d.flipped) render();},220);
+  }
+}
+document.addEventListener("pointerdown",ev=>{
+  const card=ev.target.closest(".wc[data-wkey]"); if(!card||ev.target.closest(".more,.wstartc")||drag) return;
+  if(ev.pointerType==="mouse"&&ev.button!==0) return;
+  drag={key:card.dataset.wkey,el:card,pid:ev.pointerId,type:ev.pointerType,sx:ev.clientX,sy:ev.clientY,x:ev.clientX,y:ev.clientY,started:false,scroll0:window.scrollY};
+  if(ev.pointerType==="mouse") ev.preventDefault();
+  else drag.timer=setTimeout(()=>{if(drag&&!drag.started) dragStart();},200);
+});
+document.addEventListener("pointermove",ev=>{
+  if(!drag||ev.pointerId!==drag.pid) return; drag.x=ev.clientX; drag.y=ev.clientY;
+  const dist=Math.hypot(drag.x-drag.sx,drag.y-drag.sy);
+  if(!drag.started){ if(drag.type==="mouse"){ if(dist>4) dragStart(); } else if(dist>10){ clearTimeout(drag.timer); drag=null; } return; }
+  ev.preventDefault(); dragMove();
+});
+document.addEventListener("pointerup",ev=>{if(drag&&ev.pointerId===drag.pid) dragEnd(true);});
+document.addEventListener("pointercancel",ev=>{if(drag&&ev.pointerId===drag.pid) dragEnd(false);});
+document.addEventListener("touchmove",ev=>{if(drag&&drag.started) ev.preventDefault();},{passive:false});
+document.addEventListener("contextmenu",ev=>{if(ev.target.closest(".wc")) ev.preventDefault();});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&drag) dragEnd(false);});
+
+// ---------- "⋯" menu fallback ----------
+function closePop(){document.querySelector(".pop")?.remove();}
+function openPop(btn,key){closePop(); const w=W.find(x=>x.key===key); if(!w) return; const ws=wkStart(w.date);
+  const p=document.createElement("div"); p.className="pop";
+  p.innerHTML=`<div class="ph">Move ${esc(w.title)} to</div>${[0,7].map(o=>`<div class="pd"${o?' style="margin-top:6px"':""}>${[0,1,2,3,4,5,6].map(i=>{const d=add(ws,i+o);return `<button data-popmove="${d}" class="${d===w.date?"cur":""}">${DN[pd(d).getDay()][0]}<b>${pd(d).getDate()}</b></button>`}).join("")}</div>`).join("")}
+    ${w.date!==w.orig?`<button class="pl" data-popmove="${w.orig}">↩ Back to ${DN[pd(w.orig).getDay()]} (TrainingPeaks date)</button>`:""}
+    <button class="pl" data-popopen="${w.date}">Open workout</button>`;
+  document.body.appendChild(p); const r=btn.getBoundingClientRect();
+  p.style.left=Math.max(8,Math.min(innerWidth-244,r.right-236))+"px"; p.style.top=(r.bottom+6+(r.bottom+230>innerHeight?-(236+r.height):0))+"px";
+  p.dataset.key=key;}
+
+// ---------- history tab ----------
+function sessions(){
+  const m=new Map();
+  W.forEach(w=>working(w).forEach(e=>{const k=norm(e.name); if(!m.has(k)) m.set(k,{name:e.name,items:[]}); m.get(k).items.push({w,e,sets:allSets(w,e)});}));
+  return [...m.values()];
+}
+function spark(vals,planned){
+  const Wd=96,H=34,p=3; const v=vals.filter(x=>x!=null); if(!v.length) return `<svg width="${Wd}" height="${H}"><line x1="${p}" x2="${Wd-p}" y1="${H/2}" y2="${H/2}" stroke="rgba(255,255,255,.1)" stroke-width="2" stroke-dasharray="3 4"/></svg>`;
+  const mn=Math.min(...v),mx=Math.max(...v),rg=mx-mn||1; const n=vals.length;
+  const pts=vals.map((x,i)=>x==null?null:[p+(n===1?(Wd-2*p)/2:i*(Wd-2*p)/(n-1)),H-p-(mx===mn?(H-2*p)/2:(x-mn)/rg*(H-2*p))]).filter(Boolean);
+  const col=planned?"var(--faint)":"var(--accent)";
+  return `<svg width="${Wd}" height="${H}">${pts.length>1?`<polyline fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${planned?'stroke-dasharray="3 4"':""} points="${pts.map(q=>q.join(",")).join(" ")}"/>`:""}<circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3" fill="${col}"/></svg>`;
+}
+function priorSessions(w,e,n=2){ // earlier sessions of the same exercise with logged sets, newest first
+  const k=norm(e.name); const out=[];
+  W.forEach(o=>{if(o===w||o.date>=w.date) return; o.exercises.forEach(x=>{if(!x.warmup&&norm(x.name)===k){const ss=allSets(o,x); if(ss.length) out.push({w:o,e:x,sets:ss});}});});
+  return out.sort((a,b)=>b.w.date.localeCompare(a.w.date)).slice(0,n);
+}
+const isCore=e=>/\b(ab|abs|abmat|core|plank|crunch|hollow|dead ?bug|sit.?ups?|leg raises?|v.?ups?|russian twist|bird dog)\b/i.test(`${e.name} ${e.block||""}`);
+const md=d=>pd(d).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+const mdw=d=>pd(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const topW=sets=>{const v=sets.map(x=>x.weight_lb).filter(x=>x!=null); return v.length?Math.max(...v):null};
+function deltaHtml(cur,prev){ // compare heaviest set, then best set score
+  if(!prev) return "";
+  const a=topW(cur.sets),b=topW(prev.sets);
+  if(a!=null&&b!=null&&a!==b) return a>b?`<span class="dlt up">▲ +${num(a-b)} lb</span>`:`<span class="dlt dn">▼ −${num(b-a)} lb</span>`;
+  const x=rank(bestOf(cur.sets))[1],y=rank(bestOf(prev.sets))[1];
+  if(Math.abs(x-y)<0.01) return `<span class="dlt eq">= same</span>`;
+  return x>y?`<span class="dlt up">▲ reps</span>`:`<span class="dlt dn">▼ reps</span>`;}
+function tryNext(e,sets){ // simple progression: hit the plan at the top weight -> +5 lb, else repeat that weight
+  const w=topW(sets); if(w==null) return null; const at=sets.filter(x=>x.weight_lb===w);
+  const goal=e.reps; const hit=goal!=null&&at.length&&at.every(x=>(x.reps||0)>=goal);
+  const r=goal??at[0]?.reps; const inc=w<30?2.5:5;
+  return hit?{t:`${num(w+inc)}×${r}`,why:""}:{t:`${num(w)}×${r??"?"}`,why:""};}
+function coreNotes(w,e){const x=local[w.key]?.exercises?.[ek(e)]; return [e.actuals?.notes,x?.note,x?.notes].filter(Boolean).join(" · ");}
+var hxOpen=new Set();
+function compactSets(sets){ // "155×10, 10, 8" when one weight; else "155×10, 160×8"
+  const ws=[...new Set(sets.map(x=>x.weight_lb))];
+  if(ws.length===1&&ws[0]!=null&&sets.every(x=>x.reps!=null)) return `${num(ws[0])}×${sets.map(x=>x.reps).join(", ")}`;
+  const L=sets.map(label); return L.length>1&&L.every(x=>x===L[0])?`${L.length} × ${L[0]}`:L.join(", ");}
+function lastTimeHtml(w,e){ // Target line, then consolidated history (newest first, PR marked)
+  if(e.warmup||/^(completed|done|skipped)$/.test(statusOf(w))) return "";
+  const P=priorSessions(w,e,99); if(!P.length) return "";
+  const core=isCore(e), gh=`<button data-gohist="${esc(slug(e.name))}">History</button>`;
+  const b=core?null:bestOf(P.flatMap(p=>p.sets)), tn0=core?null:tryNext(e,P[0].sets), tn=tn0&&!/\?/.test(tn0.t)?tn0:null;
+  const row=p=>`<div class="hx"><span class="d">${md(p.w.date)}</span> · ${core?`Done${coreNotes(p.w,p.e)?` · ${esc(coreNotes(p.w,p.e))}`:""}`:esc(compactSets(p.sets))}${(p.e.actuals?.skipped_sets)?` · ${p.e.actuals.skipped_sets} Skipped`:""}${b&&p.sets.includes(b)?` <span class="prb">PR</span>`:""}</div>`;
+  const N=3, more=P.slice(N), id=esc(w.key+"|"+slug(e.name)), open=hxOpen.has(w.key+"|"+slug(e.name));
+  const full=P.map(p=>{const nt=coreNotes(p.w,p.e); return `<div class="hxf"><div class="hxfh"><b>${mdw(p.w.date)}</b> · ${esc(p.w.title)}${b&&p.sets.includes(b)?` <span class="prb">PR</span>`:""}</div>${core?`<div>Done</div>`:setGrid(p.sets,null,p.e)}${nt?`<div class="hxn">Notes: ${esc(nt)}</div>`:""}</div>`}).join("");
+  return `<div class="lastx">${tn?`<div>Target: <b>${esc(tn.t)}</b></div>`:""}<div class="hxs${open?" open":""}" data-hxtog="${id}" role="button" aria-expanded="${open}"><div class="hxt">History <span class="hxc">${open?"▴":"▾"}</span></div><div class="hxsum">${P.slice(0,N).map(row).join("")}${more.length?`<div class="hxm">+${more.length} older</div>`:""}</div><div class="hxfull">${full}<button class="tbtn hxall" data-gohist="${esc(slug(e.name))}">See All History</button></div></div></div>`;
+}
+function setGrid(sets,prev,e){ // SET | TARGET | LBS | REPS (Strong/Hevy layout; Target = TrainingPeaks plan)
+  e=e||{}; const hasW=sets.some(x=>x.weight_lb!=null)||e.weight_lb!=null;
+  const fv=v=>v==null?"—":typeof v==="number"?num(v):esc(String(v));
+  const act=x=>x.reps!=null?x.reps:x.duration_s!=null?dur(x.duration_s):x.distance_m!=null?x.distance_m+" m":x.round?"✓":null;
+  const pl=x=>e.reps!=null?e.reps:x.per_plan?act(x):null;
+  const pw=x=>e.weight_lb!=null?e.weight_lb:null;
+  const pa=(p,a)=>`<small>${fv(p)}</small> / ${p!=null&&a!=null&&p!==a?`<b class="dev">${fv(a)}</b>`:fv(a)}`;
+  const tgt=x=>{const w=pw(x),r=pl(x); return w!=null&&r!=null?`${fv(w)}×${fv(r)}`:w!=null?`${fv(w)} lb`:r!=null?fv(r):"—";};
+  const dn=(p,a)=>p!=null&&a!=null&&p!==a?`<b class="dev">${fv(a)}</b>`:fv(a);
+  return `<table class="sgrid"><thead><tr><th class="c">Set</th><th>Target</th>${hasW?`<th class="r">lbs</th>`:""}<th class="r">Reps</th></tr></thead><tbody>${sets.map((x,j)=>`<tr><td class="c">${j+1}</td><td><small>${tgt(x)}</small></td>${hasW?`<td class="r">${dn(pw(x),x.weight_lb)}</td>`:""}<td class="r">${dn(pl(x),act(x))}</td></tr>`).join("")}</tbody></table>`;}
+function sessCard(s,i,list,core){ // one past session as a workout-app card
+  const prev=list.slice(i+1).find(x=>x.sets.length);
+  const earlier=list.slice(i+1).flatMap(x=>x.sets), b=bestOf(s.sets);
+  const pr=!core&&b&&b.weight_lb!=null&&(!earlier.length||better(b,bestOf(earlier)))&&earlier.length>0;
+  const head=`<div class="sh"><div class="t">${mdw(s.w.date)}</div>${s.sets.length?(core?`<span class="dlt eq">Done</span>`:(pr?`<span class="prb">PR</span> `:"")+deltaHtml(s,prev)):""}</div><div class="sub"><a href="#" data-day="${s.w.date}">${esc(s.w.title)}</a> · Target ${rxHtml(s.e)}</div>`;
+  if(!s.sets.length) return `<div class="scard">${head}<div class="sempty">${s.w.date>=TODAY?"Planned":"Not completed"}</div></div>`;
+  if(core){const n=coreNotes(s.w,s.e); return `<div class="scard">${head}${n?`<div class="sfoot">${esc(n)}</div>`:""}</div>`;}
+  const v=s.sets.reduce((a,x)=>a+(x.weight_lb||0)*(x.reps||0),0);
+  return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${v?`<div class="sfoot">Volume ${num(v)} lb</div>`:""}</div>`;}
+function historyView(){
+  const S=sessions().map(x=>{const logged=x.items.filter(i=>i.sets.length); const all=x.items.flatMap(i=>i.sets);
+    return {...x,logged,best:bestOf(all),last:x.items[x.items.length-1]}})
+    .sort((a,b)=>(b.logged.length>0)-(a.logged.length>0)||b.last.w.date.localeCompare(a.last.w.date)||a.name.localeCompare(b.name));
+  const logged=S.filter(s=>s.logged.length), rest=histOnlyLogged?[]:S.filter(s=>!s.logged.length);
+  const row=s=>{const k=slug(s.name), core=isCore(s.items[0].e);
+    const vals=s.logged.length? s.logged.map(i=>{const b=bestOf(i.sets); return rank(b)[1]}) : s.items.map(i=>i.e.weight_lb);
+    const isPlan=!s.logged.length;
+    const lastLogged=s.logged[s.logged.length-1];
+    const items=[...s.items].sort((a,b)=>b.w.date.localeCompare(a.w.date));
+    const past=items.filter(i=>i.sets.length||i.w.date<TODAY), up=items.filter(i=>!i.sets.length&&i.w.date>=TODAY);
+    const nxt=up[up.length-1], tn=!core&&lastLogged?tryNext(nxt?nxt.e:lastLogged.e,lastLogged.sets):null;
+    const hint=lastLogged?`<div class="hint2">Previous (${md(lastLogged.w.date)}): <b>${core?"Done":esc(lastLogged.sets.map(label).join(", "))}</b>${tn?`<br>Target${nxt?` (${md(nxt.w.date)})`:""}: <b>${esc(tn.t)}</b>`:""}</div>`:"";
+    const bestLbl=core&&s.logged.length?"Done":s.best?esc(label(s.best)):"";
+    return `<div class="hitem" id="ex-${esc(k)}" data-name="${esc(norm(s.name))}"><div class="hrow" data-hist="${esc(k)}"><div class="x"><div>${esc(s.name)}</div><span>${s.logged.length?`${s.logged.length} session${s.logged.length>1?"s":""} · Previous ${md(lastLogged.w.date)}`:`${s.items.length} planned · next ${md(s.items.find(i=>i.w.date>=TODAY)?.w.date||s.last.w.date)}`}</span></div>
+      ${core?"":spark(vals.filter(v=>v!=null).length?vals:[],isPlan)}
+      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
+      <div class="hdetail ${openHist===k?"on":""}">${hint}${past.map((i,n)=>sessCard(i,n,past,core)).join("")}${up.length?`<div class="sfoot" style="margin-top:8px">Planned: ${up.map(i=>md(i.w.date)).reverse().join(", ")}</div>`:""}</div></div>`;};
+  let h=`<div class="hsearch"><input id="hq" type="search" placeholder="Search exercises" value="${esc(histQ)}" autocomplete="off"><button data-hlogged class="${histOnlyLogged?"on":""}">Logged only</button></div>`;
+  if(logged.length) h+=`<div class="sec-title hsec" style="margin-top:4px">Logged</div><div class="group">${logged.map(row).join("")}</div>`;
+  if(rest.length) h+=`<div class="sec-title hsec">${logged.length?"Not logged yet":"Exercises"}</div><div class="group">${rest.map(row).join("")}</div>`;
+  return h;
+}
+function applyHistFilter(){const q=norm(histQ); document.querySelectorAll(".hitem").forEach(el=>{el.style.display=!q||el.dataset.name.includes(q)?"":"none"});}
+document.addEventListener("input",ev=>{if(ev.target.id==="hq"){histQ=ev.target.value; applyHistFilter();}});
+
+// ---------- aside ----------
+function asideView(){
+  const ws=wkStart(sel), wk=W.filter(w=>wkStart(w.date)===ws);
+  let done=0,planned=0,lvol=0,comp=0; wk.forEach(w=>{const p=progress(w);done+=p.done;planned+=p.planned;lvol+=p.lvol; if(statusOf(w)==="completed")comp++;});
+  let h=`<div class="card"><h3>This Week</h3><div class="mini"><div class="ring" style="width:64px;height:64px">${ring(done,planned,64,6)}<div class="c"><b style="font-size:14px">${planned?(done/planned*100).toFixed(1):"0.0"}%</b></div></div>
+   <div><div style="font-weight:650">${done} of ${planned} sets</div><div class="date">${comp}/${wk.length} workouts done${lvol?` · ${num(lvol)} lb`:""}</div></div></div>`;
+  const items=[...wk.map(w=>({d:w.date,o:"1",w})),...CLS.filter(c=>wkStart(c.date)===ws).map(c=>({d:c.date,o:"0"+c.time,c}))].sort((a,b)=>(a.d+a.o).localeCompare(b.d+b.o));
+  items.forEach(it=>{const d=it.d; const dd=`<div class="d">${DN[pd(d).getDay()]}<b>${pd(d).getDate()}</b></div>`;
+    if(it.w){const w=it.w,st=statusOf(w),p=progress(w); h+=`<div class="wrow" data-day="${d}">${dd}<div class="x"><div>${esc(w.title)}</div><span>${w.date!==w.orig?`Moved from ${DN[pd(w.orig).getDay()]} · `:""}${working(w).length} exercises · ${p.done}/${p.planned} sets</span></div><span class="pill ${st}">${statusText[st]}</span></div>`;}
+    else{const c=it.c,t=t12(c.time),wait=/WAIT/.test(c.status); h+=`<div class="wrow" data-day="${d}">${dd}<div class="x"><div>${esc(ctitle(c))}</div><span><span style="color:var(--cls)">THIS Gym</span> · ${t.h} ${t.ap}${c.coach?" · "+esc(c.coach):""}</span></div><span class="bdg ${bcls(c.status)}">${esc(blbl(c.status))}</span></div>`;}});
+  const rk=Object.keys(REC).filter(d=>d<=TODAY).sort(); if(rk.length){const ld=rk[rk.length-1],rv=REC[ld];
+    h+=`<div class="date" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span class="recdot ${recCls(rv)}" style="margin-left:0"></span>Latest WHOOP recovery ${Number(rv).toFixed(1)}% · ${pd(ld).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</div>`;}
+  if(!wk.length&&!items.length) h+=`<div class="date">Nothing scheduled this week.</div>`;
+  h+=`</div>`;
+  const bests=sessions().map(s=>({name:s.name,b:bestOf(s.items.flatMap(i=>i.sets))})).filter(x=>x.b&&x.b.weight_lb!=null).sort((a,b)=>rank(b.b)[1]-rank(a.b)[1]).slice(0,5);
+  h+=`<div class="card"><h3>Best sets</h3>${bests.length?bests.map(x=>`<div class="wrow" style="cursor:default"><div class="x"><div>${esc(x.name)}</div></div><b style="font-variant-numeric:tabular-nums">${esc(label(x.b))}</b></div>`).join(""):`<div class="date">Log a few sets and your bests show up here.</div>`}</div>`;
+  return h;
+}
+
+// ---------- render & events ----------
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  document.getElementById("h1").textContent=tab==="history"?"History":tab==="week"?(wkStart(sel)===wkStart(TODAY)?"This Week":"Week"):(sel===TODAY?"Today":pd(sel).toLocaleDateString(undefined,{weekday:"long"}));
+  const rv=REC[sel];
+  document.getElementById("eyebrow").innerHTML=tab==="history"?"Per Exercise":tab==="week"?"Training Calendar":esc(pd(sel).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))+(rv!=null?`<span style="display:block;text-transform:none;letter-spacing:0">${Number(rv).toFixed(1)}% Recovery</span>`:"");
+  closePop();
+  document.getElementById("main").innerHTML=tab==="history"?historyView():tab==="week"?weekView():workoutView();
+  const full=tab==="week"; document.getElementById("grid").classList.toggle("full",full); document.getElementById("app").classList.toggle("wide",full);
+  document.getElementById("aside").classList.toggle("hide",full);
+  document.getElementById("aside").innerHTML=full?"":asideView();
+  if(tab==="history"){applyHistFilter(); if(scrollHist&&openHist){scrollHist=false; const el=document.getElementById("ex-"+openHist); if(el) el.scrollIntoView({block:"start"});}}
+}
+addEventListener("hashchange",()=>{const hm=/^#history(?:\/([\w-]+))?/.exec(location.hash); if(hm){tab="history"; openHist=hm[1]||null; scrollHist=true; render();}});
+function parseSets(t){
+  const out=[];
+  for(let raw of t.split(/[,;]/)){let s=raw.trim().toLowerCase().replace(/×|\*/g,"x").replace(/\s*x\s*/g,"x").replace(/\s*@\s*/g,"@").replace(/lbs?|#/g,"");
+    if(!s) continue; let m;
+    const D=x=>{let q; if(q=x.match(/^(\d+):(\d{1,2})$/)) return +q[1]*60+ +q[2]; if(q=x.match(/^(\d+(?:\.\d+)?)s(ec)?$/)) return +q[1]; if(q=x.match(/^(\d+(?:\.\d+)?)min$/)) return q[1]*60; return null};
+    const Wt=x=>x==="bw"?null:(x.endsWith("kg")?Math.round(parseFloat(x)*2.20462*2)/2:parseFloat(x));
+    if(m=s.match(/^(\d+)x(\d+)@(.+)$/)){for(let i=0;i<+m[1];i++) out.push({weight_lb:Wt(m[3]),reps:+m[2]}); continue}
+    const d=D(s); if(d!=null){out.push({duration_s:d}); continue}
+    if(/^\d+$/.test(s)){out.push({reps:+s}); continue}
+    const p=s.split("x"); if(p.length>=2&&(p[0]==="bw"||!isNaN(parseFloat(p[0])))){const o={weight_lb:Wt(p[0])}; const dd=D(p[1]);
+      if(dd!=null)o.duration_s=dd; else if(/^\d+(\.\d+)?m$/.test(p[1]))o.distance_m=parseFloat(p[1]); else if(/^\d+$/.test(p[1]))o.reps=+p[1]; else return null;
+      if(o.weight_lb==null||isNaN(o.weight_lb)) delete o.weight_lb;
+      for(let i=0;i<(+p[2]||1);i++) out.push({...o}); continue}
+    return null;}
+  return out.length?out:null;
+}
+// ---- smart notes parse: either order around x, lbs; bigger number = weight (lb), smaller = reps ----
+function smartParse(t){
+  const out=[],unclear=[];
+  for(let raw of String(t||"").split(/[,;\n]+/)){let s=raw.trim().toLowerCase(); if(!s) continue;
+    s=s.replace(/×|\*/g,"x").replace(/pounds?|lbs?\.?|#/g," lb ").replace(/\s+/g," ").trim();
+    let m, n=1;
+    s=s.replace(/^(?:(?:first|last|1st|2nd|3rd|4th|final|all|each)\s+(?:\d+\s+)?sets?\s*(?:at|@|of|:|-)?\s*)/,"");
+    if(m=s.match(/^(\d+(?:\.\d+)?)\s*lb$/)){for(let i=0;i<n;i++) out.push({weight_lb:+m[1],reps:null}); continue}
+    if(m=s.match(/^(?:(\d+)\s*sets?\s*(?:of)?\s*)(.*)$/)){n=+m[1]; s=m[2];}
+    if(m=s.match(/^(\d+(?:\.\d+)?)\s*(lb)?\s*x\s*(\d+(?:\.\d+)?)\s*(lb)?(?:\s*x\s*(\d+))?$/)){
+      let a=+m[1],b=+m[3],w,r; if(m[2]&&!m[4]){w=a;r=b}else if(m[4]&&!m[2]){w=b;r=a}else{w=Math.max(a,b);r=Math.min(a,b)}
+      const k=m[5]?+m[5]:n; for(let i=0;i<k;i++) out.push({weight_lb:w,reps:Math.round(r)}); continue}
+    if(m=s.match(/^(\d+(?:\.\d+)?)\s*lb\s*(?:for)?\s*(\d+)(?:\s*reps?)?$/)){for(let i=0;i<n;i++) out.push({weight_lb:+m[1],reps:+m[2]}); continue}
+    if(m=s.match(/^(\d+)\s*(?:reps?\s*(?:@|at)?|@|at)\s*(\d+(?:\.\d+)?)\s*(lb)?$/)){for(let i=0;i<n;i++) out.push({weight_lb:+m[2],reps:+m[1]}); continue}
+    const old=parseSets(s.replace(/ lb /g,"")); if(old){for(let i=0;i<n;i++) out.push(...old); continue}
+    unclear.push(raw.trim());}
+  return {sets:out,unclear};
+}
+const isBW=e=>e.weight_lb==null&&!e.other_load&&(/\b(ab|abs|core|plank|crunch|hollow|dead ?bug|sit.?up|leg raise|v.?up|russian twist|bird dog|push.?up|pull.?up|chin.?up|dip)s?\b/i.test(`${e.name} ${e.block||""} ${e.label}`));
+const LW=k=>(local[k]=local[k]||{exercises:{}});
+const LX=(k,e)=>{const w=LW(k); w.exercises=w.exercises||{}; return (w.exercises[e]=w.exercises[e]||{sets:[]});};
+document.addEventListener("click",ev=>{const t=ev.target.closest("[data-skipset],[data-unskip],[data-wskip],[data-wunskip]"); if(!t) return; ev.stopPropagation(); ev.preventDefault();
+  if(t.dataset.wskip||t.dataset.wunskip){const k=t.dataset.wskip||t.dataset.wunskip, w=W.find(x=>x.key===k), L=LW(k);
+    if(t.dataset.wskip){L.prev_status=L.status||null; L.status="skipped"; touch(k,"skip"); setTimeout(()=>showToast("Workout skipped",{type:"skip",key:k}),0);} else {L.status=(L.prev_status&&L.prev_status!=="skipped")?L.prev_status:"planned"; delete L.prev_status; touch(k,"unskip");}
+    render(); return;}
+  const [k,e]=(t.dataset.skipset||t.dataset.unskip).split("::"); const x=LX(k,e); x.skipped=Math.max(0,(x.skipped||0)+(t.dataset.skipset?1:-1)); touch(k,t.dataset.skipset?"skip set":"unskip set"); render();},true);
+function touch(k,why){const w=LW(k); w.updated_at=new Date().toISOString(); saveLocal(); if(typeof syncPush==="function") syncPush(k,why);}
+function saveExNotes(k,e,txt){const x=LX(k,e); x.notes=txt; const p=smartParse(txt); x.parsed=p.sets; x.unclear=p.unclear; touch(k); return p;}
+const todayCT=()=>new Date().toLocaleDateString("en-CA",{timeZone:"America/Chicago"});
+const validT=t=>!!t&&Number.isFinite(Date.parse(t)); const durT=(a,b)=>{if(!validT(a)||!validT(b)) return null; const d=(Date.parse(b)-Date.parse(a))/1000; return Number.isFinite(d)&&d>=0?d:null;};
+const fmtT=sec=>{if(!Number.isFinite(sec)) return ""; sec=Math.max(0,Math.floor(sec)); const h=Math.floor(sec/3600),m=Math.floor(sec/60)%60,ss=sec%60; return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(ss).padStart(2,"0");};
+setInterval(()=>document.querySelectorAll("[data-tick]").forEach(el=>{if(!validT(el.dataset.tick)) return; el.textContent=fmtT((Date.now()-Date.parse(el.dataset.tick))/1000)}),1000);
+document.addEventListener("click",ev=>{
+  if(justDragged){ev.preventDefault();return}
+  if(!ev.target.closest(".pop")&&!ev.target.closest("[data-more]")) closePop();
+  const t=ev.target.closest("button,[data-hist],[data-day],.wc[data-wkey]"); if(t&&t.matches("a[data-day]")) ev.preventDefault(); if(!t) return;
+  if(t.dataset.more){const open=document.querySelector(".pop")?.dataset.key===t.dataset.more; closePop(); if(!open) openPop(t,t.dataset.more); return}
+  if(t.dataset.popmove){const k=t.closest(".pop").dataset.key; closePop(); doMove(k,t.dataset.popmove); return}
+  if(t.dataset.popopen){closePop(); sel=t.dataset.popopen; tab="workout"; render(); window.scrollTo({top:0}); return}
+  if(t.dataset.wkey){const w=W.find(x=>x.key===t.dataset.wkey); if(w){sel=w.date; tab="workout"; render(); window.scrollTo({top:0});} return}
+  if(t.id==="gear"){document.getElementById("menu").classList.toggle("on");return}
+  if(!t.closest("#menu")) document.getElementById("menu").classList.remove("on");
+  if(t.dataset.tab){tab=t.dataset.tab;render();return}
+  if(t.dataset.day){sel=t.dataset.day;tab="workout";render();window.scrollTo({top:0,behavior:"smooth"});return}
+  if(t.dataset.wk){const ns=add(wkStart(sel),+t.dataset.wk); const first=W.find(w=>wkStart(w.date)===ns); sel=(ns===wkStart(TODAY))?TODAY:(first?first.date:ns); render(); return}
+  if(t.dataset.note){t.classList.toggle("on");document.querySelector(`[data-note-body="${CSS.escape(t.dataset.note)}"]`)?.classList.toggle("on");return}
+  if(t.dataset.add){const r=document.querySelector(`[data-log="${CSS.escape(t.dataset.add)}"]`); r.classList.toggle("on"); r.querySelector("input").focus(); return}
+  if(t.hasAttribute("data-save")){const inp=t.previousElementSibling; const p=saveExNotes(inp.dataset.w,inp.dataset.e,inp.value.trim()); render(); if(p.unclear.length) showToast("Saved · couldn't read: "+p.unclear.join(", "),null); return}
+  const split=v=>{const i=v.indexOf("::"); return [v.slice(0,i),v.slice(i+2)]};
+  if(t.dataset.delset){ev.stopPropagation(); const [k,e]=split(t.dataset.delset); const x=LX(k,e); if(confirm("Delete this set?")){x.sets.splice(+t.dataset.i,1); touch(k); render();} return}
+  if(t.dataset.editset){const [k,e]=split(t.dataset.editset); const x=LX(k,e); const v=prompt("Edit set (e.g. 35x12). Leave blank to delete.",label(x.sets[+t.dataset.i]).replace("×","x")); if(v==null) return;
+    if(!v.trim()) x.sets.splice(+t.dataset.i,1); else{const p=smartParse(v); if(!p.sets.length){alert("Couldn't read that.");return} x.sets.splice(+t.dataset.i,1,...p.sets);} touch(k); render(); return}
+  if(t.dataset.editnote){const r=document.querySelector(`[data-log="${CSS.escape(t.dataset.editnote)}"]`); r.classList.add("on"); r.querySelector("textarea").focus(); return}
+  if(t.dataset.delnote){const [k,e]=split(t.dataset.delnote); if(confirm("Delete these notes and the sets read from them?")){const x=LX(k,e); delete x.notes; x.parsed=[]; x.unclear=[]; touch(k); render();} return}
+  if(t.dataset.bwdone){const [k,e]=split(t.dataset.bwdone); const x=LX(k,e); x.done=x.done?null:new Date().toISOString(); touch(k); render(); if(x.done){const r=document.querySelector(`[data-log="${CSS.escape(t.dataset.bwdone)}"]`); r&&r.classList.add("on");} return}
+  if(t.dataset.gundo){ev.stopPropagation(); const k=t.dataset.gundo; const w=LW(k); w.rounds=w.rounds||{}; if(w.rounds[t.dataset.g]>0) w.rounds[t.dataset.g]--; if(!w.rounds[t.dataset.g]) delete w.rounds[t.dataset.g]; touch(k,"undo_set"); render(); return}
+  if(t.dataset.gset){const k=t.dataset.gset; const w=LW(k); w.rounds=w.rounds||{}; w.rounds[t.dataset.g]=(w.rounds[t.dataset.g]||0)+1;
+    t.closest(".group")?.querySelectorAll(".logrow textarea").forEach(ta=>{if(ta.value.trim()!==(LXr({key:k},{label:ta.dataset.e.split("|")[0],name:ta.dataset.e.slice(ta.dataset.e.indexOf("|")+1)}).notes||"")) saveExNotes(k,ta.dataset.e,ta.value.trim());});
+    if(!w.started_at) w.started_at=new Date().toISOString(); touch(k); render(); return}
+  if(t.dataset.wkstart){const k=t.dataset.wkstart,w0=W.find(x=>x.key===k); const w=LW(k); if(!validT(w.started_at)) w.started_at=new Date().toISOString(); delete w.ended_at; touch(k); if(w0){sel=w0.date; tab="workout";} render(); window.scrollTo({top:0}); return}
+  if(t.dataset.wstart){const w=LW(t.dataset.wstart); w.started_at=new Date().toISOString(); delete w.ended_at; touch(t.dataset.wstart); render(); return}
+  if(t.dataset.wend){const w=LW(t.dataset.wend); w.ended_at=new Date().toISOString(); touch(t.dataset.wend); render(); return}
+  if(t.dataset.cstart||t.dataset.cend){const k=t.dataset.cstart||t.dataset.cend; local._cls=local._cls||{}; const r=local._cls[k]=local._cls[k]||{}; if(t.dataset.cstart){r.started_at=new Date().toISOString(); delete r.ended_at;} else r.ended_at=new Date().toISOString(); touch("_cls"); render(); return}
+  if(t.dataset.hist){openHist=openHist===t.dataset.hist?null:t.dataset.hist; setHistURL(); render(); return}
+  if(t.dataset.gohist){openHist=t.dataset.gohist; tab="history"; scrollHist=true; setHistURL(); render(); return}
+  if("hlogged" in t.dataset){histOnlyLogged=!histOnlyLogged; render(); return}
+  if(t.id==="mExport"){const out={kind:"actuals_export",export_id:Math.random().toString(36).slice(2)+Date.now(),exported_at:new Date().toISOString(),athlete:"Noah Roberson",workouts:local,moves};
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:"application/json"})); a.download=`actuals_${TODAY}.json`; a.click(); return}
+  if(t.id==="mClear"){if(confirm("Clear sets and moves made in this browser? (Anything logged via chat is kept.)")){local={};moves={};saveLocal();saveMoves();applyMoves();render()} return}
+});
+document.addEventListener("change",ev=>{const ta=ev.target.closest("[data-cnote]"); if(ta){local._cls=local._cls||{}; const r=local._cls[ta.dataset.cnote]=local._cls[ta.dataset.cnote]||{}; r.notes=ta.value.trim(); touch("_cls");}});
+document.addEventListener("keydown",ev=>{if(ev.key==="Enter"&&ev.target.matches(".logrow input")) ev.target.nextElementSibling.click()});
+
+// ---------- complete workout / summary ----------
+// Off-device sync: not connected yet (needs Noah's scoped token). Until then data stays in this browser.
+const syncLabel=()=>SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.";
+const MAILTO=""; // public site: no email address embedded (Noah 10/29); mail app asks for recipient
+function summaryData(w){
+  const rows=[]; let sets=0,reps=0,vol=0;
+  const others=new Map(); W.forEach(o=>o.exercises.forEach(e=>{const k=norm(e.name); if(!others.has(k)) others.set(k,[]); if(o!==w) others.get(k).push(...allSets(o,e)); else others.get(k).push(...storeSets(e));}));
+  w.exercises.forEach((e,i)=>{const ls=localSets(w,e), all=allSets(w,e); if(e.warmup&&!ls.length) return;
+    const prevBest=bestOf(others.get(norm(e.name))||[]), b=bestOf(ls);
+    const pr=!!(b&&b.weight_lb!=null&&prevBest&&better(b,prevBest)) || !!(b&&b.weight_lb!=null&&!prevBest);
+    all.forEach(x=>{sets++; reps+=x.reps||0; vol+=(x.weight_lb||0)*(x.reps||0);});
+    rows.push({i,e,all,ls,pr,best:b});});
+  return {rows,sets,reps,vol};
+}
+const shortDate=d=>pd(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).replace(",","");
+function payloadObj(w,note){
+  const x=[]; w.exercises.forEach((e,i)=>{const ls=localSets(w,e), n=local[w.key]?.exercises?.[ek(e)]?.notes; if(!ls.length&&!n) return;
+    x.push([i,ls.map(s=>(s.duration_s==null&&s.distance_m==null)?[s.weight_lb??null,s.reps??null]:{w:s.weight_lb,r:s.reps,d:s.duration_s,m:s.distance_m}),n||undefined]);});
+  return {v:1,k:w.key,i:(local[w.key]?.cid)||(Math.random().toString(36).slice(2,8)+Date.now().toString(36)),
+    s:"completed",d:w.date!==w.orig?w.date:undefined,n:note||undefined,x,r:local[w.key]?.rounds||undefined,t:local[w.key]?.started_at?[local[w.key].started_at,local[w.key].ended_at||null]:undefined};
+}
+function b64(bytes){let s=""; bytes.forEach(b=>s+=String.fromCharCode(b)); return btoa(s);}
+async function encodePayload(o){
+  const raw=new TextEncoder().encode(JSON.stringify(o));
+  if(window.CompressionStream){try{const cs=new Blob([raw]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const z=new Uint8Array(await new Response(cs).arrayBuffer()); if(z.length<raw.length) return "z1:"+b64(z);}catch(e){}}
+  return "j1:"+b64(raw);
+}
+async function buildEmail(w,note){
+  const S=summaryData(w), p=payloadObj(w,note); local[w.key]=local[w.key]||{exercises:{}}; local[w.key].cid=p.i; saveLocal();
+  const subject=`Workout complete: ${w.title} · ${shortDate(w.date)}`;
+  const head=[`${w.title} · ${shortDate(w.date)}`,`${S.sets} sets · ${num(S.reps)} reps · ${num(S.vol)} lb volume`,""];
+  const lines=S.rows.filter(r=>r.all.length).map(r=>`${r.pr?"★ ":""}${r.e.name}: ${r.all.map(label).join(", ")}`);
+  const prs=S.rows.filter(r=>r.pr).map(r=>`${r.e.name} ${label(r.best)}`);
+  const tail=[...(prs.length?["","New bests: "+prs.slice(0,4).join("; ")+(prs.length>4?` (+${prs.length-4} more)`:"")]:[]),...(note?["","Notes: "+note]:[]),"","--- data (don't edit) ---",await encodePayload(p)];
+  const mk=L=>`mailto:${MAILTO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent([...head,...L,...tail].join("\n"))}`;
+  const more=L=>L.length<lines.length?[...L,`(+${lines.length-L.length} more in dashboard)`]:L;
+  let L=lines, url=mk(L);
+  if(url.length>1800){L=lines.map(l=>l.length>48?l.slice(0,46)+"…":l); url=mk(L);}
+  while(url.length>1800&&L.length){L=L.slice(0,-1); url=mk(more(L));}
+  const text=[...head,...lines,...tail].join("\n");
+  return {subject,url,text};
+}
+function completeIssues(w){
+  const out=[], S=summaryData(w), taps=Object.values(local[w.key]?.rounds||{}).reduce((a,b)=>a+b,0);
+  const unread=[]; w.exercises.forEach(e=>{const x=local[w.key]?.exercises?.[ek(e)]; (x?.unclear||[]).forEach(u=>unread.push(`${e.name}: “${u}”`));});
+  if(unread.length) out.push(`Notes I couldn't read as sets (kept as notes): ${unread.join("; ")}`);
+  if(taps&&!S.sets) out.push(`You tapped Log Set ${taps}× but 0 sets were counted.`);
+  else if(!S.sets) out.push("0 sets logged for this workout.");
+  return out;
+}
+function openSummary(key){
+  const w=W.find(x=>x.key===key); if(!w) return;
+  local[w.key]=local[w.key]||{exercises:{}};
+  document.querySelectorAll(".logrow textarea").forEach(ta=>{if(ta.dataset.w===w.key&&ta.value.trim()&&ta.value.trim()!==(local[w.key].exercises?.[ta.dataset.e]?.notes||"")) saveExNotes(w.key,ta.dataset.e,ta.value.trim());});
+  working(w).filter(isBW).forEach(e=>{const x=LX(w.key,ek(e)); if(!x.done) x.done=new Date().toISOString();});
+  const issues=completeIssues(w);
+  if(issues.length&&statusOf(w)!=="completed"&&!confirm("Before you complete:\n\n• "+issues.join("\n• ")+"\n\nComplete anyway? (You can edit after.)")) return;
+  const L=local[w.key]; L.status="completed"; L.completed_at=new Date().toISOString(); if(L.started_at&&!L.ended_at) L.ended_at=L.completed_at; touch(w.key); render();
+  const S=summaryData(w);
+  const bg=document.createElement("div"); bg.className="sheet-bg"; bg.id="sheet";
+  bg.innerHTML=`<div class="sheet" role="dialog" aria-label="Workout summary"><div class="grab"></div>
+   <div class="sd">${esc(pd(w.date).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"}))}</div><h2>${esc(w.title)}</h2><span class="pill completed">Completed</span>
+   <div class="sst"><div><b>${S.sets}</b><span>sets</span></div><div><b>${S.reps?num(S.reps):"—"}</b><span>reps</span></div><div><b>${S.vol?num(S.vol):"—"}</b><span>lb volume</span></div></div>
+   ${S.rows.map(r=>`<div class="sx"><div class="n"><span>${esc(r.e.name)}</span>${r.pr?`<span class="pr">★ NEW BEST</span>`:""}</div><div class="c">${r.all.length?r.all.map(x=>esc(label(x))).join(" · "):"not logged"}</div></div>`).join("")}
+   ${issues.length?`<div class="warnbox"><b>Check these</b><ul>${issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`:""}
+   <textarea id="sumNote" placeholder="Optional notes (how it felt, anything to change)…">${esc(local[w.key].note||"")}</textarea>
+   <div class="syncbar" id="sumSync">${syncLabel()}</div><div class="acts"><button class="sec" id="sumCopy">Copy summary</button><button class="sec" id="sumClose">Done</button></div></div>`;
+  document.body.appendChild(bg);
+  const note=()=>document.getElementById("sumNote").value.trim();
+  const refresh=async()=>{local[w.key].note=note(); const em=await buildEmail(w,note()); return em;};
+  refresh(); document.getElementById("sumNote").addEventListener("change",()=>{local[w.key].note=note(); touch(w.key);});
+  document.getElementById("sumCopy").addEventListener("click",async()=>{const em=await refresh(); const t=`Subject: ${em.subject}\n\n${em.text}`;
+    try{await navigator.clipboard.writeText(t);}catch(e){const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();}
+    showToast("Summary copied",null);});
+  const close=()=>bg.remove(); document.getElementById("sumClose").addEventListener("click",close);
+  bg.addEventListener("click",ev=>{if(ev.target===bg) close();});
+}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-complete]"); if(b){ev.stopPropagation(); openSummary(b.dataset.complete);}},true);
+// ---------- cancel class: confirm (with fee rules) -> prefilled private GitHub issue; bot does the PushPress cancel ----------
+const FEAT=(EXTRA&&EXTRA.features)||{};
+const hm=d=>d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})+" CT";
+function lateInfo(c,now=new Date()){
+  const start=new Date(`${c.date}T${c.time||"00:00"}:00`); let late=null;
+  if(/THIS STRENGTH/i.test(c.class)) late=start; else if(/REFORMER/i.test(c.class)) late=new Date(start-3600e3);
+  const lines=[];
+  if(/WAIT/.test(c.status||"")) lines.push("Waitlist spot.");
+  if(!late) lines.push("Check the gym's late-cancel rule; $15 may apply.");
+  else if(now>=late) lines.push("⚠ This is a late cancel — $15 fee.");
+  else{lines.push(`Free to cancel until ${hm(late)}${late<start?" (1 hr before)":" (class start)"}.`);
+    if(late-now<15*60e3) lines.push("⚠ Request may not process before the late-cancel window.");}
+  return {late,lines};
+}
+function feeLines(c,now){return ["Fees: a $15 fee applies to a late cancel, or to a no-show on a class with a waitlist.",...lateInfo(c,now).lines];}
+function classLine(c){const t=t12(c.time); return `${c.class} · ${shortDate(c.date)}, ${t.h} ${t.ap}${c.coach?" with "+c.coach:""}`;}
+function cancelText(c,now){
+  return [classLine(c),"",...feeLines(c,now),"","To cancel, cancel it in the THIS Gym app or tell This Gym Fitness in chat. It'll drop off here once it's cancelled."].join("\n");}
+let cancelClass=k=>{const c=CLS.find(x=>ckey(x)===k); if(c) alert(cancelText(c));};
+
+// ---------- online sync: every change -> one JSON file in Noah's private GitHub repo ----------
+// The token lives ONLY in this phone's localStorage (tpDash.sync.v1). It is never in the page source or the repo.
+const SYNC=(()=>{
+  const KC="tpDash.sync.v1", KQ="tpDash.syncq.v1", KS="tpDash.syncseen.v1", REPO="noahroberson98/training-logs";
+  const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")??d}catch(e){return d}}, wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  const cfg=()=>rd(KC,{}), setCfg=c=>wr(KC,c), q=()=>rd(KQ,[]), setQ=v=>wr(KQ,v);
+  const api=()=>(localStorage.getItem("tpDash.syncapi.v1")||"https://api.github.com").replace(/\/$/,"");
+  const repo=()=>cfg().repo||REPO;
+  let state="idle", busy=false, timer=null;
+  const dev=()=>{const c=cfg(); if(!c.device){c.device=Math.random().toString(36).slice(2,10); setCfg(c);} return c.device;};
+  const b64u=s=>btoa(unescape(encodeURIComponent(s))), unb64u=s=>decodeURIComponent(escape(atob(s.replace(/\s/g,""))));
+  const hdr=()=>({"Authorization":"Bearer "+cfg().token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"});
+  function derived(k){const w=W.find(x=>x.key===k); if(!w) return null; const ex={};
+    w.exercises.forEach(e=>{const ls=localSets(w,e), n=local[k]?.exercises?.[ek(e)]?.notes; const sk=local[k]?.exercises?.[ek(e)]?.skipped||0; if(ls.length||n||sk) ex[ek(e)]={skipped:sk,sets:ls.map(s=>{const o={}; ["weight_lb","reps","duration_s","distance_m"].forEach(f=>{if(s[f]!=null) o[f]=s[f]}); if(s.per_plan) o.per_plan=true; if(s.round) o.round=true; return o;}),notes:n||null};});
+    return {date:w.date,orig:w.orig,title:w.title,status:local[k]?.status||null,exercises:ex,note:local[k]?.note||null,started_at:local[k]?.started_at||null,ended_at:local[k]?.ended_at||null};}
+  function event(k,why){const at=new Date().toISOString(), id=at.replace(/[-:.]/g,"")+"-"+dev()+"-"+Math.random().toString(36).slice(2,7);
+    const ev={v:1,id,at,device:dev(),reason:why||"edit",key:k};
+    if(k==="_moves"){ev.kind="moves"; ev.state=moves;} else {ev.kind=k.startsWith("_")?"meta":"workout"; ev.state=local[k]||null; if(ev.kind==="workout") ev.derived=derived(k);}
+    return ev;}
+  function push(k,why){if(!cfg().token) return; const Q=q(); Q.push(event(k,why)); setQ(Q); badge(); flush();}
+  async function put(ev){const path=`events/${ev.at.slice(0,10)}/${ev.id}.json`;
+    const r=await fetch(`${api()}/repos/${repo()}/contents/${path}`,{method:"PUT",headers:hdr(),body:JSON.stringify({message:`${ev.reason} ${ev.key}`,content:b64u(JSON.stringify(ev))})});
+    if(r.ok||r.status===422) return true;   // 422 = file already exists -> already saved
+    if(r.status===401||r.status===403||r.status===404){state="auth"; throw new Error("auth "+r.status);}
+    throw new Error("http "+r.status);}
+  async function flush(){if(busy||!cfg().token) return; busy=true; clearTimeout(timer);
+    try{while(q().length){const ev=q()[0]; await put(ev); setQ(q().filter(x=>x.id!==ev.id)); markSeen(ev.id);} state="ok";}
+    catch(e){if(state!=="auth") state="offline"; timer=setTimeout(flush,state==="auth"?120000:15000);}
+    finally{busy=false; badge();}}
+  const seen=()=>new Set(rd(KS,[])), markSeen=id=>{const s=rd(KS,[]); if(!s.includes(id)){s.push(id); wr(KS,s);}};
+  async function pull(){if(!cfg().token) return 0;
+    const r=await fetch(`${api()}/repos/${repo()}/git/trees/HEAD?recursive=1`,{headers:hdr()}); if(r.status===409||r.status===404) return 0; if(!r.ok) throw new Error("http "+r.status);
+    const S=seen(), files=((await r.json()).tree||[]).filter(t=>t.type==="blob"&&/^events\/.+\.json$/.test(t.path)).map(t=>t.path).sort();
+    let applied=0;
+    for(const path of files){const id=path.split("/").pop().replace(/\.json$/,""); if(S.has(id)) continue;
+      const g=await fetch(`${api()}/repos/${repo()}/contents/${path}`,{headers:hdr()}); if(!g.ok) continue;
+      let ev; try{ev=JSON.parse(unb64u((await g.json()).content))}catch(e){continue}
+      markSeen(id); if(ev.device===dev()) continue;
+      if(ev.kind==="moves"){const mine=localStorage.getItem(LSM+".at")||""; if(ev.at>mine){moves=ev.state||{}; saveMoves("pull"); localStorage.setItem(LSM+".at",ev.at); applyMoves(); applied++;}}
+      else if(ev.key){const cur=local[ev.key], ts=(ev.state&&ev.state.updated_at)||ev.at; if(!cur||ts>(cur.updated_at||"")){if(ev.state) local[ev.key]=ev.state; else delete local[ev.key]; applied++;}}}
+    if(applied){saveLocal(); render();} return applied;}
+  async function test(){const r=await fetch(`${api()}/repos/${repo()}`,{headers:hdr()});
+    if(!r.ok) return {ok:false,msg:r.status===401?"Token rejected (expired or mistyped).":r.status===404?"Token can't see "+repo()+" — pick that repo when creating it.":"GitHub error "+r.status};
+    const j=await r.json(); if(j.permissions&&j.permissions.push===false) return {ok:false,msg:"Token is read-only — set Contents to Read and write."};
+    return {ok:true,msg:`Connected to ${j.full_name}${j.private?" (private)":""}.`};}
+  function backfill(){const ks=Object.keys(local).filter(k=>local[k]); ks.forEach(k=>{const Q=q(); Q.push(event(k,"backfill")); setQ(Q);});
+    if(Object.keys(moves).length){const Q=q(); Q.push(event("_moves","backfill")); setQ(Q);} const c=cfg(); c.backfilled=new Date().toISOString(); setCfg(c);}
+  function badge(){const b=document.getElementById("syncBadge"); if(!b) return; if(!cfg().token){b.style.display=""; b.className="sbadge err"; b.textContent="Not syncing · Tap to connect"; b.onclick=()=>openForm(); return;} b.onclick=null;
+    const n=q().length; b.style.display=""; b.className="sbadge "+(state==="auth"?"err":n?"wait":"ok");
+    b.textContent=state==="auth"?"Sync: fix token":n?`${n} waiting`:"Saved online ✓"; const sb=document.getElementById("sumSync"); if(sb) sb.textContent=syncLabel();}
+  function openForm(){const c=cfg(); const bg=document.createElement("div"); bg.className="sheet-bg"; bg.id="syncSheet";
+    bg.innerHTML=`<div class="sheet syncform" role="dialog" aria-label="Online sync"><div class="grab"></div><h2>Online sync</h2>
+     <p>Every set, tap, note, edit, move and completion saves to your private GitHub repo <b>${esc(repo())}</b>. The token stays on this phone only.</p>
+     <input id="syncTok" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${c.token?"Token saved — paste a new one to replace":"Paste fine-grained token (github_pat_…)"}">
+     <div class="syncbar" id="syncMsg">${c.token?"Connected"+(c.backfilled?" · existing logs uploaded":""):"Not connected"}</div>
+     <div class="acts"><button class="send" id="syncSave">Save &amp; test connection</button><button class="sec" id="syncTest">Test connection</button><button class="sec" id="syncOff">Disconnect</button><button class="sec" id="syncClose">Close</button></div></div>`;
+    document.body.appendChild(bg); const msg=t=>document.getElementById("syncMsg").textContent=t, close=()=>bg.remove();
+    bg.addEventListener("click",ev=>{if(ev.target===bg) close();}); document.getElementById("syncClose").onclick=close;
+    document.getElementById("syncOff").onclick=()=>{const c=cfg(); delete c.token; setCfg(c); state="idle"; badge(); msg("Disconnected. Token removed from this phone.");};
+    document.getElementById("syncTest").onclick=async()=>{if(!cfg().token) return msg("No token saved yet."); msg("Testing…"); try{const r=await test(); msg(r.msg);}catch(e){msg("Can't reach GitHub (offline?).");}};
+    document.getElementById("syncSave").onclick=async()=>{const t=document.getElementById("syncTok").value.trim(); if(!t&&!cfg().token) return msg("Paste the token first.");
+      const prev=cfg(); if(t){const c=cfg(); c.token=t; setCfg(c);} msg("Testing…");
+      let r; try{r=await test();}catch(e){r={ok:false,msg:"Can't reach GitHub (offline?)."};}
+      if(!r.ok){if(t){setCfg(prev);} badge(); return msg(r.msg+" Not saved.");}
+      document.getElementById("syncTok").value=""; state="idle";
+      if(!cfg().backfilled) backfill(); msg(r.msg+" Uploading…"); badge(); await flush();
+      try{await pull();}catch(e){} msg(q().length?`${r.msg} ${q().length} waiting (will retry).`:`${r.msg} All logs saved online ✓`);};}
+  document.addEventListener("click",ev=>{if(ev.target.closest("#mSync")){document.getElementById("menu").classList.remove("on"); openForm();}});
+  window.addEventListener("online",()=>flush()); document.addEventListener("visibilitychange",()=>{if(!document.hidden){flush(); pull().catch(()=>{});}});
+  setTimeout(()=>{badge(); if(cfg().token){flush(); pull().catch(()=>{});}},0);
+  return {cfg,q,push,flush,pull,test,backfill,badge,derived,event,_state:()=>state};
+})();
+const syncPush=(k,why)=>SYNC.push(k,why);
+
+document.addEventListener("click",ev=>{if(ev.target.closest("[data-gohist]")) return; const b=ev.target.closest("[data-hxtog]"); if(!b) return; ev.stopPropagation(); ev.preventDefault(); const k=b.dataset.hxtog; const o=!hxOpen.has(k); o?hxOpen.add(k):hxOpen.delete(k); b.classList.toggle("open",o); b.setAttribute("aria-expanded",o); b.querySelector(".hxc").textContent=o?"▴":"▾";},true);
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-cancelcls]"); if(b){ev.stopPropagation(); ev.preventDefault(); cancelClass(b.dataset.cancelcls);}},true);
+render();
+</script>
+</body>
+</html>
