@@ -799,7 +799,7 @@ document.addEventListener("click",ev=>{
   if(t.dataset.hist){openHist=openHist===t.dataset.hist?null:t.dataset.hist; setHistURL(); render(); return}
   if(t.dataset.gohist){openHist=t.dataset.gohist; tab="history"; scrollHist=true; setHistURL(); render(); return}
   if("hlogged" in t.dataset){histOnlyLogged=!histOnlyLogged; render(); return}
-  if(t.id==="mExport"){const out={kind:"actuals_export",export_id:Math.random().toString(36).slice(2)+Date.now(),exported_at:new Date().toISOString(),athlete:"Noah Roberson",workouts:local,moves};
+  if(t.id==="mExport"){const out={kind:"actuals_export",export_id:Math.random().toString(36).slice(2)+Date.now(),exported_at:new Date().toISOString(),athlete:"Noah",workouts:local,moves};
     const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:"application/json"})); a.download=`actuals_${TODAY}.json`; a.click(); return}
   if(t.id==="mClear"){if(confirm("Clear sets and moves made in this browser? (Anything logged via chat is kept.)")){local={};moves={};saveLocal();saveMoves();applyMoves();render()} return}
 });
