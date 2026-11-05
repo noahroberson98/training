@@ -315,7 +315,7 @@ body.dragging .chev.flip{background:var(--accent);color:#0b0b0f}
     <button id="mSync">Online sync (token)…</button>
     <button id="mExport">Export browser logs (JSON)</button>
     <button id="mClear">Clear browser logs &amp; moves</button>
-    <div class="meta">Easiest: tell the bot in chat what you lifted, e.g. "RDL 165×10, 165×10, 165×8".<br>Data from TrainingPeaks · built Nov 5, 2026 9:26 AM CT</div>
+    <div class="meta">Easiest: tell the bot in chat what you lifted, e.g. "RDL 165×10, 165×10, 165×8".<br>Data from TrainingPeaks · built Nov 5, 2026 10:33 AM CT</div>
   </div>
   <div class="seg" id="tabs"><button data-tab="week" class="on">Week</button><button data-tab="workout">Day</button><button data-tab="history">History</button></div>
   <div class="grid" id="grid">
@@ -999,7 +999,23 @@ function openAddExercise(key){
 // Off-device sync: not connected yet (needs Noah's scoped token). Until then data stays in this browser.
 const syncLabel=()=>SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.";
 const MAILTO=""; const FS_TOKEN="c887d310ab23926b6698bde74bc69275"; // FormSubmit alias for +workout (not a credential; same as JARVIS)
-async function fsSend(w,em,note){const L=local[w.key]; const sig=w.key+"|"+(note||""); if(L.fs_sent===sig) return; try{const r=await fetch("https://formsubmit.co/ajax/"+FS_TOKEN,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({_subject:em.subject,app:"Training",source:"Total Fitness",key:w.key,note:note||"",message:em.text,_template:"box",_captcha:"false"})}); if(r.ok){L.fs_sent=sig; saveLocal(); showToast("Workout emailed ✓",null);} else showToast("Email failed ("+r.status+") — use Copy summary",null);}catch(e){showToast("Email failed — use Copy summary",null);}}
+async function fsSend(w,em,note,opts){
+  const L=local[w.key]; const sig=w.key+"|"+(note||""); if(L.fs_sent===sig) return true;
+  const onStatus=opts&&opts.onStatus;
+  const ac=new AbortController(); const to=setTimeout(()=>ac.abort(),12000);
+  try{
+    if(onStatus) onStatus("sending");
+    const r=await fetch("https://formsubmit.co/ajax/"+FS_TOKEN,{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({_subject:em.subject,app:"Training",source:"Total Fitness",key:w.key,note:note||"",message:em.text,_template:"box",_captcha:"false"})});
+    clearTimeout(to);
+    if(r.ok){L.fs_sent=sig; saveLocal(); if(onStatus) onStatus("ok"); showToast("Workout emailed ✓",null); return true;}
+    if(onStatus) onStatus("fail"); showToast("Email failed ("+r.status+") — use Copy summary",null); return false;
+  }catch(e){
+    clearTimeout(to);
+    if(onStatus) onStatus("fail");
+    showToast("Email failed — use Copy summary",null);
+    return false;
+  }
+}
  // public site: no email address embedded (Noah 10/29); mail app asks for recipient
 function summaryData(w){
   const rows=[]; let sets=0,reps=0,vol=0;
@@ -1072,8 +1088,23 @@ function openSummary(key){
   document.getElementById("sumCopy").addEventListener("click",async()=>{const em=await refresh(); const t=`Subject: ${em.subject}\n\n${em.text}`;
     try{await navigator.clipboard.writeText(t);}catch(e){const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();}
     showToast("Summary copied",null);});
-  const close=async()=>{bg.remove(); local[w.key].note=note(); touch(w.key); fsSend(w,await buildEmail(w,note()),note());}; document.getElementById("sumClose").addEventListener("click",close);
-  bg.addEventListener("click",ev=>{if(ev.target===bg) close();});
+  let sending=false;
+  const setCloseEnabled=(on,label)=>{const btn=document.getElementById("sumClose"); if(!btn) return; btn.disabled=!on; btn.textContent=label||"Done";};
+  const close=async()=>{
+    if(sending) return;
+    sending=true;
+    local[w.key].note=note(); touch(w.key);
+    setCloseEnabled(false,"Sending…");
+    const em=await buildEmail(w,note());
+    const ok=await fsSend(w,em,note(),{onStatus:st=>{
+      if(st==="sending") setCloseEnabled(false,"Sending…");
+    }});
+    if(ok){bg.remove(); return;}
+    sending=false;
+    setCloseEnabled(true,"Done");
+  };
+  document.getElementById("sumClose").addEventListener("click",close);
+  bg.addEventListener("click",ev=>{if(ev.target===bg){if(sending) return; close();}});
 }
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-complete]"); if(b){ev.stopPropagation(); openSummary(b.dataset.complete);}},true);
 // ---------- cancel class: confirm (with fee rules) -> prefilled private GitHub issue; bot does the PushPress cancel ----------
