@@ -400,15 +400,36 @@ const grpOf=e=>e.extra?"X":e.label.replace(/\d+$/,"");
 function groupKey(w,e){const g=grpOf(e); const first=working(w).find(x=>grpOf(x)===g)||e; return g+"@"+ek(first);}
 const roundsOf=(w,e)=>{if(e.warmup) return 0; const g=groupKey(w,e); const a=(local[w.key]?.rounds||{})[g]||0; const b=(aliasBag(w)?.rounds||{})[g]||0; return Math.max(a,b);};
 // Each "Log Set" tap = one planned round for every exercise in the group (Noah 10/25). Typed/parsed sets count first; taps only add the rounds not already typed.
-function setSig(s){return JSON.stringify([s&&s.weight_lb!=null?s.weight_lb:null,s&&s.reps!=null?s.reps:null,s&&s.duration_s!=null?s.duration_s:null,s&&s.distance_m!=null?s.distance_m:null,!!(s&&s.round)]);}
+function setStableId(s){
+  if(!s||typeof s!=="object") return "";
+  for(const k of ["id","set_id","eid"]){ if(s[k]!=null&&String(s[k])!=="") return String(s[k]); }
+  return "";
+}
+function setContentKey(s){return JSON.stringify([s&&s.weight_lb!=null?s.weight_lb:null,s&&s.reps!=null?s.reps:null,s&&s.duration_s!=null?s.duration_s:null,s&&s.distance_m!=null?s.distance_m:null,!!(s&&s.round)]);}
+function dedupeStableIds(list){
+  const seen=new Set(), out=[];
+  list.forEach(s=>{const id=setStableId(s); if(id){ if(seen.has(id)) return; seen.add(id); } out.push(s);});
+  return out;
+}
+function mergeOccurrences(ownList, aliasList){
+  const own=dedupeStableIds(ownList), alias=dedupeStableIds(aliasList);
+  const ids=new Set(own.map(setStableId).filter(Boolean));
+  const out=[...own]; let ambiguous=false;
+  alias.forEach(s=>{
+    const id=setStableId(s);
+    if(id&&ids.has(id)) return;
+    out.push(s);
+    if(id) ids.add(id);
+    else if(own.some(o=>setContentKey(o)===setContentKey(s))) ambiguous=true;
+  });
+  return {sets:out, ambiguous};
+}
 const localSets=(w,e)=>{
   const own=local[w.key]?.exercises?.[ek(e)];
   const ax=aliasBag(w)?.exercises?.[ek(e)];
   const list=z=>z?[...(z.sets||[]),...(z.parsed||[])]:[];
-  let raw;
-  if(!ax) raw=list(own);
-  else {const a=list(own), seen=new Set(a.map(setSig)); raw=a.concat(list(ax).filter(s=>!seen.has(setSig(s))));}
-  const ex=raw.map(s=>perPlan(e,s));
+  const merged=mergeOccurrences(list(own), ax?list(ax):[]);
+  const ex=merged.sets.map(s=>perPlan(e,s));
   const extra=Math.max(0,roundsOf(w,e)-ex.length); if(!extra) return ex;
   const lastW=[...ex].reverse().find(s=>s.weight_lb!=null)?.weight_lb??e.weight_lb??null;
   const r={round:true,per_plan:true}; if(lastW!=null) r.weight_lb=lastW; if(e.reps!=null) r.reps=e.reps; else if(e.duration_s!=null) r.duration_s=e.duration_s;
@@ -461,12 +482,15 @@ function hasLoggedWork(w){
   if((w.free||/Free/i.test(w.source||"")) && String((local[w.key]&&local[w.key].note)||"").trim()) return true;
   return false;
 }
+function storeHasLogged(w){return working(w).some(e=>(storeSets(e)||[]).some(isActualSet));}
 function statusOf(w){
   const L=local[w.key]||{}, s=L.status||w.status||"planned";
   if(s==="skipped") return "skipped";
-  if(s==="completed" && !hasLoggedWork(w)) return "unlogged";
+  const logged=hasLoggedWork(w);
+  if((L.status==="completed"||w.status==="completed") && !logged) return "unlogged";
+  if(w.status==="completed" && !storeHasLogged(w) && L.status!=="completed" && logged) return "progress";
   const started=validT(L.started_at)||validT(aliasStart(w));
-  if(s!=="completed" && (progress(w).logged>0||started)) return "progress";
+  if(s!=="completed" && (logged||started)) return "progress";
   return s;
 }
 const statusText={planned:"Planned",completed:"Completed",skipped:"Skipped",progress:"In Progress",unlogged:"No Sets Logged"};
@@ -539,6 +563,13 @@ function ptMeta(w){
   if(w.pt.status) bits.push(blbl(w.pt.status));
   return bits.join(" · ");
 }
+function aliasAmbiguous(w,e){
+  const own=local[w.key]?.exercises?.[ek(e)];
+  const ax=aliasBag(w)?.exercises?.[ek(e)];
+  if(!ax) return false;
+  const list=z=>z?[...(z.sets||[]),...(z.parsed||[])]:[];
+  return mergeOccurrences(list(own), list(ax)).ambiguous;
+}
 function emptyDoneOnly(w,e){
   if(allSets(w,e).some(isActualSet)) return false;
   const a=e.actuals||{};
@@ -589,6 +620,7 @@ function exRow(w,e){
     <div class="exh"><div class="lab">${esc(e.label)}</div><div class="name"><span class="nm">${esc(e.name)}</span></div><button class="nbtn ${L.note?"on":""}" data-exnote="${id}" aria-label="Note">📝</button></div>
     <div class="rx">${tgtLine(w,e)}${e.note?` · <i>${esc(e.note)}</i>`:""}</div>
     ${emptyDoneOnly(w,e)?`<div class="ex-note">Marked done · no reps logged</div>`:""}
+    ${aliasAmbiguous(w,e)?`<div class="ex-note">Same weight and reps are also saved on the Personal Training log. Both are kept. There is no set id to tell a repeat from a second set.</div>`:""}
     ${lastTimeHtml(w,e)}
     <div class="srows">${rows}</div>
     ${L.note?`<div class="exnotes">📝 ${esc(L.note)}</div>`:""}
@@ -630,7 +662,7 @@ function workoutView(){
       <h2>${esc(w.title)}</h2><div style="display:flex;align-items:center;gap:6px"><span class="pill ${st}">${statusText[st]||st}</span><button class="icon-btn" style="width:28px;height:28px;background:var(--surface2)" data-more="${esc(w.key)}" aria-label="More">${ICON.more}</button></div>
       ${ptMeta(w)?`<div class="date">${esc(ptMeta(w))}</div>`:""}
       <div class="date">${esc(setsLine(w))}</div>
-      ${st==="unlogged"?`<div class="date">Finish recorded · no sets logged</div>`:""}
+      ${st==="unlogged"?`<div class="timer"><span>Finish recorded · no sets logged</span> <button class="tbtn" style="white-space:nowrap" data-logjump="${esc(w.key)}">Log sets</button></div>`:""}
       ${w.date!==w.orig?`<div class="moved-hint">Moved from ${DN[pd(w.orig).getDay()]}</div>`:""}${freeChip}${(w.tags||[]).map(t=>`<span class="tagchip">${esc(t)}</span>`).join(" ")}${whoopLine(whoopForWorkout(w))}</div>
       <div class="ring">${ring(p.logged,p.planned)}<div class="c"><div><b>${p.logged}/${p.planned}</b><br><span>logged</span></div></div></div></div>
       <div class="stats"><div class="stat"><b>${working(w).length}</b><span>exercises</span></div><div class="stat"><b>${p.lreps?num(p.lreps):"0"}</b><span>reps logged</span></div>
@@ -983,6 +1015,7 @@ document.addEventListener("click",ev=>{
     if(!w.started_at) w.started_at=new Date().toISOString(); touch(k); render(); return}
   if(t.dataset.free!=null){openFreeSheet(t.dataset.free||sel); return}
   if(t.dataset.addex){openAddExercise(t.dataset.addex); return}
+  if(t.dataset.logjump){const el=document.querySelector(".now")||document.querySelector("[data-logrow]"); el?.scrollIntoView({block:"center"}); (document.querySelector(".now [data-qw]")||document.querySelector("[data-fw]"))?.focus(); return}
   if(t.dataset.wkstart){const k=t.dataset.wkstart,w0=W.find(x=>x.key===k); const w=LW(k); if(!validT(w.started_at)){const adopted=w0&&sessionTimes(w0).started; w.started_at=validT(adopted)?adopted:new Date().toISOString();} delete w.ended_at; touch(k); if(w0){sel=w0.date; tab="workout";} render(); window.scrollTo({top:0}); return}
   if(t.dataset.wstart){const w=LW(t.dataset.wstart); w.started_at=new Date().toISOString(); delete w.ended_at; touch(t.dataset.wstart); render(); return}
   if(t.dataset.wend){const key=t.dataset.wend,w0=W.find(x=>x.key===key),w=LW(key); if(!validT(w.started_at)){const adopted=w0&&sessionTimes(w0).started; w.started_at=validT(adopted)?adopted:new Date().toISOString();} w.ended_at=new Date().toISOString(); touch(key); render(); return}
