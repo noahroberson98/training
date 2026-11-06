@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "example": true,
+  "label": "EXAMPLE — not a real training log",
+  "workouts": {
+    "2026-10-01|Example Upper": {
+      "date": "2026-10-01",
+      "title": "Example Upper",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "W", "block": "W", "name": "Example Bench Press", "sets": 1, "reps": 10, "weight_lb": 45, "warmup": true, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 45, "reps": 10}]}},
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 2, "reps": 8, "weight_lb": 100, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 100, "reps": 8}, {"weight_lb": 100, "reps": 8}], "notes": "Example note. Not a real log."}}
+      ]
+    },
+    "2026-10-08|Example Upper": {
+      "date": "2026-10-08",
+      "title": "Example Upper",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 2, "reps": 5, "weight_lb": 100, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 100, "reps": 5}, {"weight_lb": 100, "reps": 5}]}}
+      ]
+    },
+    "2026-10-15|Example A": {
+      "date": "2026-10-15",
+      "title": "Example A",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 1, "reps": 1, "weight_lb": 105, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [
+          {"weight_lb": 105, "reps": 1},
+          {"weight_lb": 200, "reps": 10, "per_plan": true},
+          {"weight_lb": 40, "reps": 15},
+          {"weight_lb": 0, "reps": 8},
+          {"weight_lb": 50, "reps": null},
+          {"reps": 10},
+          {"weight_lb": 80, "reps": 8, "round": true}
+        ]}}
+      ]
+    },
+    "2026-10-15|Example B": {
+      "date": "2026-10-15",
+      "title": "Example B",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 1, "reps": 3, "weight_lb": 110, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 110, "reps": 3}]}}
+      ]
+    },
+    "2026-10-22|Example Upper": {
+      "date": "2026-10-22",
+      "title": "Example Upper",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 1, "reps": 11, "weight_lb": 95, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 95, "reps": 11}]}}
+      ]
+    },
+    "2026-10-29|Example Upper": {
+      "date": "2026-10-29",
+      "title": "Example Upper",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Bench Press", "sets": 1, "reps": 20, "weight_lb": 40, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 40, "reps": 20}]}}
+      ]
+    },
+    "2026-10-03|Example Empty": {
+      "date": "2026-10-03",
+      "title": "Example Empty",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Empty Press", "sets": 3, "reps": 8, "weight_lb": 100, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [
+          {"weight_lb": 100, "reps": 8, "per_plan": true},
+          {"weight_lb": 0, "reps": 8},
+          {"weight_lb": 50, "reps": null},
+          {"reps": 10},
+          {"weight_lb": 80, "reps": 8, "round": true}
+        ]}}
+      ]
+    },
+    "2026-10-04|Example DB": {
+      "date": "2026-10-04",
+      "title": "Example DB",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example DB Curl", "sets": 1, "reps": 10, "weight_lb": 20, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 20, "reps": 10}]}}
+      ]
+    },
+    "2026-10-18|Example DB": {
+      "date": "2026-10-18",
+      "title": "Example DB",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example DB Curl", "sets": 1, "reps": 8, "weight_lb": 25, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 25, "reps": 8}]}}
+      ]
+    },
+    "2026-10-05|Example Assist": {
+      "date": "2026-10-05",
+      "title": "Example Assist",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Assisted Pull-Up", "sets": 1, "reps": 8, "weight_lb": 50, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 50, "reps": 8}]}}
+      ]
+    },
+    "2026-10-06|Example KG": {
+      "date": "2026-10-06",
+      "title": "Example KG",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example KG Row", "sets": 1, "reps": 5, "weight_lb": null, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_kg": 40, "reps": 5}]}}
+      ]
+    },
+    "2026-10-02|Example Mixed": {
+      "date": "2026-10-02",
+      "title": "Example Mixed",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Mixed Row", "sets": 1, "reps": 5, "weight_lb": 100, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 100, "reps": 5}]}}
+      ]
+    },
+    "2026-10-16|Example Mixed": {
+      "date": "2026-10-16",
+      "title": "Example Mixed",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Mixed Row", "sets": 1, "reps": 5, "weight_lb": null, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_kg": 40, "reps": 5}]}}
+      ]
+    },
+    "2026-10-07|Example Conflict": {
+      "date": "2026-10-07",
+      "title": "Example Conflict",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Conflict Press", "sets": 1, "reps": 5, "weight_lb": 100, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 100, "weight_kg": 10, "reps": 5}]}}
+      ]
+    },
+    "2026-10-09|Example Push": {
+      "date": "2026-10-09",
+      "title": "Example Push",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example Push Up", "sets": 1, "reps": 10, "weight_lb": null, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"reps": 10}]}}
+      ]
+    }
+  }
+}

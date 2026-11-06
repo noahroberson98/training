@@ -1,0 +1,336 @@
+--- a/scripts/template.html
++++ b/scripts/template.html
+@@ -171,6 +171,30 @@
+ .hrow .best span{font-size:12px;color:var(--muted);letter-spacing:.05em}
+ .hdetail{display:none;padding:0 18px 14px}
+ .hdetail.on{display:block}
++
++.e1rm-panel{margin:0 0 14px}
++.e1rm-kicker{font-weight:700;font-size:16px}
++.e1rm-pick{display:block;margin:0 0 10px;font-size:13px;font-weight:600;color:var(--muted)}
++.e1rm-pick select{display:block;width:100%;box-sizing:border-box;margin-top:6px;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text)}
++.e1rm-svg{width:100%;height:auto;display:block;margin-top:4px}
++.e1rm-leg{display:flex;flex-wrap:wrap;gap:6px 12px;margin:6px 0 2px;font-size:12px;color:var(--muted)}
++.swatch{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
++.swatch.top{background:var(--accent)}
++.swatch.est{background:var(--good)}
++.swatch.brz{height:0;border-top:2px dashed var(--muted);width:16px}
++.swatch.low{background:transparent;border:2px solid var(--amber);height:8px;width:8px;border-radius:50%}
++.e1rm-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;margin-top:8px}
++.e1rm-table caption{caption-side:bottom;text-align:left;font-size:12px;color:var(--muted);padding-top:6px}
++.e1rm-table th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 4px 4px}
++.e1rm-table td{padding:7px 4px;border-top:1px solid var(--line);vertical-align:top;white-space:normal}
++.e1rm-table .sub,.e1rm-note{font-size:12px;color:var(--muted);font-weight:500;line-height:1.45}
++.e1rm-note{margin:6px 0 0;font-weight:400}
++.e1rm-empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
++.e1rm-empty p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
++.exbanner{background:var(--amber-soft);color:var(--amber);border:1px solid rgba(245,196,81,.45);border-radius:12px;padding:8px 12px;margin:0 0 12px;font-size:13px;font-weight:650}
++.lowc{color:var(--amber)}
++.hrow .best{min-width:88px}
++
+ .sess{display:flex;gap:12px;align-items:baseline;padding:7px 0;font-size:14px}
+ .sess .dd{width:64px;color:var(--muted);flex:none}
+ .sess .chips{margin:0}
+@@ -871,40 +895,271 @@
+   const tgt=x=>{const w=pw(x),r=pl(x); return w!=null&&r!=null?`${fv(w)}×${fv(r)}`:w!=null?`${fv(w)} lb`:r!=null?fv(r):"—";};
+   const dn=(p,a)=>p!=null&&a!=null&&p!==a?`<b class="dev">${fv(a)}</b>`:fv(a);
+   return `<table class="sgrid"><thead><tr><th class="c">Set</th><th>Target</th>${hasW?`<th class="r">lbs</th>`:""}<th class="r">Reps</th></tr></thead><tbody>${sets.map((x,j)=>`<tr><td class="c">${j+1}</td><td><small>${tgt(x)}</small></td>${hasW?`<td class="r">${dn(pw(x),x.weight_lb)}</td>`:""}<td class="r">${dn(pl(x),act(x))}</td></tr>`).join("")}</tbody></table>`;}
++/*E1RM_PURE_BEGIN*/
++// Logged-set estimates only. Epley is primary. Brzycki is a labeled comparison.
++// A 1-rep set stays at the logged weight. Reps above 12 are low confidence.
++function e1rmPos(v){
++  if(typeof v==="boolean"||v==null||typeof v==="object") return null;
++  if(typeof v==="string"&&v.trim()==="") return null;
++  const x=typeof v==="number"?v:Number(v);
++  if(!Number.isFinite(x)||x<=0) return null;
++  return x;
++}
++function e1rmReps(v){
++  const x=e1rmPos(v);
++  if(x==null||Math.round(x)!==x) return null;
++  return x;
++}
++function e1rmId(s){
++  if(!s||typeof s!=="object") return "";
++  for(const k of ["id","set_id","eid"]){ if(s[k]!=null&&String(s[k])!=="") return String(s[k]); }
++  return "";
++}
++function e1rmFmt(x){
++  if(x==null||!Number.isFinite(+x)) return "";
++  const n=Math.round((+x)*10), neg=n<0, a=Math.abs(n);
++  const whole=Math.floor(a/10), frac=a%10;
++  return (neg?"-":"")+whole+(frac?"."+frac:"");
++}
++function e1rmEpley(w,r){ return w*(1+r/30); }
++function e1rmBrzycki(w,r){ return w*36/(37-r); }
++function e1rmNameBasis(name){
++  const n=String(name||"");
++  if(/\bassisted\b/i.test(n)) return "assistance";
++  if(/\b(dumbbell|kettlebell)s?\b|\bdb\b|\bkb\b/i.test(n)) return "per_hand_unconfirmed";
++  return "stored_lb";
++}
++function e1rmEstimate(set, exercise){
++  const e=exercise||{};
++  const fail=reason=>({ok:false,reason,weight:null,reps:null,unit:null,basis:null,method:null,primary:null,brzycki:null,confidence:null});
++  if(!set||typeof set!=="object") return fail("invalid");
++  if(e.warmup||set.warmup===true) return fail("warmup");
++  if(set.per_plan===true||set.round===true||set.planned===true||set.from_plan===true||set.src==="plan") return fail("plan_filled");
++  if(set.assisted===true||set.load_role==="assistance"||set.basis==="assistance"||e1rmNameBasis(e.name)==="assistance") return fail("assistance");
++  const lbPresent=set.weight_lb!=null, kgPresent=set.weight_kg!=null;
++  const lb=lbPresent?e1rmPos(set.weight_lb):null, kg=kgPresent?e1rmPos(set.weight_kg):null;
++  if(lbPresent&&lb==null) return fail("invalid");
++  if(kgPresent&&kg==null) return fail("invalid");
++  let weight, unit, basis;
++  if(lbPresent&&kgPresent){
++    const conv=kg*2.20462;
++    if(!(conv>0)||Math.abs(lb-conv)/conv>0.02) return fail("unit_conflict");
++    weight=lb; unit="lb"; basis=e1rmNameBasis(e.name);
++  }else if(lbPresent){
++    weight=lb; unit="lb"; basis=e1rmNameBasis(e.name);
++  }else if(kgPresent){
++    weight=kg; unit="kg"; basis=e1rmNameBasis(e.name)==="per_hand_unconfirmed"?"per_hand_unconfirmed":"kg";
++  }else return fail("invalid");
++  const reps=e1rmReps(set.reps);
++  if(reps==null) return fail("invalid");
++  if(reps===1) return {ok:true,reason:"",weight,reps,unit,basis,method:"actual_single",primary:weight,brzycki:weight,confidence:"actual_single"};
++  const primary=e1rmEpley(weight,reps);
++  const brzycki=reps<=10?e1rmBrzycki(weight,reps):null;
++  return {ok:true,reason:"",weight,reps,unit,basis,method:"epley",primary,brzycki,confidence:reps>12?"low":"estimate"};
++}
++function e1rmDedupe(sets){
++  const seen=new Set(), out=[];
++  (sets||[]).forEach(s=>{ const id=e1rmId(s); if(id){ if(seen.has(id)) return; seen.add(id); } out.push(s); });
++  return out;
++}
++function e1rmSession(sets, exercise){
++  const est=e1rmDedupe(sets).map(s=>e1rmEstimate(s, exercise));
++  const excluded={};
++  est.forEach(e=>{ if(!e.ok) excluded[e.reason]=(excluded[e.reason]||0)+1; });
++  const groups=new Map();
++  est.forEach(e=>{ if(!e.ok) return; const k=e.unit+"|"+e.basis; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(e); });
++  const points=[];
++  groups.forEach((list,k)=>{
++    const top=list.reduce((a,b)=> (b.weight>a.weight||(b.weight===a.weight&&(b.reps>a.reps||(b.reps===a.reps&&b.primary>a.primary))))?b:a);
++    const confident=list.filter(e=>e.confidence!=="low");
++    const pool=confident.length?confident:list;
++    const best=pool.reduce((a,b)=>b.primary>a.primary?b:a);
++    points.push({unit:best.unit,basis:best.basis,group:k,topWeight:top.weight,topReps:top.reps,primary:best.primary,method:best.method,brzycki:best.brzycki,confidence:confident.length?best.confidence:"low",bestWeight:best.weight,bestReps:best.reps,eligible:list.length});
++  });
++  return {points, excluded, excludedCount:est.filter(e=>!e.ok).length, eligibleCount:est.filter(e=>e.ok).length};
++}
++function e1rmSeries(items){
++  const all=[], excluded={};
++  (items||[]).forEach(it=>{
++    const sess=e1rmSession(it.sets, it.exercise);
++    Object.keys(sess.excluded).forEach(r=>{ excluded[r]=(excluded[r]||0)+sess.excluded[r]; });
++    sess.points.forEach(p=>all.push(Object.assign({key:String(it.key||""),date:String(it.date||""),title:String(it.title||""),note:String(it.note||"")}, p)));
++  });
++  all.sort((a,b)=>(a.date+"\n"+a.key+"\n"+a.group).localeCompare(b.date+"\n"+b.key+"\n"+b.group));
++  const counts=new Map();
++  all.forEach(p=>{ const c=counts.get(p.group)||{n:0,last:""}; c.n++; const mark=p.date+"\n"+p.key; if(mark>c.last) c.last=mark; counts.set(p.group,c); });
++  let chartKey=null, bestN=-1, bestLast="";
++  counts.forEach((c,k)=>{ if(c.n>bestN||(c.n===bestN&&c.last>bestLast)){ chartKey=k; bestN=c.n; bestLast=c.last; } });
++  return {points:all, chart:chartKey?all.filter(p=>p.group===chartKey):[], held:chartKey?all.filter(p=>p.group!==chartKey):all, chartKey, excluded};
++}
++/*E1RM_PURE_END*/
++
+ function sessCard(s,i,list,core){ // one past session as a workout-app card
+-  const prev=list.slice(i+1).find(x=>x.sets.length);
+-  const earlier=list.slice(i+1).flatMap(x=>x.sets), b=bestOf(s.sets);
+-  const pr=!core&&b&&b.weight_lb!=null&&(!earlier.length||better(b,bestOf(earlier)))&&earlier.length>0;
+-  const head=`<div class="sh"><div class="t">${mdw(s.w.date)}</div>${s.sets.length?(core?`<span class="dlt eq">Done</span>`:(pr?`<span class="prb">PR</span> `:"")+deltaHtml(s,prev)):""}</div><div class="sub"><a href="#" data-day="${s.w.date}">${esc(s.w.title)}</a> · Target ${rxHtml(s.e)}</div>`;
++  const elig=sets=>sets.filter(x=>e1rmEstimate(x,s.e).ok);
++  const prev=list.slice(i+1).find(x=>elig(x.sets).length);
++  const curE=elig(s.sets);
++  const earlier=list.slice(i+1).flatMap(x=>elig(x.sets)), b=bestOf(curE);
++  const pr=!core&&b&&b.weight_lb!=null&&earlier.length>0&&better(b,bestOf(earlier));
++  const head=`<div class="sh"><div class="t">${mdw(s.w.date)}</div>${s.sets.length?(core?`<span class="dlt eq">Done</span>`:(pr?`<span class="prb">PR</span> `:"")+(curE.length&&prev?deltaHtml({sets:curE},{sets:elig(prev.sets)}):"")):""}</div><div class="sub"><a href="#" data-day="${s.w.date}">${esc(s.w.title)}</a> · Target ${rxHtml(s.e)}</div>`;
+   if(!s.sets.length){const raw=(local[s.w.key]&&local[s.w.key].status)||s.w.status; const msg=raw==="completed"?"No sets logged":raw==="skipped"?"Skipped":s.w.date>=TODAY?"Planned":"Not completed"; return `<div class="scard">${head}<div class="sempty">${msg}</div></div>`;}
+   if(core){const n=coreNotes(s.w,s.e); return `<div class="scard">${head}${n?`<div class="sfoot">${esc(n)}</div>`:""}</div>`;}
+   const v=s.sets.reduce((a,x)=>a+(x.weight_lb||0)*(x.reps||0),0);
+   return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${v?`<div class="sfoot">Volume ${num(v)} lb</div>`:""}</div>`;}
++function e1rmItems(s){
++  const by=new Map();
++  s.items.forEach(it=>{
++    const k=it.w.key;
++    if(!by.has(k)) by.set(k,{key:k,date:it.w.date,title:it.w.title||"",sets:[],exercise:{name:it.e.name,warmup:!!it.e.warmup,other_load:it.e.other_load||null,label:it.e.label||"",block:it.e.block||""},note:""});
++    const g=by.get(k);
++    (it.sets||[]).forEach(x=>g.sets.push(x));
++    const bag=local[it.w.key]&&local[it.w.key].exercises&&local[it.w.key].exercises[ek(it.e)];
++    const n=[it.e.actuals&&it.e.actuals.notes, it.e.note, bag&&bag.note, bag&&bag.notes].filter(Boolean).join(" · ");
++    if(n&&g.note.indexOf(n)<0) g.note=(g.note?g.note+" · ":"")+n;
++  });
++  return [...by.values()];
++}
++function e1rmUnit(p){ return p.unit==="kg"?"kg":"lb"; }
++function e1rmSigned(d){ const a=e1rmFmt(Math.abs(d)); if(!a||a==="0") return "0"; return (d>0?"+":"−")+a; }
++function e1rmBasisText(p){
++  if(p.basis==="per_hand_unconfirmed"&&p.unit==="kg") return "Kilograms as logged. Dumbbell or kettlebell: the log does not say per hand or total, so this is not doubled and not converted.";
++  if(p.basis==="per_hand_unconfirmed") return "Pounds as logged. Dumbbell or kettlebell: the log does not say per hand or total, so this is not doubled.";
++  if(p.unit==="kg") return "Kilograms as logged. Not converted to pounds.";
++  return "Pounds as logged.";
++}
++function e1rmExcludedText(ex){
++  const labels={plan_filled:"plan-filled",warmup:"warm-up",invalid:"missing or invalid",assistance:"assisted",unit_conflict:"conflicting-unit"};
++  const bits=Object.keys(labels).filter(k=>ex&&ex[k]).map(k=>`${ex[k]} ${labels[k]}`);
++  return bits.length?bits.join(", ")+" not used.":"";
++}
++function e1rmLatest(p){
++  const u=e1rmUnit(p), top=`${e1rmFmt(p.topWeight)}×${p.topReps} ${u}`;
++  if(p.method==="actual_single") return `Latest ${md(p.date)} · top set ${top} · logged single ${e1rmFmt(p.primary)} ${u}. Not a verified max.`;
++  return `Latest ${md(p.date)} · top set ${top} · est. 1RM ${e1rmFmt(p.primary)} ${u} (Epley).${p.confidence==="low"?" Low confidence: above 12 reps.":""}`;
++}
++function e1rmChange(cur, prev){
++  if(!prev) return "One logged session in this unit. No earlier session to compare.";
++  const u=e1rmUnit(cur);
++  const top=e1rmSigned(cur.topWeight-prev.topWeight), est=e1rmSigned(cur.primary-prev.primary);
++  let s=`Since ${md(prev.date)} · ${top==="0"?"top set no change":"top set "+top+" "+u} · ${est==="0"?"estimate no change":"estimate "+est+" "+u}.`;
++  if(cur.confidence==="low"||prev.confidence==="low") s+=" Includes a low-confidence estimate.";
++  if(cur.method==="actual_single"||prev.method==="actual_single") s+=" A logged single is the weight that was lifted, not an Epley estimate.";
++  return s;
++}
++function e1rmDateLabel(p, points){
++  const dup=points.filter(q=>q.date===p.date).length>1;
++  if(!dup) return md(p.date);
++  const bits=String(p.title||"").trim().split(/\s+/);
++  return md(p.date)+" "+(bits[bits.length-1]||"");
++}
++function e1rmChartSvg(points){
++  if(!points.length) return "";
++  const W=360,H=168,L=36,R=18,T=12,B=28;
++  const vals=[];
++  points.forEach(p=>{ vals.push(p.topWeight,p.primary); if(p.brzycki!=null) vals.push(p.brzycki); });
++  let mn=Math.min(...vals), mx=Math.max(...vals);
++  if(mn===mx){ mn=mn*0.9; mx=mx*1.08; } else { const pad=(mx-mn)*0.14; mn-=pad; mx+=pad; }
++  if(mn<0) mn=0;
++  const n=points.length;
++  const X=i=>L+(n===1?(W-L-R)/2:i*(W-L-R)/(n-1));
++  const Y=v=>T+(mx-v)/(mx-mn||1)*(H-T-B);
++  const seg=(get,skip)=>{
++    let d="", on=false;
++    points.forEach((p,i)=>{
++      const v=get(p);
++      if(v==null||(skip&&skip(p))){ on=false; return; }
++      d+=(on?` L${X(i).toFixed(1)},${Y(v).toFixed(1)}`:`M${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
++      on=true;
++    });
++    return d;
++  };
++  const dots=points.map((p,i)=>{
++    const bits=[];
++    if(p.brzycki!=null) bits.push(`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.brzycki).toFixed(1)}" r="2.4" fill="var(--muted)"/>`);
++    bits.push(`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.topWeight).toFixed(1)}" r="3.2" fill="var(--accent)"/>`);
++    if(p.confidence==="low") bits.push(`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.primary).toFixed(1)}" r="4.2" fill="none" stroke="var(--amber)" stroke-width="2"/>`);
++    else bits.push(`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.primary).toFixed(1)}" r="3.4" fill="var(--good)"/>`);
++    return bits.join("");
++  }).join("");
++  const labels=points.map((p,i)=>{
++    const show=n<=6||i===0||i===n-1||i===Math.floor((n-1)/2);
++    if(!show) return "";
++    const anchor=i===0?"start":i===n-1?"end":"middle";
++    return `<text x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="${anchor}" fill="var(--muted)" font-size="10">${esc(e1rmDateLabel(p,points))}</text>`;
++  }).join("");
++  const aria=points.map(p=>`${e1rmDateLabel(p,points)} top ${e1rmFmt(p.topWeight)} estimate ${e1rmFmt(p.primary)} ${e1rmUnit(p)}`).join("; ");
++  return `<svg class="e1rm-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc("Top set and estimated 1RM. "+aria)}"><line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="rgba(255,255,255,.12)"/>${seg(p=>p.topWeight)?`<path d="${seg(p=>p.topWeight)}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`:""}${seg(p=>p.brzycki)?`<path d="${seg(p=>p.brzycki)}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/>`:""}${seg(p=>p.confidence==="low"?null:p.primary)?`<path d="${seg(p=>p.confidence==="low"?null:p.primary)}" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`:""}${dots}${labels}<text x="4" y="14" fill="var(--faint)" font-size="10">${esc(e1rmFmt(mx))}</text><text x="4" y="${H-B}" fill="var(--faint)" font-size="10">${esc(e1rmFmt(mn))}</text></svg>`;
++}
++function e1rmMethodCell(p){
++  const u=e1rmUnit(p);
++  if(p.method==="actual_single") return `${esc(e1rmFmt(p.primary))} ${u}<div class="sub">Logged single from ${esc(e1rmFmt(p.bestWeight))}×${p.bestReps}. Not a verified max. Brzycki ${esc(e1rmFmt(p.brzycki))} ${u}, same weight.</div>`;
++  const brz=p.brzycki==null?"Brzycki not used above 10 reps.":`Brzycki ${esc(e1rmFmt(p.brzycki))} ${u}.`;
++  const low=p.confidence==="low"?` <span class="lowc">Low confidence, above 12 reps.</span>`:"";
++  return `${esc(e1rmFmt(p.primary))} ${u}<div class="sub">Epley from ${esc(e1rmFmt(p.bestWeight))}×${p.bestReps}. ${brz}${low}</div>`;
++}
++function e1rmTable(points){
++  if(!points.length) return "";
++  const rows=points.map(p=>{
++    const u=e1rmUnit(p);
++    const note=p.note?`<div class="sub">${esc(p.note)}</div>`:"";
++    return `<tr data-date="${esc(p.date)}" data-key="${esc(p.key)}" data-primary="${p.primary}" data-method="${esc(p.method)}" data-confidence="${esc(p.confidence)}" data-top="${p.topWeight}" data-top-reps="${p.topReps}" data-unit="${esc(p.unit)}" data-basis="${esc(p.basis)}" data-brzycki="${p.brzycki==null?"":p.brzycki}"><td>${esc(md(p.date))}<div class="sub">${esc(p.title)}</div>${note}</td><td>${esc(e1rmFmt(p.topWeight))}×${p.topReps} ${u}</td><td>${e1rmMethodCell(p)}</td></tr>`;
++  }).join("");
++  return `<table class="e1rm-table"><caption>Top set and estimated one-rep max by session, oldest first. The same numbers are in the chart.</caption><thead><tr><th scope="col">Date</th><th scope="col">Top set</th><th scope="col">Est. 1RM</th></tr></thead><tbody>${rows}</tbody></table>`;
++}
++function e1rmPanel(selected){
++  if(!selected){
++    const missing=openHist?"That exercise is not in this log.":"Select an exercise to see its progression. Nothing is estimated until you do.";
++    return `<div class="card e1rm-panel" id="e1rm-panel" data-e1rm-state="prompt"><div class="e1rm-empty"><b>No exercise selected</b><p>${esc(missing)} Planned loads are not drawn as progress.</p></div></div>`;
++  }
++  const series=e1rmSeries(e1rmItems(selected));
++  const chart=series.chart, last=chart[chart.length-1], prev=chart.length>1?chart[chart.length-2]:null;
++  const dropped=e1rmExcludedText(series.excluded);
++  const basis=last?e1rmBasisText(last):"Pounds as logged.";
++  const held=series.held.length?` ${series.held.length} session${series.held.length>1?"s":""} in another unit or load basis ${series.held.length>1?"are":"is"} listed in the table and not drawn on this chart.` :"";
++  if(!series.points.length){
++    return `<div class="card e1rm-panel" id="e1rm-panel" data-e1rm-state="empty" data-name="${esc(norm(selected.name))}"><div class="e1rm-empty"><b>No estimated max</b><p>No logged set with a real weight and rep count for ${esc(selected.name)}. Planned loads, plan-filled reps, warm-ups, assisted loads, and missing numbers are not turned into a max or a trend.</p>${dropped?`<p>${esc(dropped)}</p>`:""}</div></div>`;
++  }
++  const latest=last?e1rmLatest(last):"";
++  const change=last?e1rmChange(last, prev):"";
++  return `<div class="card e1rm-panel" id="e1rm-panel" data-e1rm-state="chart" data-chart-key="${esc(series.chartKey||"")}" data-name="${esc(norm(selected.name))}"><div class="e1rm-kicker">${esc(selected.name)}</div><p class="e1rm-note">${esc(basis)}${esc(held)}</p>${last?`<p class="hint2" data-e1rm-latest>${esc(latest)}</p>`:""}${last?`<p class="e1rm-note" data-e1rm-change>${esc(change)}</p>`:""}${e1rmChartSvg(chart)}<div class="e1rm-leg"><span><i class="swatch top"></i>Top set</span><span><i class="swatch est"></i>Est. 1RM, Epley</span><span><i class="swatch brz"></i>Brzycki, 2–10 reps</span><span><i class="swatch low"></i>Above 12 reps, low confidence</span></div>${e1rmTable(series.points)}${dropped?`<p class="e1rm-note">${esc(dropped)}</p>`:""}<p class="e1rm-note">Epley is weight × (1 + reps / 30). Brzycki is weight × 36 / (37 − reps), shown only through 10 reps, and it is not swapped in as the main line. A logged single stays at that weight. Above 12 reps the Epley number is flagged low confidence. The log does not say a set was to failure. This is not a measured max and not a suggestion to attempt one.</p></div>`;
++}
+ function historyView(){
+   const S=sessions().map(x=>{const logged=x.items.filter(i=>i.sets.length); const all=x.items.flatMap(i=>i.sets);
+     return {...x,logged,best:bestOf(all),last:x.items[x.items.length-1]}})
+     .sort((a,b)=>(b.logged.length>0)-(a.logged.length>0)||b.last.w.date.localeCompare(a.last.w.date)||a.name.localeCompare(b.name));
+   const logged=S.filter(s=>s.logged.length), rest=histOnlyLogged?[]:S.filter(s=>!s.logged.length);
++  const selected=openHist?S.find(s=>slug(s.name)===openHist)||null:null;
+   const row=s=>{const k=slug(s.name), core=isCore(s.items[0].e);
+-    const vals=s.logged.length? s.logged.map(i=>{const b=bestOf(i.sets); return rank(b)[1]}) : s.items.map(i=>i.e.weight_lb);
+-    const isPlan=!s.logged.length;
++    const series=e1rmSeries(e1rmItems(s));
++    const lastP=series.chart[series.chart.length-1];
++    const vals=series.chart.map(p=>p.primary);
+     const lastLogged=s.logged[s.logged.length-1];
+-    const items=[...s.items].sort((a,b)=>b.w.date.localeCompare(a.w.date));
++    const items=[...s.items].sort((a,b)=>b.w.date.localeCompare(a.w.date)||b.w.key.localeCompare(a.w.key));
+     const past=items.filter(i=>i.sets.length||i.w.date<TODAY), up=items.filter(i=>!i.sets.length&&i.w.date>=TODAY);
+     const nxt=up[up.length-1], tn=!core&&lastLogged?((nxt&&TOV(nxt.w.key,nxt.e))||tryNext(nxt?nxt.e:lastLogged.e,lastLogged.sets)):null;
+     const hint=lastLogged?`<div class="hint2">Previous (${md(lastLogged.w.date)}): <b>${core?"Done":esc(lastLogged.sets.map(label).join(", "))}</b>${tn?`<br>Target${nxt?` (${md(nxt.w.date)})`:""}: <b>${esc(tn.t)}</b>`:""}</div>`:"";
+-    const bestLbl=core&&s.logged.length?"Done":s.best?esc(label(s.best)):"";
++    let bestCell;
++    if(lastP){ const u=e1rmUnit(lastP); const sub=lastP.method==="actual_single"?"Single":lastP.confidence==="low"?"Low conf.":"Est. 1RM"; bestCell=`<b>${esc(e1rmFmt(lastP.primary))} ${u}</b><span>${sub}</span>`; }
++    else if(core&&s.logged.length) bestCell=`<b>Done</b><span>Previous</span>`;
++    else if(s.logged.length) bestCell=`<b style="color:var(--muted);font-weight:600;font-size:14px">—</b><span>No load</span>`;
++    else bestCell=`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`;
+     return `<div class="hitem" id="ex-${esc(k)}" data-name="${esc(norm(s.name))}"><div class="hrow" data-hist="${esc(k)}"><div class="x"><div>${esc(s.name)}</div><span>${s.logged.length?`${s.logged.length} session${s.logged.length>1?"s":""} · Previous ${md(lastLogged.w.date)}`:`${s.items.length} planned · next ${md(s.items.find(i=>i.w.date>=TODAY)?.w.date||s.last.w.date)}`}</span></div>
+-      ${core?"":spark(vals.filter(v=>v!=null).length?vals:[],isPlan)}
+-      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
++      ${(core&&!series.chart.length)?"":spark(vals,false)}
++      <div class="best">${bestCell}</div></div>
+       <div class="hdetail ${openHist===k?"on":""}">${hint}${past.map((i,n)=>sessCard(i,n,past,core)).join("")}${up.length?`<div class="sfoot" style="margin-top:8px">Planned: ${up.map(i=>md(i.w.date)).reverse().join(", ")}</div>`:""}</div></div>`;};
+-  let h=`<div class="hsearch"><input id="hq" type="search" placeholder="Search exercises" value="${esc(histQ)}" autocomplete="off"><button data-hlogged class="${histOnlyLogged?"on":""}">Logged only</button></div>`;
++  const opts=[`<option value="">Select an exercise</option>`].concat(S.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${esc(slug(s.name))}"${openHist===slug(s.name)?" selected":""}>${esc(s.name)}</option>`));
++  let h=STORE&&STORE.example?`<div class="exbanner">Example data. Not a real training log.</div>`:"";
++  h+=`<label class="e1rm-pick" for="ex-pick">Exercise<select id="ex-pick">${opts.join("")}</select></label>`;
++  h+=e1rmPanel(selected);
++  h+=`<div class="hsearch"><input id="hq" type="search" placeholder="Search exercises" value="${esc(histQ)}" autocomplete="off"><button data-hlogged class="${histOnlyLogged?"on":""}">Logged only</button></div>`;
++  if(!S.length) h+=`<div class="e1rm-empty"><b>No exercises</b><p>Nothing in this log to chart.</p></div>`;
+   if(logged.length) h+=`<div class="sec-title hsec" style="margin-top:4px">Logged</div><div class="group">${logged.map(row).join("")}</div>`;
+   if(rest.length) h+=`<div class="sec-title hsec">${logged.length?"Not logged yet":"Exercises"}</div><div class="group">${rest.map(row).join("")}</div>`;
+   return h;
+ }
++
+ function applyHistFilter(){const q=norm(histQ); document.querySelectorAll(".hitem").forEach(el=>{el.style.display=!q||el.dataset.name.includes(q)?"":"none"});}
+ document.addEventListener("input",ev=>{if(ev.target.id==="hq"){histQ=ev.target.value; applyHistFilter();}});
++document.addEventListener("change",ev=>{if(ev.target.id!=="ex-pick") return; openHist=ev.target.value||null; scrollHist=false; setHistURL(); render();});
+ 
+ // ---------- aside ----------
+ function asideView(){
+@@ -920,8 +1175,8 @@
+     h+=`<div class="date" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span class="recdot ${recCls(rv)}" style="margin-left:0"></span>Latest WHOOP recovery ${Number(rv).toFixed(1)}% · ${pd(ld).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</div>`;}
+   if(!wk.length&&!items.length) h+=`<div class="date">Nothing scheduled this week.</div>`;
+   h+=`</div>`;
+-  const bests=sessions().map(s=>({name:s.name,b:bestOf(s.items.flatMap(i=>i.sets))})).filter(x=>x.b&&x.b.weight_lb!=null).sort((a,b)=>rank(b.b)[1]-rank(a.b)[1]).slice(0,5);
+-  h+=`<div class="card"><h3>Best Sets</h3>${bests.length?bests.map(x=>`<div class="wrow" style="cursor:default"><div class="x"><div>${esc(x.name)}</div></div><b style="font-variant-numeric:tabular-nums">${esc(label(x.b))}</b></div>`).join(""):`<div class="date">Log a few sets and your bests show up here.</div>`}</div>`;
++  const bests=sessions().map(s=>{const by=new Map(); e1rmSeries(e1rmItems(s)).points.forEach(p=>{const cur=by.get(p.group); if(!cur||p.primary>cur.primary) by.set(p.group,p);}); return [...by.values()].map(p=>({name:s.name,p}));}).flat().sort((a,b)=>(a.p.unit==="lb"?0:1)-(b.p.unit==="lb"?0:1)||b.p.primary-a.p.primary).slice(0,5);
++  h+=`<div class="card"><h3>Best estimates</h3>${bests.length?bests.map(x=>`<div class="wrow" style="cursor:default"><div class="x"><div>${esc(x.name)}</div><span>${x.p.method==="actual_single"?"Logged single":x.p.confidence==="low"?"Low confidence":"Epley"}</span></div><b style="font-variant-numeric:tabular-nums">${esc(e1rmFmt(x.p.primary))} ${x.p.unit==="kg"?"kg":"lb"}</b></div>`).join(""):`<div class="date">Log a weight and reps and an estimate shows up here.</div>`}</div>`;
+   return h;
+ }
+ 
+@@ -937,7 +1192,7 @@
+   const full=tab==="week"; document.getElementById("grid").classList.toggle("full",full); document.getElementById("app").classList.toggle("wide",full);
+   document.getElementById("aside").classList.toggle("hide",full);
+   document.getElementById("aside").innerHTML=full?"":asideView();
+-  if(tab==="history"){applyHistFilter(); if(scrollHist&&openHist){scrollHist=false; const el=document.getElementById("ex-"+openHist); if(el) el.scrollIntoView({block:"start"});}}
++  if(tab==="history"){applyHistFilter(); if(scrollHist&&openHist){scrollHist=false; const el=document.getElementById("e1rm-panel")||document.getElementById("ex-"+openHist); if(el) el.scrollIntoView({block:"start"});}}
+ }
+ addEventListener("hashchange",()=>{const hm=/^#history(?:\/([\w-]+))?/.exec(location.hash); if(hm){tab="history"; openHist=hm[1]||null; scrollHist=true; render();}});
+ function parseSets(t){
