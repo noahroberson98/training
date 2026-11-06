@@ -544,17 +544,33 @@ function pairPt(){
 function aliasBag(w){const k=w&&w.pt?ckey(w.pt):null; return (k&&local[k])||null;}
 function clsBag(w){const k=w&&w.pt?ckey(w.pt):null; return (k&&local._cls&&local._cls[k])||null;}
 function aliasStart(w){const c=clsBag(w), a=aliasBag(w); return (c&&c.started_at)||(a&&a.started_at)||null;}
+function recordedWindow(w){
+  if(w&&validT(w.started_at)&&validT(w.ended_at)) return {started:w.started_at, ended:w.ended_at};
+  return null;
+}
 function sessionTimes(w){
   const L=local[w.key]||{}, c=clsBag(w)||{}, a=aliasBag(w)||{};
+  const rec=recordedWindow(w);
   let started, ended;
-  if(validT(L.started_at)){started=L.started_at; ended=validT(L.ended_at)?L.ended_at:null;}
-  else {
+  if(validT(L.started_at)){
+    const localEnded=validT(L.ended_at)?L.ended_at:null;
+    // A start written at or after a recorded finish, with no local end, is not a new session.
+    if(rec && !localEnded && Date.parse(L.started_at)>=Date.parse(rec.ended)){started=rec.started; ended=rec.ended;}
+    else {started=L.started_at; ended=localEnded;}
+  } else {
     const starts=[c.started_at,a.started_at,w.started_at].filter(validT).sort();
     const ends=[c.ended_at,a.ended_at,w.ended_at].filter(validT).sort();
     started=starts[0]||null; ended=ends.length?ends[ends.length-1]:null;
   }
   const notes=[L.note,c.notes,a.note].map(x=>String(x||"").trim()).filter(Boolean);
   return {started, ended, note:[...new Set(notes)].join(" · ")};
+}
+function keepRecordedClock(k){
+  const w0=W.find(x=>x.key===k), L=LW(k), rec=recordedWindow(w0);
+  if(!rec) return false;
+  if(!validT(L.started_at) || Date.parse(L.started_at)>=Date.parse(rec.ended)) L.started_at=rec.started;
+  if(!validT(L.ended_at)) L.ended_at=rec.ended;
+  return true;
 }
 function ptMeta(w){
   if(!w||!w.pt) return "";
@@ -997,12 +1013,12 @@ document.addEventListener("click",ev=>{
   if(t.dataset.logrow||t.dataset.quicklog){const [k,e]=split(t.dataset.logrow||t.dataset.quicklog); const box=t.dataset.logrow?t.closest(".srow"):t.closest(".now");
     const wv=box.querySelector(t.dataset.logrow?"[data-fw]":"[data-qw]").value.trim(), rv=box.querySelector(t.dataset.logrow?"[data-fr]":"[data-qr]").value.trim();
     const s1={}; if(wv!==""&&Number.isFinite(+wv)) s1.weight_lb=+wv; if(rv!==""&&Number.isFinite(+rv)) s1.reps=+rv; if(s1.weight_lb==null&&s1.reps==null){alert("Enter weight or reps.");return}
-    const x=LX(k,e); x.sets=x.sets||[]; x.sets.push(s1); const L=LW(k); if(!L.started_at) L.started_at=new Date().toISOString(); L.rest_at=new Date().toISOString();
+    const x=LX(k,e); x.sets=x.sets||[]; x.sets.push(s1); const L=LW(k); if(!keepRecordedClock(k)&&!validT(L.started_at)) L.started_at=new Date().toISOString(); L.rest_at=new Date().toISOString();
     const w0=W.find(q=>q.key===k), e0=w0&&w0.exercises.find(q=>ek(q)===e), pb=w0&&e0&&priorBest(w0,e0); touch(k,"log set"); render(); showToast(pb&&s1.weight_lb!=null&&better(s1,pb)?"New PR · "+label(s1):"Set logged · rest timer started",null); return}
   if(t.dataset.addrow){const [k,e]=split(t.dataset.addrow); const x=LX(k,e); x.xrows=(x.xrows||0)+1; touch(k,"add set"); render(); return}
   if(t.dataset.addset){const [k,e]=split(t.dataset.addset); const w0=W.find(x=>x.key===k), e0=w0&&w0.exercises.find(x=>ek(x)===e); const prev=w0&&e0?allSets(w0,e0).filter(x=>!x.round).slice(-1)[0]:null;
     const v=prompt("Add a set (e.g. 105x15)",prev?label(prev).replace("×","x"):""); if(v==null||!v.trim()) return; const p=smartParse(v); if(!p.sets.length){alert("Couldn't read that. Try 105x15.");return}
-    const x=LX(k,e); x.sets=x.sets||[]; x.sets.push(...p.sets.map(s=>e0?perPlan(e0,s):s)); const L=LW(k); if(!L.started_at) L.started_at=new Date().toISOString(); touch(k,"add set"); render(); return}
+    const x=LX(k,e); x.sets=x.sets||[]; x.sets.push(...p.sets.map(s=>e0?perPlan(e0,s):s)); const L=LW(k); if(!keepRecordedClock(k)&&!validT(L.started_at)) L.started_at=new Date().toISOString(); touch(k,"add set"); render(); return}
   if(t.dataset.exnote){const [k,e]=split(t.dataset.exnote); const x=LX(k,e); const v=prompt("Note for this exercise",x.note||""); if(v==null) return; if(v.trim()) x.note=v.trim(); else delete x.note; touch(k,"note"); render(); return}
   if(t.dataset.delset){ev.stopPropagation(); const [k,e]=split(t.dataset.delset); const x=LX(k,e); if(confirm("Delete this set?")){x.sets.splice(+t.dataset.i,1); touch(k); render();} return}
   if(t.dataset.editset){const [k,e]=split(t.dataset.editset); const x=LX(k,e); const v=prompt("Edit set (e.g. 35x12). Leave blank to delete.",label(x.sets[+t.dataset.i]).replace("×","x")); if(v==null) return;
@@ -1013,7 +1029,7 @@ document.addEventListener("click",ev=>{
   if(t.dataset.gundo){ev.stopPropagation(); const k=t.dataset.gundo; const w=LW(k); w.rounds=w.rounds||{}; if(w.rounds[t.dataset.g]>0) w.rounds[t.dataset.g]--; if(!w.rounds[t.dataset.g]) delete w.rounds[t.dataset.g]; touch(k,"undo_set"); render(); return}
   if(t.dataset.gset){const k=t.dataset.gset; const w=LW(k); w.rounds=w.rounds||{}; w.rounds[t.dataset.g]=(w.rounds[t.dataset.g]||0)+1;
     t.closest(".group")?.querySelectorAll(".logrow textarea").forEach(ta=>{if(ta.value.trim()!==(LXr({key:k},{label:ta.dataset.e.split("|")[0],name:ta.dataset.e.slice(ta.dataset.e.indexOf("|")+1)}).notes||"")) saveExNotes(k,ta.dataset.e,ta.value.trim());});
-    if(!w.started_at) w.started_at=new Date().toISOString(); touch(k); render(); return}
+    if(!keepRecordedClock(k)&&!validT(w.started_at)) w.started_at=new Date().toISOString(); touch(k); render(); return}
   if(t.dataset.free!=null){openFreeSheet(t.dataset.free||sel); return}
   if(t.dataset.addex){openAddExercise(t.dataset.addex); return}
   if(t.dataset.logjump){const k=t.dataset.logjump, w0=W.find(x=>x.key===k); if(w0){sel=w0.date; tab="workout";} render(); const el=document.querySelector(".now")||document.querySelector("[data-logrow]"); el?.scrollIntoView({block:"center"}); (document.querySelector(".now [data-qw]")||document.querySelector("[data-fw]"))?.focus(); return}
@@ -1193,7 +1209,7 @@ function openSummary(key){
   document.querySelectorAll(".logrow textarea").forEach(ta=>{if(ta.dataset.w===w.key&&ta.value.trim()&&ta.value.trim()!==(local[w.key].exercises?.[ta.dataset.e]?.notes||"")) saveExNotes(w.key,ta.dataset.e,ta.value.trim());});
   const issues=completeIssues(w);
   if(issues.length&&statusOf(w)!=="completed"&&!confirm("Before you complete:\n\n• "+issues.join("\n• ")+"\n\nComplete anyway? (You can edit after.)")) return;
-  const L=local[w.key]; L.status="completed"; L.completed_at=new Date().toISOString(); if(L.started_at&&!L.ended_at) L.ended_at=L.completed_at; touch(w.key); render();
+  const L=local[w.key]; L.status="completed"; L.completed_at=new Date().toISOString(); if(!keepRecordedClock(w.key)&&L.started_at&&!L.ended_at) L.ended_at=L.completed_at; touch(w.key); render();
   const S=summaryData(w);
   const bg=document.createElement("div"); bg.className="sheet-bg"; bg.id="sheet";
   bg.innerHTML=`<div class="sheet" role="dialog" aria-label="Workout summary"><div class="grab"></div>
