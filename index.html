@@ -697,14 +697,15 @@ function workoutView(){
 // ---------- week calendar ----------
 function wcard(w){const st=statusOf(w);
   const pill=st==="completed"?`<span class="wpill done">Completed</span>`:st==="skipped"?`<span class="wpill skp">Skipped</span>`:st==="unlogged"?`<span class="wpill empty">No Sets Logged</span>`:"";
-  const start=(st==="planned"||st==="progress"||st==="unlogged")&&w.date===todayCT()?`<button class="wstartc" data-wkstart="${esc(w.key)}">Start</button>`:"";
+  const start=(st==="planned"||st==="progress")&&w.date===todayCT()?`<button class="wstartc" data-wkstart="${esc(w.key)}">Start</button>`:"";
+  const log=st==="unlogged"?`<button class="wstartc" data-logjump="${esc(w.key)}">Log sets</button>`:"";
   return `<div class="wc ${st==="completed"?"completed":st==="skipped"?"skipped":""}" data-wkey="${esc(w.key)}" title="Drag to another day · tap to open">
     <span class="grip" aria-hidden="true">${ICON.grip}</span>
     <div class="x"><div class="tt">${esc(w.title)}</div><div class="mm">${working(w).length} exercises<br>${esc(setsLine(w))}</div>
       ${ptMeta(w)?`<div class="mm">${esc(ptMeta(w))}</div>`:""}
       ${st==="unlogged"?`<div class="mm">Finish recorded · no sets logged</div>`:""}
       ${w.date!==w.orig?`<div class="from">Moved from ${DN[pd(w.orig).getDay()]}</div>`:""}${(w.tags||[]).length?`<span class="opt" title="${esc(w.tags.join(" · "))}">optional</span>`:""}
-    ${pill}${start}</div>
+    ${pill}${log||start}</div>
     <button class="more" data-more="${esc(w.key)}" aria-label="More options">${ICON.more}</button></div>`;}
 function ccard(c){const t=t12(c.time),wait=/WAIT/.test(c.status);
   return `<div class="cc${c.status==="COMPLETED"?" past":""}" title="THIS Gym booking · not movable here"><span class="lock">${ICON.lock}</span><div class="t">${t.h} ${t.ap}</div><div class="n">${esc(ctitle(c))}</div>${c.coach?`<div class="m">${esc(c.coach)}</div>`:""}${c.posted!=null?`<div class="m">${c.posted?"Posted":"Workout not posted yet"}</div>`:""}${c.whoop?`<div class="w">${whoopLine(c.whoop,1)}</div>`:""}${cxBits(c,1)}${cxBits(c,1)&&c.status?" ":""}${c.status?`<span class="b ${wait?"wait":bcls(c.status)==="res"?"":bcls(c.status)}">${esc(blbl(c.status))}</span>`:""}</div>`;}
@@ -1015,7 +1016,7 @@ document.addEventListener("click",ev=>{
     if(!w.started_at) w.started_at=new Date().toISOString(); touch(k); render(); return}
   if(t.dataset.free!=null){openFreeSheet(t.dataset.free||sel); return}
   if(t.dataset.addex){openAddExercise(t.dataset.addex); return}
-  if(t.dataset.logjump){const el=document.querySelector(".now")||document.querySelector("[data-logrow]"); el?.scrollIntoView({block:"center"}); (document.querySelector(".now [data-qw]")||document.querySelector("[data-fw]"))?.focus(); return}
+  if(t.dataset.logjump){const k=t.dataset.logjump, w0=W.find(x=>x.key===k); if(w0){sel=w0.date; tab="workout";} render(); const el=document.querySelector(".now")||document.querySelector("[data-logrow]"); el?.scrollIntoView({block:"center"}); (document.querySelector(".now [data-qw]")||document.querySelector("[data-fw]"))?.focus(); return}
   if(t.dataset.wkstart){const k=t.dataset.wkstart,w0=W.find(x=>x.key===k); const w=LW(k); if(!validT(w.started_at)){const adopted=w0&&sessionTimes(w0).started; w.started_at=validT(adopted)?adopted:new Date().toISOString();} delete w.ended_at; touch(k); if(w0){sel=w0.date; tab="workout";} render(); window.scrollTo({top:0}); return}
   if(t.dataset.wstart){const w=LW(t.dataset.wstart); w.started_at=new Date().toISOString(); delete w.ended_at; touch(t.dataset.wstart); render(); return}
   if(t.dataset.wend){const key=t.dataset.wend,w0=W.find(x=>x.key===key),w=LW(key); if(!validT(w.started_at)){const adopted=w0&&sessionTimes(w0).started; w.started_at=validT(adopted)?adopted:new Date().toISOString();} w.ended_at=new Date().toISOString(); touch(key); render(); return}
