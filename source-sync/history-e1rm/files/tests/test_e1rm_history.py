@@ -3,7 +3,7 @@
 No live store, no outbound send. Node checks the template functions. Playwright
 checks the sanitized example page only.
 """
-import json, os, subprocess, sys, tempfile
+import json, os, re, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +27,32 @@ a = TPL.find("/*E1RM_PURE_BEGIN*/")
 b = TPL.find("/*E1RM_PURE_END*/")
 check(a > 0 and b > a, "template has the estimate block")
 pure = TPL[a:b + len("/*E1RM_PURE_END*/")]
-check('const FS_TOKEN="REDACTED_FORMSUBMIT_ALIAS"' in TPL, "generator token line was not rewritten")
+token_lines = re.findall(r'const FS_TOKEN="([^"]*)"', TPL)
+check(len(token_lines) == 1, "template has one FS_TOKEN assignment")
+# The History patch must not rewrite that line. A production checkout keeps its real
+# token; a kit checkout may still say REDACTED_FORMSUBMIT_ALIAS. Neither value is printed.
+patch_candidates = []
+if os.environ.get("HISTORY_PATCH"):
+    patch_candidates.append(Path(os.environ["HISTORY_PATCH"]))
+for parent in Path(__file__).resolve().parents:
+    patch_candidates.append(parent / "patches" / "template.html.patch")
+    patch_candidates.append(parent / "source-sync" / "history-e1rm" / "patches" / "template.html.patch")
+patch_candidates.append(Path.cwd() / "source-sync" / "history-e1rm" / "patches" / "template.html.patch")
+patch_path = next((p for p in patch_candidates if p.exists()), None)
+patch_text = patch_path.read_text(encoding="utf-8") if patch_path else ""
+def patch_leaves_token(text):
+    return bool(text) and "FS_TOKEN" not in text
+if patch_text:
+    print("PATCH " + str(patch_path))
+    check(patch_leaves_token(patch_text), "history patch does not rewrite the token line")
+else:
+    print("NOTE history patch file was not beside this checkout; set HISTORY_PATCH to check it")
+check(not patch_leaves_token('const FS_TOKEN="rewritten"'), "a patch that rewrites the token line fails this check")
+sentinel = "TOKEN_SENTINEL_SHOULD_CLEAR"
+cleared = P.render_page(TPL.replace('const FS_TOKEN="%s"' % token_lines[0], 'const FS_TOKEN="%s"' % sentinel, 1), {"schema": 1, "example": True, "workouts": {}})
+check(sentinel not in cleared and 'const FS_TOKEN=""' in cleared, "preview build clears a sentinel token")
+kept = 'const FS_TOKEN="%s"' % sentinel
+check(sentinel in kept and 'const FS_TOKEN=""' not in kept, "a token left in place fails the clear check")
 check("https://formsubmit.co/ajax/" in TPL and "https://api.github.com" in TPL, "generator send hosts stay in source")
 check("function keepRecordedClock(" in TPL, "recorded-clock repair still in the template")
 check("<canvas" not in TPL.lower(), "chart is not a canvas element")

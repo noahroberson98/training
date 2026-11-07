@@ -1,6 +1,15 @@
+# Test assumptions corrected after the fresh build
+
+Initial failures, unchanged product page:
+
+- `test_e1rm_history.py` failed one check, "generator token line was not rewritten", because it required `const FS_TOKEN="REDACTED_FORMSUBMIT_ALIAS"`. A production template correctly keeps its real token. The check now requires one assignment, a History patch that does not mention `FS_TOKEN`, and a sentinel token that the preview builder must clear. Leaving that sentinel in place fails a negative control. The token value is not printed.
+- `test_e1rm_current.py` failed "menu uses the snapshot's own build clock" because it required `Nov 6, 2026 6:27 PM CT` and the phrase `historical preview`. The fresh safe page's own line is `Nov 6, 2026 7:03 PM CT` and does not add that phrase. The test also rebuilt a temporary preview, so it was not a test of the exact file. It now runs `test_e1rm_exact.py` on the given file, hashes it before and after, and reads the build clock from that file. Replacing the clock with `current-data-preview` or another time fails a negative control.
+
+These were fixture assumptions, not product defects. The attached safe HTML was not edited.
+
 # Tests after the Style corrections
 
-H1–H4 and S1–S2 are covered by `test_e1rm_history.py` and `test_e1rm_current.py`, including an escaped `<img>` / `&` / quote canary in a point tooltip, a logged single with no Brzycki value, and a mixed-unit caption that does not claim every table row is on the chart. The current-data test also checks the snapshot build clock `Nov 6, 2026 6:27 PM CT`, the historical-preview label, the six `t240u#` ids, and that the dormant cancellation-relay block is absent from the preview the same way `build.py` removes it when the feature is off. The relay source block in the template still matches the run12 template byte for byte.
+H1–H4 and S1–S2 are covered by `test_e1rm_history.py` and `test_e1rm_exact.py`, including an escaped `<img>` / `&` / quote canary in a point tooltip, a logged single with no Brzycki value, and a mixed-unit caption that does not claim every table row is on the chart. The exact-page test reads the build clock from the file it is given. On the fresh safe page that clock is `Nov 6, 2026 7:03 PM CT`, with no historical-preview tag. The earlier `6:27 PM CT` line belonged to the historical snapshot only. The exact-page test also checks the six `t240u#` ids and that the dormant cancellation-relay block is absent. The relay source block in the template still matches the run12 template byte for byte.
 
 # Tests run after the run12 merge
 

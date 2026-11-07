@@ -39,11 +39,20 @@ cp files/scripts/preview_history.py scripts/preview_history.py
 cp files/scripts/preview_current.py scripts/preview_current.py
 cp files/tests/test_e1rm_history.py tests/test_e1rm_history.py
 cp files/tests/test_e1rm_current.py tests/test_e1rm_current.py
+cp files/tests/test_e1rm_exact.py tests/test_e1rm_exact.py
 mkdir -p tests/fixtures
 cp files/tests/fixtures/history_example.json tests/fixtures/history_example.json
-python3 tests/test_e1rm_history.py
+HISTORY_PATCH="$PWD/patches/template.html.patch" python3 tests/test_e1rm_history.py
 ```
 
-`test_e1rm_current.py` needs the sanitized current snapshot path. Do not publish that page.
+Run that from the handoff directory so `patches/template.html.patch` resolves. If the test instead runs inside the generator checkout, set `HISTORY_PATCH` to the absolute path of that same patch. The test does not print the token. Without the patch file it still checks that a sentinel token is cleared and that a patch mentioning `FS_TOKEN` would fail, and it prints a NOTE that the patch file was not beside the checkout.
+
+`test_e1rm_current.py` takes the exact sanitized page and does not rebuild it:
+
+```
+python3 tests/test_e1rm_current.py /path/to/safe.html /tmp/exact-shots
+```
+
+It hashes that file before and after. Do not publish the page.
 
 Do not run `publish.sh` for this handoff. The deployed `index.html` on this branch stays the run12 page. History reaches the site only through a later authorized rebuild after Style clears the corrected current-input build.
