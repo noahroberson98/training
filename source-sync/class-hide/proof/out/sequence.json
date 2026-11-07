@@ -1,0 +1,1267 @@
+{
+  "head": "c0d9143227040f682e070fe4746f95f395cf0e25",
+  "passed_html_unchanged": true,
+  "harness_sha": "0010cc40ef9430491ae96f919de0fe8e68eeee62a53c82767b626b26bae73842",
+  "pins": {
+    "build.py": {
+      "sha256": "bb6ad076e055014a185d52da00db784570fcb6e3b7dc3847c1bbf892826723f4",
+      "bytes": 15913,
+      "matches_committed": true
+    },
+    "merge.py": {
+      "sha256": "b66b724a0bc6a92c5891334c9b8b34deb5e4b83e6e8f60b55afa283bc1d259b0",
+      "bytes": 13872,
+      "matches_committed": true
+    },
+    "common.py": {
+      "sha256": "d4e199e3f5e2add850eb35a08c36f0765613572d1c326dd391366cb5fe94e24f",
+      "bytes": 10399,
+      "matches_committed": true
+    },
+    "whoop_pair.py": {
+      "sha256": "4b79dfa1c773cf7a479de0f86f77eef6fe5382adb28a843cab0439edc2fb8b0c",
+      "bytes": 7760,
+      "matches_committed": true
+    },
+    "template.html": {
+      "sha256": "692e26226f9e5c0dc62ea5020b7bf7e54832399cb1b914ac02f10911772a54ee",
+      "bytes": 163381,
+      "matches_committed": true
+    }
+  },
+  "identical_app_pngs": {
+    "cb4d0225076b64e8c29182ba217948c746d39e87c899b0a1fd1758e8d7aedfc2": [
+      "a-start-visible",
+      "a-after-undo"
+    ],
+    "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4": [
+      "a-after-hide",
+      "a-after-reload",
+      "a-after-rebuild"
+    ],
+    "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5": [
+      "b-empty-built-hide",
+      "b-after-hide",
+      "b-after-reload",
+      "b-after-rebuild",
+      "b-second-empty-built-hide"
+    ],
+    "3388c2204451a294a37b5b7b320cf74e3d6f30dd6a3b022b88fb125619627aa9": [
+      "b-local-false-visible",
+      "b-after-undo"
+    ]
+  },
+  "off_machine_requests": [],
+  "dialogs": [],
+  "steps": [
+    {
+      "at": "2026-11-07T18:36:12.979265+00:00",
+      "step": "pins",
+      "head": "c0d9143227040f682e070fe4746f95f395cf0e25",
+      "passed_html": "d6e51ce0310e6c9fe29825e584e0554149e54ada9c861ea37f9f5442e86f252a",
+      "passed_bytes": 167108,
+      "harness_sha": "0010cc40ef9430491ae96f919de0fe8e68eeee62a53c82767b626b26bae73842",
+      "harness_bytes": 26999,
+      "template_sha": "692e26226f9e5c0dc62ea5020b7bf7e54832399cb1b914ac02f10911772a54ee",
+      "build_sha": "bb6ad076e055014a185d52da00db784570fcb6e3b7dc3847c1bbf892826723f4",
+      "merge_sha": "b66b724a0bc6a92c5891334c9b8b34deb5e4b83e6e8f60b55afa283bc1d259b0"
+    },
+    {
+      "at": "2026-11-07T18:36:13.365193+00:00",
+      "step": "a-initial-merge",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/merge.py",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/batch.json",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/data/workouts.json"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/a",
+      "exit": 0,
+      "stdout": "merged batch.json: 0 added, 3 updated, 0 unchanged; store now has 3 workouts\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/a-initial-merge.log"
+    },
+    {
+      "at": "2026-11-07T18:36:13.401805+00:00",
+      "step": "a-initial-build",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/build.py",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/data/workouts.json",
+        "--out",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial.html",
+        "--csv",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial-workouts.csv",
+        "--classes",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/feeds/a-initial.csv",
+        "--whoop",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/whoop/whoop_daily.csv"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/a",
+      "exit": 0,
+      "stdout": "read 3 THIS Gym classes, 0 WHOOP days\nwrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial.html (3 workouts, 4 exercises)\nwrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial-workouts.csv\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/a-initial-build.log"
+    },
+    {
+      "at": "2026-11-07T18:36:13.402001+00:00",
+      "step": "a-initial-page",
+      "page": "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial.html",
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "page_bytes": 166181,
+      "feed": "/agent/repos/training/source-sync/class-hide/proof/work/a/feeds/a-initial.csv",
+      "feed_sha": "371f595f6d46ad0c374efd94479b91d66dafb406dc30dcc02bb9931281d12c0c"
+    },
+    {
+      "at": "2026-11-07T18:36:13.402581+00:00",
+      "step": "a-initial-invariants",
+      "ok": true,
+      "problems": [],
+      "csv_status": "RESERVED",
+      "status": "RESERVED",
+      "cancel_source": null,
+      "provider": null,
+      "hidden": null,
+      "source": "synthetic feed",
+      "first_seen": "2026-11-07T18:36:13",
+      "last_seen": "2026-11-07T18:36:13",
+      "sets": {
+        "2099-01-01|APEX": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-03|Strength": {
+          "status": "completed",
+          "status_locked": true,
+          "sets": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-06|Upper Body": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "at": "2026-11-07T18:36:13.581904+00:00",
+      "step": "a-start-visible",
+      "note": "No user_overrides.json. APEX starts visible. This is before any Hide click.",
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "feed_sha": "371f595f6d46ad0c374efd94479b91d66dafb406dc30dcc02bb9931281d12c0c",
+      "feed_written": "2026-11-07T18:36:13.332403+00:00",
+      "storage": null,
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "RESERVED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "false",
+        "store": "",
+        "cancel": "",
+        "parent": "booked",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\nHide\nCancel class\nReserved\nWorkout not posted yet"
+      },
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:13.748773+00:00",
+      "step": "a-start-shot",
+      "app_png": "a-start-visible-app.png",
+      "app_sha": "cb4d0225076b64e8c29182ba217948c746d39e87c899b0a1fd1758e8d7aedfc2",
+      "app_bytes": 321834,
+      "captioned_sha": "05bdfbff005b3a98059539ca0d4b3cd81abf455c809686917f958b9b027deffd",
+      "captioned_bytes": 330882,
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "storage": null,
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:13.962185+00:00",
+      "step": "a-after-hide",
+      "hit": {
+        "w": 58.125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      },
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "RESERVED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+      },
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:14.116438+00:00",
+      "step": "a-hide-shot",
+      "app_png": "a-after-hide-app.png",
+      "app_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "app_bytes": 308419,
+      "captioned_sha": "cf17c5f0eb7eb57a6892cab0e89b5b8ae900b6d86c457c1c13f33d70ea814805",
+      "captioned_bytes": 311836,
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:14.293228+00:00",
+      "step": "a-after-reload",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "RESERVED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+      },
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:14.446279+00:00",
+      "step": "a-reload-shot",
+      "app_png": "a-after-reload-app.png",
+      "app_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "app_bytes": 308419,
+      "captioned_sha": "8555271e93557f671a620e6d3a6f4b8b5b9d5a316653ba5375457def1ea57db3",
+      "captioned_bytes": 313736,
+      "page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:14.593957+00:00",
+      "step": "a-rebuilt-merge",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/merge.py",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/batch.json",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/data/workouts.json"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/a",
+      "exit": 0,
+      "stdout": "merged batch.json: 0 added, 0 updated, 3 unchanged; store now has 3 workouts\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/a-rebuilt-merge.log"
+    },
+    {
+      "at": "2026-11-07T18:36:14.625956+00:00",
+      "step": "a-rebuilt-build",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/build.py",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/data/workouts.json",
+        "--out",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-rebuilt.html",
+        "--csv",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-rebuilt-workouts.csv",
+        "--classes",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/feeds/a-fresh-reserved.csv",
+        "--whoop",
+        "/agent/repos/training/source-sync/class-hide/proof/work/a/whoop/whoop_daily.csv"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/a",
+      "exit": 0,
+      "stdout": "read 3 THIS Gym classes, 0 WHOOP days\nwrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-rebuilt.html (3 workouts, 4 exercises)\nwrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-rebuilt-workouts.csv\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/a-rebuilt-build.log"
+    },
+    {
+      "at": "2026-11-07T18:36:14.626159+00:00",
+      "step": "a-rebuilt-page",
+      "page": "/agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-rebuilt.html",
+      "page_sha": "c9b48586d0bb059d953feb19b8d56aece7f0428df9cf38aaba7417827c49925e",
+      "page_bytes": 166181,
+      "feed": "/agent/repos/training/source-sync/class-hide/proof/work/a/feeds/a-fresh-reserved.csv",
+      "feed_sha": "ea2b90b79cc978360560490af79becf3b9962a3d01bbbab65861f0a57e56e565"
+    },
+    {
+      "at": "2026-11-07T18:36:14.626673+00:00",
+      "step": "a-rebuilt-invariants",
+      "ok": true,
+      "problems": [],
+      "csv_status": "RESERVED",
+      "status": "RESERVED",
+      "cancel_source": null,
+      "provider": null,
+      "hidden": null,
+      "source": "synthetic feed",
+      "first_seen": "2026-11-07T18:36:13",
+      "last_seen": "2026-11-07T18:36:14",
+      "sets": {
+        "2099-01-01|APEX": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-03|Strength": {
+          "status": "completed",
+          "status_locked": true,
+          "sets": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-06|Upper Body": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "at": "2026-11-07T18:36:14.684545+00:00",
+      "step": "a-after-rebuild-same-browser",
+      "note": "Real build.py and merge.py reran on a new RESERVED feed. Same browser storage.",
+      "page_sha": "c9b48586d0bb059d953feb19b8d56aece7f0428df9cf38aaba7417827c49925e",
+      "previous_page_sha": "86f12203c73dcd52cff3de9ff862ec2ff82cba90b18650995b2779a7c5a4ac17",
+      "feed_sha": "ea2b90b79cc978360560490af79becf3b9962a3d01bbbab65861f0a57e56e565",
+      "previous_feed_sha": "371f595f6d46ad0c374efd94479b91d66dafb406dc30dcc02bb9931281d12c0c",
+      "feed_written": "2026-11-07T18:36:14.564226+00:00",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "RESERVED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+      },
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:14.814683+00:00",
+      "step": "a-rebuild-shot",
+      "app_png": "a-after-rebuild-app.png",
+      "app_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "app_bytes": 308419,
+      "captioned_sha": "e111ea4fc9375530e2417b739b771db725f7543727f0fe6f144f727a9631e987",
+      "captioned_bytes": 313596,
+      "page_sha": "c9b48586d0bb059d953feb19b8d56aece7f0428df9cf38aaba7417827c49925e",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX",
+      "feed_sha": "ea2b90b79cc978360560490af79becf3b9962a3d01bbbab65861f0a57e56e565"
+    },
+    {
+      "at": "2026-11-07T18:36:15.010159+00:00",
+      "step": "a-after-undo",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      },
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "RESERVED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "false",
+        "store": "phone",
+        "cancel": "",
+        "parent": "booked",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\nHide\nCancel class\nReserved\nWorkout not posted yet"
+      },
+      "page_sha": "c9b48586d0bb059d953feb19b8d56aece7f0428df9cf38aaba7417827c49925e",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:15.172380+00:00",
+      "step": "a-undo-shot",
+      "app_png": "a-after-undo-app.png",
+      "app_sha": "cb4d0225076b64e8c29182ba217948c746d39e87c899b0a1fd1758e8d7aedfc2",
+      "app_bytes": 321834,
+      "captioned_sha": "2f17dac9ebfd9784136ef32d5b04c9da6d485691dab06df9740b1a64201ec76c",
+      "captioned_bytes": 330299,
+      "page_sha": "c9b48586d0bb059d953feb19b8d56aece7f0428df9cf38aaba7417827c49925e",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:15.663923+00:00",
+      "step": "b-initial-merge",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/merge.py",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/batch.json",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/data/workouts.json"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/b",
+      "exit": 0,
+      "stdout": "merged batch.json: 0 added, 3 updated, 0 unchanged; store now has 3 workouts\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/b-initial-merge.log"
+    },
+    {
+      "at": "2026-11-07T18:36:15.699360+00:00",
+      "step": "b-initial-build",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/build.py",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/data/workouts.json",
+        "--out",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-initial.html",
+        "--csv",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-initial-workouts.csv",
+        "--classes",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/feeds/b-initial.csv",
+        "--whoop",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/whoop/whoop_daily.csv"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/b",
+      "exit": 0,
+      "stdout": "read 3 THIS Gym classes, 0 WHOOP days\nwrote /agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-initial.html (3 workouts, 4 exercises)\nwrote /agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-initial-workouts.csv\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/b-initial-build.log"
+    },
+    {
+      "at": "2026-11-07T18:36:15.699565+00:00",
+      "step": "b-initial-page",
+      "page": "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-initial.html",
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "page_bytes": 166463,
+      "feed": "/agent/repos/training/source-sync/class-hide/proof/work/b/feeds/b-initial.csv",
+      "feed_sha": "4e20634a80953be31e532030d126e03364a625ac8f1ca94dd84d09336e354fdd"
+    },
+    {
+      "at": "2026-11-07T18:36:15.700012+00:00",
+      "step": "b-initial-invariants",
+      "ok": true,
+      "problems": [],
+      "csv_status": "RESERVED",
+      "status": "CANCELLED",
+      "cancel_source": "user",
+      "provider": false,
+      "hidden": true,
+      "source": "synthetic feed",
+      "first_seen": "2026-11-07T18:36:15",
+      "last_seen": "2026-11-07T18:36:15",
+      "sets": {
+        "2099-01-01|APEX": {
+          "status": "skipped",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-03|Strength": {
+          "status": "completed",
+          "status_locked": true,
+          "sets": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-06|Upper Body": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "at": "2026-11-07T18:36:15.838252+00:00",
+      "step": "b-empty-browser-built-hide",
+      "note": "Setup only. The row is already hidden by the shared file consumed by build.py. This is not a Hide click.",
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "feed_sha": "4e20634a80953be31e532030d126e03364a625ac8f1ca94dd84d09336e354fdd",
+      "feed_written": "2026-11-07T18:36:15.630882+00:00",
+      "storage": null,
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "built",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:15.961885+00:00",
+      "step": "b-empty-shot",
+      "app_png": "b-empty-built-hide-app.png",
+      "app_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "app_bytes": 308299,
+      "captioned_sha": "0582627c76b7e79309af979489960812982e7935918437d9c86d0308f4c1aa3b",
+      "captioned_bytes": 318310,
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "storage": null,
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:16.237961+00:00",
+      "step": "b-before-undo",
+      "note": "Same built page. Undo is required before a Hide click because the row is not visible yet.",
+      "storage": null,
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "built",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:16.309402+00:00",
+      "step": "b-local-false-overrides-built-true",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      },
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "false",
+        "store": "phone",
+        "cancel": "user",
+        "parent": "booked",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved\nWorkout not posted yet"
+      },
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:16.471947+00:00",
+      "step": "b-local-false-shot",
+      "app_png": "b-local-false-visible-app.png",
+      "app_sha": "3388c2204451a294a37b5b7b320cf74e3d6f30dd6a3b022b88fb125619627aa9",
+      "app_bytes": 346226,
+      "captioned_sha": "4d102e98d836e83abeb1754cda85fc05a4c16f99f212f612462d111c86a72115",
+      "captioned_bytes": 361080,
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:16.692496+00:00",
+      "step": "b-after-hide-click",
+      "note": "This Hide click happens only after Undo showed the row.",
+      "hit": {
+        "w": 58.125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      },
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:16.844135+00:00",
+      "step": "b-hide-shot",
+      "app_png": "b-after-hide-app.png",
+      "app_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "app_bytes": 308299,
+      "captioned_sha": "53c65edda56fe3b57023af8a17d1e50fffe62ec816c6c84e9542ae226d1350c9",
+      "captioned_bytes": 319470,
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:17.016649+00:00",
+      "step": "b-after-reload",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:17.145209+00:00",
+      "step": "b-reload-shot",
+      "app_png": "b-after-reload-app.png",
+      "app_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "app_bytes": 308299,
+      "captioned_sha": "79b1e4471fba25f07b594cea441c372eb85c5551d0bd22062c15622c1f53c3d9",
+      "captioned_bytes": 320265,
+      "page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:17.297398+00:00",
+      "step": "b-rebuilt-merge",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/merge.py",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/batch.json",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/data/workouts.json"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/b",
+      "exit": 0,
+      "stdout": "merged batch.json: 0 added, 1 updated, 2 unchanged; store now has 3 workouts\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/b-rebuilt-merge.log"
+    },
+    {
+      "at": "2026-11-07T18:36:17.329585+00:00",
+      "step": "b-rebuilt-build",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/build.py",
+        "--store",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/data/workouts.json",
+        "--out",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-rebuilt.html",
+        "--csv",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-rebuilt-workouts.csv",
+        "--classes",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/feeds/b-fresh-reserved.csv",
+        "--whoop",
+        "/agent/repos/training/source-sync/class-hide/proof/work/b/whoop/whoop_daily.csv"
+      ],
+      "cwd": "/agent/repos/training/source-sync/class-hide/proof/work/b",
+      "exit": 0,
+      "stdout": "read 3 THIS Gym classes, 0 WHOOP days\nwrote /agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-rebuilt.html (3 workouts, 4 exercises)\nwrote /agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-rebuilt-workouts.csv\n",
+      "stderr": "",
+      "log": "/agent/repos/training/source-sync/class-hide/proof/out/commands/b-rebuilt-build.log"
+    },
+    {
+      "at": "2026-11-07T18:36:17.329776+00:00",
+      "step": "b-rebuilt-page",
+      "page": "/agent/repos/training/source-sync/class-hide/proof/work/b/pages/b-rebuilt.html",
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "page_bytes": 166851,
+      "feed": "/agent/repos/training/source-sync/class-hide/proof/work/b/feeds/b-fresh-reserved.csv",
+      "feed_sha": "9d02506363c5c24a0cc9514485f8b80f3aa0fe8fb1cd4d63236f136efaf32a54"
+    },
+    {
+      "at": "2026-11-07T18:36:17.330195+00:00",
+      "step": "b-rebuilt-invariants",
+      "ok": true,
+      "problems": [],
+      "csv_status": "RESERVED",
+      "status": "CANCELLED",
+      "cancel_source": "user",
+      "provider": false,
+      "hidden": true,
+      "source": "synthetic feed",
+      "first_seen": "2026-11-07T18:36:15",
+      "last_seen": "2026-11-07T18:36:17",
+      "sets": {
+        "2099-01-01|APEX": {
+          "status": "skipped",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Row",
+              [
+                [
+                  40,
+                  8
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-03|Strength": {
+          "status": "completed",
+          "status_locked": true,
+          "sets": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "B1",
+              "Squat",
+              [
+                [
+                  185,
+                  5
+                ]
+              ]
+            ]
+          ]
+        },
+        "2099-01-06|Upper Body": {
+          "status": "completed",
+          "status_locked": false,
+          "sets": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              "A1",
+              "Bench Press",
+              [
+                [
+                  135,
+                  8
+                ],
+                [
+                  135,
+                  8
+                ],
+                [
+                  145,
+                  6
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "at": "2026-11-07T18:36:17.392354+00:00",
+      "step": "b-after-rebuild-same-browser",
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "previous_page_sha": "9dbbe05ab1147ddabbef3a3d6a309a8044574f0e6d9803854cd220e1c3c8d2c5",
+      "feed_sha": "9d02506363c5c24a0cc9514485f8b80f3aa0fe8fb1cd4d63236f136efaf32a54",
+      "previous_feed_sha": "4e20634a80953be31e532030d126e03364a625ac8f1ca94dd84d09336e354fdd",
+      "feed_written": "2026-11-07T18:36:17.267931+00:00",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "phone",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:17.528190+00:00",
+      "step": "b-rebuild-shot",
+      "app_png": "b-after-rebuild-app.png",
+      "app_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "app_bytes": 308299,
+      "captioned_sha": "7c813210e922932ba8872309fccb08a63f7a4b9e298712e03ccba43333382bc6",
+      "captioned_bytes": 320203,
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+      "session_key": "2099-01-01|10:00|APEX",
+      "feed_sha": "9d02506363c5c24a0cc9514485f8b80f3aa0fe8fb1cd4d63236f136efaf32a54"
+    },
+    {
+      "at": "2026-11-07T18:36:17.743702+00:00",
+      "step": "b-after-undo-visible",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      },
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "false",
+        "store": "phone",
+        "cancel": "user",
+        "parent": "booked",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved\nWorkout not posted yet"
+      },
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:17.903867+00:00",
+      "step": "b-undo-shot",
+      "app_png": "b-after-undo-app.png",
+      "app_sha": "3388c2204451a294a37b5b7b320cf74e3d6f30dd6a3b022b88fb125619627aa9",
+      "app_bytes": 346226,
+      "captioned_sha": "173b862afe889889a33b0c707b209c046cebbc7494cc428fb01be23e9d19abaf",
+      "captioned_bytes": 356719,
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:18.194022+00:00",
+      "step": "b-second-empty-browser",
+      "note": "A different empty browser still follows the built shared hide. The phone Undo did not change the file.",
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "storage": null,
+      "card": {
+        "count": 1,
+        "key": "2099-01-01|10:00|APEX",
+        "status": "CANCELLED",
+        "csv": "RESERVED",
+        "provider": "false",
+        "hidden": "true",
+        "store": "built",
+        "cancel": "user",
+        "parent": "hidden",
+        "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+      },
+      "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+      "session_key": "2099-01-01|10:00|APEX",
+      "ok": true
+    },
+    {
+      "at": "2026-11-07T18:36:18.329453+00:00",
+      "step": "b-second-empty-shot",
+      "app_png": "b-second-empty-built-hide-app.png",
+      "app_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "app_bytes": 308299,
+      "captioned_sha": "21cabeca4d3c0cf7914e900724ebb7591db4084806f12769824b9b9b3fabdaa9",
+      "captioned_bytes": 320187,
+      "page_sha": "093b2797dec3db4b947e5638120ad976dc75baf2978d4cc7d99a81c9c7a3330c",
+      "storage": null,
+      "session_key": "2099-01-01|10:00|APEX"
+    },
+    {
+      "at": "2026-11-07T18:36:18.669352+00:00",
+      "step": "unchanged-artifact",
+      "passed_html_after": "d6e51ce0310e6c9fe29825e584e0554149e54ada9c861ea37f9f5442e86f252a",
+      "template_after": "692e26226f9e5c0dc62ea5020b7bf7e54832399cb1b914ac02f10911772a54ee",
+      "build_after": "bb6ad076e055014a185d52da00db784570fcb6e3b7dc3847c1bbf892826723f4",
+      "merge_after": "b66b724a0bc6a92c5891334c9b8b34deb5e4b83e6e8f60b55afa283bc1d259b0",
+      "ok": true
+    }
+  ],
+  "shots": [
+    {
+      "name": "a-start-visible",
+      "at": "2026-11-07T18:36:13.748773+00:00",
+      "app_png_sha": "cb4d0225076b64e8c29182ba217948c746d39e87c899b0a1fd1758e8d7aedfc2",
+      "captioned_png_sha": "05bdfbff005b3a98059539ca0d4b3cd81abf455c809686917f958b9b027deffd"
+    },
+    {
+      "name": "a-after-hide",
+      "at": "2026-11-07T18:36:14.116438+00:00",
+      "app_png_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "captioned_png_sha": "cf17c5f0eb7eb57a6892cab0e89b5b8ae900b6d86c457c1c13f33d70ea814805"
+    },
+    {
+      "name": "a-after-reload",
+      "at": "2026-11-07T18:36:14.446279+00:00",
+      "app_png_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "captioned_png_sha": "8555271e93557f671a620e6d3a6f4b8b5b9d5a316653ba5375457def1ea57db3"
+    },
+    {
+      "name": "a-after-rebuild",
+      "at": "2026-11-07T18:36:14.814683+00:00",
+      "app_png_sha": "a90d8783078eee3ac5467a0b3f28884cd975a115e4c8e34765c46d5cb6f237c4",
+      "captioned_png_sha": "e111ea4fc9375530e2417b739b771db725f7543727f0fe6f144f727a9631e987"
+    },
+    {
+      "name": "a-after-undo",
+      "at": "2026-11-07T18:36:15.172380+00:00",
+      "app_png_sha": "cb4d0225076b64e8c29182ba217948c746d39e87c899b0a1fd1758e8d7aedfc2",
+      "captioned_png_sha": "2f17dac9ebfd9784136ef32d5b04c9da6d485691dab06df9740b1a64201ec76c"
+    },
+    {
+      "name": "b-empty-built-hide",
+      "at": "2026-11-07T18:36:15.961885+00:00",
+      "app_png_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "captioned_png_sha": "0582627c76b7e79309af979489960812982e7935918437d9c86d0308f4c1aa3b"
+    },
+    {
+      "name": "b-local-false-visible",
+      "at": "2026-11-07T18:36:16.471947+00:00",
+      "app_png_sha": "3388c2204451a294a37b5b7b320cf74e3d6f30dd6a3b022b88fb125619627aa9",
+      "captioned_png_sha": "4d102e98d836e83abeb1754cda85fc05a4c16f99f212f612462d111c86a72115"
+    },
+    {
+      "name": "b-after-hide",
+      "at": "2026-11-07T18:36:16.844135+00:00",
+      "app_png_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "captioned_png_sha": "53c65edda56fe3b57023af8a17d1e50fffe62ec816c6c84e9542ae226d1350c9"
+    },
+    {
+      "name": "b-after-reload",
+      "at": "2026-11-07T18:36:17.145209+00:00",
+      "app_png_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "captioned_png_sha": "79b1e4471fba25f07b594cea441c372eb85c5551d0bd22062c15622c1f53c3d9"
+    },
+    {
+      "name": "b-after-rebuild",
+      "at": "2026-11-07T18:36:17.528190+00:00",
+      "app_png_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "captioned_png_sha": "7c813210e922932ba8872309fccb08a63f7a4b9e298712e03ccba43333382bc6"
+    },
+    {
+      "name": "b-after-undo",
+      "at": "2026-11-07T18:36:17.903867+00:00",
+      "app_png_sha": "3388c2204451a294a37b5b7b320cf74e3d6f30dd6a3b022b88fb125619627aa9",
+      "captioned_png_sha": "173b862afe889889a33b0c707b209c046cebbc7494cc428fb01be23e9d19abaf"
+    },
+    {
+      "name": "b-second-empty-built-hide",
+      "at": "2026-11-07T18:36:18.329453+00:00",
+      "app_png_sha": "3d20fd456e2329171e980ac17df8696f10c04ccaeed64d8c61d0c84cb814eff5",
+      "captioned_png_sha": "21cabeca4d3c0cf7914e900724ebb7591db4084806f12769824b9b9b3fabdaa9"
+    }
+  ]
+}

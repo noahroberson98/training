@@ -1,0 +1,7 @@
+$ /usr/bin/python3 scripts/merge.py /agent/repos/training/source-sync/class-hide/proof/work/b/batch.json --store /agent/repos/training/source-sync/class-hide/proof/work/b/data/workouts.json
+exit 0
+--- stdout ---
+merged batch.json: 0 added, 3 updated, 0 unchanged; store now has 3 workouts
+
+--- stderr ---
+

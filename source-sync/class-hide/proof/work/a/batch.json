@@ -1,0 +1,50 @@
+{
+  "source": "synthetic",
+  "workouts": [
+    {
+      "date": "2099-01-01",
+      "title": "APEX",
+      "status": "completed",
+      "exercises": [
+        {
+          "label": "A1",
+          "name": "Row",
+          "sets": 3,
+          "reps": 8
+        }
+      ]
+    },
+    {
+      "date": "2099-01-03",
+      "title": "Strength",
+      "status": "planned",
+      "exercises": [
+        {
+          "label": "B1",
+          "name": "Squat",
+          "sets": 1,
+          "reps": 5
+        }
+      ]
+    },
+    {
+      "date": "2099-01-06",
+      "title": "Upper Body",
+      "status": "completed",
+      "exercises": [
+        {
+          "label": "A1",
+          "name": "Bench Press",
+          "sets": 3,
+          "reps": 8
+        },
+        {
+          "label": "W",
+          "name": "Easy Bike",
+          "sets": 1,
+          "warmup": true
+        }
+      ]
+    }
+  ]
+}
