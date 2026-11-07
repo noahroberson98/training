@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "integration_status": "pending_sync_consumer_implementation",
+  "sessions": {
+    "2099-01-01|10:00|APEX": {
+      "session_key": "2099-01-01|10:00|APEX",
+      "date": "2099-01-01",
+      "time": "10:00",
+      "timezone": "America/Chicago",
+      "class": "APEX",
+      "status": "cancelled",
+      "attendance": "skipped",
+      "hidden": true,
+      "source": "Synthetic User",
+      "source_message_id": "fake-message-1",
+      "source_agent_id": "synthetic-agent",
+      "source_quote": "Synthetic fixture: cancelled and skipped.",
+      "reported_at": "2099-01-03T11:45:00-06:00",
+      "recorded_at": "2099-01-03T11:46:00-06:00",
+      "provider_cancellation_verified": false,
+      "note": "Synthetic user report only; no provider action or verification."
+    },
+    "2099-01-02|10:00|APEX": {
+      "session_key": "2099-01-02|10:00|APEX",
+      "date": "2099-01-02",
+      "time": "10:00",
+      "timezone": "America/Chicago",
+      "class": "APEX",
+      "status": "cancelled",
+      "attendance": "skipped",
+      "hidden": true,
+      "source": "Synthetic User",
+      "source_message_id": "fake-message-2",
+      "source_agent_id": "synthetic-agent",
+      "source_quote": "Synthetic fixture: cancelled and skipped.",
+      "reported_at": "2099-01-03T11:45:00-06:00",
+      "recorded_at": "2099-01-03T11:46:00-06:00",
+      "provider_cancellation_verified": false,
+      "note": "Synthetic user report only; no provider action or verification."
+    }
+  }
+}

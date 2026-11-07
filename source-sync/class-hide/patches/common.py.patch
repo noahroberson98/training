@@ -1,0 +1,91 @@
+--- a/scripts/common.py
++++ b/scripts/common.py
+@@ -1,5 +1,5 @@
+ """Shared helpers: set parsing/formatting, best-set ranking, exercise-name matching."""
+-import difflib, re
++import difflib, json, os, re
+ 
+ # ---------- sets ----------
+ _NUM = r"(\d+(?:\.\d+)?)"
+@@ -215,3 +215,81 @@
+ 
+ def fill_store_per_plan(store):
+     return sum(fill_per_plan(e) for w in store["workouts"].values() for e in w["exercises"])
++
++
++def session_key(date, time, name):
++    return f"{date}|{time}|{name}"
++
++
++def load_user_overrides(path):
++    """Read the prospective user_overrides.json. Missing file means no overrides."""
++    if not path or not os.path.exists(path):
++        return {}
++    with open(path, encoding="utf-8") as f:
++        doc = json.load(f)
++    out = {}
++    for key, row in (doc.get("sessions") or {}).items():
++        if isinstance(row, dict):
++            out[row.get("session_key") or key] = row
++    return out
++
++
++def apply_user_class_override(entry, ov):
++    """A user hide/cancel is not a provider cancellation and does not refresh the feed clock.
++
++    Undo (hidden false) changes visibility only. csv_status and source stay as the feed left them.
++    """
++    if not entry or not ov:
++        return entry
++    verified = bool(ov.get("provider_cancellation_verified"))
++    user_status = str(ov.get("status") or "").lower()
++    hidden = ov.get("hidden")
++    entry["provider_cancellation_verified"] = verified
++    entry["user_override"] = {
++        "status": ov.get("status"),
++        "attendance": ov.get("attendance"),
++        "hidden": hidden,
++        "provider_cancellation_verified": verified,
++        "source": ov.get("source") or "user",
++        "reported_at": ov.get("reported_at"),
++    }
++    if user_status == "cancelled" and not verified:
++        entry["status"] = "CANCELLED"
++        entry["cancel_source"] = "user"
++        entry["hidden"] = True if hidden is None else bool(hidden)
++    elif hidden is False:
++        entry["hidden"] = False
++    elif hidden is True:
++        entry["hidden"] = True
++    return entry
++
++
++def hold_user_workout_overrides(store, overrides, preserved_exercises=None):
++    """Do not let a feed rewrite complete or drop a user-cancelled session's logged sets.
++
++    status_locked still wins. Hidden false only clears the hide flag.
++    preserved_exercises is the pre-merge exercise list keyed by session_key.
++    """
++    if not overrides:
++        return
++    preserved_exercises = preserved_exercises or {}
++    for w in store.get("workouts", {}).values():
++        sk = w.get("session_key") or ""
++        ov = overrides.get(sk)
++        if not ov:
++            continue
++        if sk in preserved_exercises and preserved_exercises[sk] is not None:
++            w["exercises"] = preserved_exercises[sk]
++        if w.get("status_locked"):
++            if ov.get("hidden") is not None:
++                w["user_hidden"] = bool(ov.get("hidden"))
++            continue
++        if str(ov.get("status") or "").lower() == "cancelled" and not ov.get("provider_cancellation_verified"):
++            if w.get("status") == "completed" or str(ov.get("attendance") or "").lower() == "skipped":
++                w["status"] = "skipped"
++            w["user_cancel_source"] = "user"
++            w["provider_cancellation_verified"] = False
++        if ov.get("hidden") is False:
++            w["user_hidden"] = False
++        elif ov.get("hidden"):
++            w["user_hidden"] = True

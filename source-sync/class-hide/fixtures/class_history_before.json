@@ -1,0 +1,32 @@
+{
+  "2099-01-01|10:00|APEX": {
+    "date": "2099-01-01",
+    "time": "10:00",
+    "class": "APEX",
+    "type": "class",
+    "coach": "",
+    "status": "RESERVED",
+    "source": "synthetic feed",
+    "csv_status": "RESERVED"
+  },
+  "2099-01-02|10:00|APEX": {
+    "date": "2099-01-02",
+    "time": "10:00",
+    "class": "APEX",
+    "type": "class",
+    "coach": "",
+    "status": "RESERVED",
+    "source": "synthetic feed",
+    "csv_status": "RESERVED"
+  },
+  "2099-01-03|09:00|THIS STRENGTH": {
+    "date": "2099-01-03",
+    "time": "09:00",
+    "class": "THIS STRENGTH",
+    "type": "class",
+    "coach": "",
+    "status": "RESERVED",
+    "source": "synthetic feed",
+    "csv_status": "RESERVED"
+  }
+}

@@ -1,0 +1,12 @@
+PASS unrelated booking is listed
+PASS hide moves that row and shows Undo
+PASS hidden row keeps the gym reserved label
+PASS the other booking stays booked
+PASS hide survives reload
+PASS stale reserved feed does not restore the hidden row
+PASS the row missing from the feed is still available to hide
+PASS a missing feed row stays hidden after reload of the feed
+PASS undo puts the row back
+PASS undo does not pretend the gym cancelled it
+PASS a failed save does not claim the row was hidden
+ALL PASS
