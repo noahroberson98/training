@@ -1,6 +1,6 @@
 # JARVIS owner contract
 
-Do not publish this branch. Do not apply the held training-overview bookings change. Do not change the morning or afternoon routines.
+Do not publish this branch. Do not apply the held training-overview bookings change. Do not change the morning or afternoon routines. Do not restore the emptied credential. Do not send mail.
 
 ## What JARVIS may store
 
@@ -18,7 +18,7 @@ Undo changes `hidden` only. It must leave the cancellation note, the logged sets
 
 ## What the feed may overwrite
 
-`thisgym_reservations.csv` and `thisgym_schedule.json` are rewritten by the browser routines from PushPress. Those files are not the override store. A later reserved row, or a missing row, must not bring a hidden session back as a normal booking.
+`thisgym_reservations.csv` and `thisgym_schedule.json` are rewritten by the browser routines from PushPress. Those files are not the override store. A later reserved row, or a missing row, must not bring a hidden session back as a normal booking when `user_overrides.json` still hides it. `build.py` and `merge.py` are the readers. The routines themselves are not edited here and were not verified.
 
 ## What the code does
 
@@ -36,8 +36,14 @@ Undo changes `hidden` only. It must leave the cancellation note, the logged sets
 
 `scripts/sync_guard.py` and `scripts/lock_status.py` are unchanged.
 
+`scripts/template.html` is the page. Day cards and week cards both get Hide. Hidden By You has Undo. A user-cancelled card shows the feed badge, not a gym-cancelled badge, plus "You reported this cancelled. The gym list still says reserved."
+
+## Phone storage is not the file
+
+The page writes `localStorage` key `tpDash.classHide.v1` on that browser. That survives a reload and a rebuilt page opened in the same browser. It does not write `data/user_overrides.json` and it does not update another device. A new browser with empty storage follows the built `hidden` flag from the last build that read the file. There is no cross-device sync in this change.
+
 ## What the page must show
 
-Hide and Undo are Title Case buttons. After Hide, the row is under "Hidden By You" and Undo is on that row. The sentence is "You reported this cancelled. The gym list still says reserved." It must not say the gym cancelled it. A failed save leaves the row where it was and says it was not saved. The as-of time is the feed time already on the record, in CT. No new freshness is written.
+Hide and Undo are Title Case buttons. After Hide, the row is under "Hidden By You" and Undo is on that row. The sentence is "You reported this cancelled. The gym list still says reserved." It must not say the gym cancelled it. A failed save leaves the row where it was and says "Not saved on this phone. The class is still listed." The as-of time on the fixture page is Jan 3, 2099, 11:46 AM CT. No new freshness field is written.
 
-The synthetic page `class-hide.html` is the review fixture. The published `index.html` does not contain this control yet because `template.html` was not in the handoff.
+The review fixture is `assembled/current.html`, generated from the real template and the synthetic dataset. `class-hide.html` is an older standalone demo and is not this contract's page. The published `index.html` does not contain this control.

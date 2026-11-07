@@ -1,4 +1,4 @@
-"""Mobile Hide and Undo on the synthetic class page. Local only."""
+"""Retired standalone demo. The review proof is test_template_mobile.py on assembled/current.html."""
 import hashlib, os, sys, threading
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
