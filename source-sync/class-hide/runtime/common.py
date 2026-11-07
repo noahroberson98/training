@@ -234,6 +234,39 @@ def load_user_overrides(path):
     return out
 
 
+def provider_feed_status(prev, incoming, ov=None):
+    """Separate the provider baseline from a user-mutated feed column.
+
+    incoming is the status string on this feed read. It is not, by itself,
+    provider confirmation. An unverified user cancel does not replace an
+    established baseline, and it does not become a hardcoded RESERVED when
+    no baseline exists. That case is explicit unknown. A different feed value
+    with no user-cancel explanation is a new feed observation, still unverified.
+    """
+    prev = prev or {}
+    incoming = str(incoming or "").strip()
+    established = str(prev.get("provider_status") or prev.get("csv_status") or "").strip()
+    if established.lower() == "unknown":
+        established = ""
+    unverified_user_cancel = bool(
+        ov and not ov.get("provider_cancellation_verified")
+        and str(ov.get("status") or "").lower() == "cancelled"
+    )
+    if unverified_user_cancel and "CANCEL" in incoming.upper():
+        if established:
+            return established, "retained_established_baseline"
+        return "unknown", "unknown_user_mutated_feed"
+    if not incoming:
+        if established:
+            return established, "retained_established_baseline"
+        return "unknown", "unknown_missing_feed_status"
+    if established and incoming.upper() == established.upper():
+        return established, "established_baseline"
+    if established:
+        return incoming, "feed_observation"
+    return incoming, "first_feed_observation"
+
+
 def apply_user_class_override(entry, ov):
     """A user hide/cancel is not a provider cancellation and does not refresh the feed clock.
 

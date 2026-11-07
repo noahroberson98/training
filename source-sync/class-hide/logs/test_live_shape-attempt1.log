@@ -1,0 +1,20 @@
+FAIL user-mutated CANCELLED feed keeps the established provider baseline
+FAIL raw feed column is recorded separately
+PASS display status is the user report
+PASS user report is not provider confirmation
+PASS the other booking provider status stays reserved
+PASS a feed change without a user report updates the baseline and does not verify the provider
+PASS that feed change is not labeled user or confirmed
+FAIL no established baseline stays unknown instead of a hardcoded reserved or a copied cancel
+PASS missing baseline is still an unverified user report
+PASS an established provider cancel is not rewritten to reserved
+PASS an established cancel string is still not provider verification
+PASS row set stays one 40x8
+PASS locked strength stays completed
+PASS duplicate bench rows stay two occurrences
+PASS staged generators exit 0 through the synthetic symlink
+PASS symlink resolves only inside this temp tree
+FAIL build.py keeps the provider baseline when the linked override is unverified
+FAIL built page states the user report and the unverified gym list
+PASS built page keeps provider verification false
+SOME FAILED

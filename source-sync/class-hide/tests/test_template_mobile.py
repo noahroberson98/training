@@ -51,7 +51,7 @@ seen = []
 APEX = "2099-01-01|10:00|APEX"
 MISSING = "2099-01-02|10:00|APEX"
 OTHER = "2099-01-03|09:00|THIS STRENGTH"
-SENTENCE = "You reported this cancelled. The gym list still says reserved."
+SENTENCE = "You reported this cancelled. The provider has not confirmed it. The gym list still says reserved."
 FAIL = "Not saved on this phone. Visibility has not changed."
 SCOPE = "Hide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice."
 GEOM = """el => {

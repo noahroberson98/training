@@ -6,7 +6,7 @@ Public Training stays open with no password. JARVIS stays behind its existing pr
 
 Published site `main` is `794e86cd120100046d8dc510280085edb890d1b5` (Nov 7, 2026, 5:36 AM CT). History publish `dca4a9fe5b0a0aff50fd5207f11e5c687c3e8f12` is the prior publish. Repair `5b682c9312af54e9f24f0eb26bcb99805860f75c` is still an ancestor of `main` and is not rewritten. This branch starts at current `main`. `index.html` is not edited.
 
-The standalone `class-hide.html` is an earlier demo. It is not the production UI and it is not the page these results describe. The review page is `assembled/current.html`, 167,108 bytes, sha256 `d6e51ce0310e6c9fe29825e584e0554149e54ada9c861ea37f9f5442e86f252a`, filled from the real `scripts/template.html` with an explicitly synthetic dataset. It replaces the Style-reviewed candidate `80229dc37c082b1a87b845cb4fd718d5784d04e47055767f12305833aac6fc9e`.
+The standalone `class-hide.html` is an earlier demo. It is not the production UI and it is not the page these results describe. The current safe page is `assembled/current.html`, 168,002 bytes, sha256 `7e706e2150f55e5d72a8e7b12eb89370310aaf3668f47f7e747c3bf89426318f`. The live-shape page is `assembled/live-shape.html`, 166,888 bytes, sha256 `31b5f0feaec428ec73b712a446526b5861213aecb0f4e358b57af3e13227fac4`. Style's earlier pass on `d6e51ce0310e6c9fe29825e584e0554149e54ada9c861ea37f9f5442e86f252a` does not cover this card. No approval is claimed.
 
 ## Two stores, and the boundary
 
@@ -14,7 +14,9 @@ The screen says: "Hide and Undo change visibility only in this browser. Undo doe
 
 On this browser, Hide and Undo write `localStorage` key `tpDash.classHide.v1`. A saved choice here wins over the hide baked into the page. Undo of a built-hidden row shows that row on this browser and leaves the shared choice unchanged. A browser with no saved choice follows the hide baked by the last build. The page does not write the shared file and does not update another browser or device.
 
-The shared file is `data/user_overrides.json`. `build.py` reads it while writing `data/class_history.json`. `merge.py` reads it while writing `data/workouts.json`. A feed rewrite can replace `thisgym_reservations.csv` and `thisgym_schedule.json`. It does not delete the override file. Another device sees a change only after that file is edited and the page is built again.
+The generators read `ROOT/data/user_overrides.json`, where ROOT is the parent of `scripts/`. On a training-dashboard install that is `training-dashboard/data/user_overrides.json`. The canonical fitness file is a different path. This branch does not install a symlink and does not change either live path. `WIRING.md` states the staged expectation. A temp-tree test opens a synthetic symlink and does not create `/workspace/training-dashboard`.
+
+`csv_status` and `provider_status` are the provider baseline. `feed_status` is the raw column on this read. An unverified user cancel does not replace an established baseline, and it does not turn a missing baseline into RESERVED or into a copied CANCELLED. That case is `unknown`. A feed change with no user-cancel explanation can update the baseline, and that update is still not `provider_cancellation_verified`. A user override never sets that flag true.
 
 ## What the published page does today
 
@@ -42,7 +44,7 @@ Hide sets `hidden` true and keeps the user cancellation. The gym list can still 
 
 6. Charts. Not applicable to this change. No bar, waterfall, or what-if chart is added. The existing History estimate chart is unchanged and still draws for the synthetic Bench Press, Row, and Squat rows.
 
-7. Status is text plus color. The gym badge stays the feed word, "Reserved." The sentence is "You reported this cancelled. The gym list still says reserved." Color is not the only signal. A user hide is not labeled as a gym cancellation. Buttons are Title Case: Hide, Undo. At 390 CSS pixels the class name is a wrapping box, not an ellipsis. On the day card the name box is 248 by 21.8, the painted text is 114.7 wide, and Hide, Cancel, and Reserved sit below it without covering it.
+7. Status is text plus color. For a user report that the provider has not confirmed, the badge is the provider baseline, and the sentence is "You reported this cancelled. The provider has not confirmed it. The gym list still says reserved." When the baseline is unknown, the badge says Unknown and the sentence does not claim reserved. Color is not the only signal. Buttons are Title Case: Hide, Undo. The live-shape card was readable at 390 CSS pixels. This wording needs a new Style check.
 
 8. Reconciliation. The synthetic class rows stay the same rows. Hide moves one row between the booked list and Hidden By You and does not drop the others. The Row set at 40 lb, the Squat set at 185 lb, and the Bench Press sets at 135 lb and 145 lb stay. The locked Strength workout stays Completed. The APEX workout stays Skipped because the user reported it, and that is not a provider confirmation. No money ledger is added.
 
@@ -74,6 +76,21 @@ Hide sets `hidden` true and keeps the user cancellation. The gym list can still 
 | Original private files | Not uploaded | Fuzz 0 on the sanitized copies only. `logs/fuzz0.log`. That does not prove an apply to the original hashes |
 | Morning and afternoon routines, live provider, email, publish | Not run | Not run |
 
+## Live-shape results
+
+`logs/test_live_shape-attempt1.log` is the failure before the fix: the user-mutated CANCELLED column replaced the RESERVED baseline. `logs/test_live_shape-attempt2.log` is a later assertion miss on the unrendered source string. `logs/test_live_shape.log` is the passing run. The 13-step synthetic proof is not clearance for this shape.
+
+| Check | Expected | Actual |
+|---|---|---|
+| Established RESERVED plus user-mutated CANCELLED column | `csv_status` and `provider_status` stay RESERVED, `feed_status` is CANCELLED, display is user cancel, provider flag false | Pass |
+| Feed CANCELLED with no user report | Baseline becomes CANCELLED, not labeled user or confirmed, provider flag not true | Pass |
+| No baseline plus user-mutated CANCELLED | `unknown`, not a hardcoded RESERVED | Pass |
+| Established provider CANCELLED | Stays CANCELLED | Pass |
+| Other booking | Stays RESERVED | Pass |
+| Sets and lock | Row 40×8, Squat 185×5 locked completed, Bench 135×8 twice plus 145×6 | Pass |
+| Synthetic symlink | Generators read it inside a temp tree only | Pass |
+| Hidden card at 390 | User-report sentence, Reserved badge, provider false, Undo, failed save | Pass. Shots `live-shape-hidden.png`, `live-shape-undo.png`, `live-shape-save-failed.png` |
+
 ## What is still true
 
-The published `index.html` does not contain Hide. These patches are not applied to the private originals. The credential literal stays empty. Style review of this template-generated fixture is still required before any publish.
+The published `index.html` is unchanged. The private originals are not patched. The live symlink is not installed. The credential literal stays empty. The new card still needs Style review. No approval is claimed, and no release is authorized.

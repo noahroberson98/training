@@ -9,7 +9,7 @@
  .cls::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--cls)}
  .cls .tm{width:52px;flex:none;text-align:center;line-height:1.1}
  .cls .tm b{display:block;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
-@@ -60,6 +60,14 @@
+@@ -60,11 +60,20 @@
  .cls .x{flex:1;min-width:0}.cls .x div{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  .cls .x span{font-size:13px;color:var(--muted)}
  .cls .src{font-size:12px;color:var(--cls);font-weight:650;letter-spacing:.07em;margin-bottom:2px}
@@ -24,7 +24,14 @@
  .bdg{font-size:12px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:7px;flex:none}
  .bdg.res{background:var(--cls-soft);color:var(--cls)}
  .wh{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}.wh b{color:var(--text,#e8ecf3);font-weight:650}.wh .wl{color:var(--rg);font-weight:700;letter-spacing:.06em;font-size:12px}
-@@ -367,8 +375,14 @@
+ .bdg.done{background:rgba(61,220,132,.13);color:var(--rg)}.bdg.cx{background:transparent;color:var(--rr);border:1px solid var(--line2)}
+-.cc.past{opacity:.85}.cc .b.done{background:rgba(61,220,132,.13);color:var(--rg)}.cc .b.cx{background:transparent;color:var(--rr)}.cc .w{font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
++.bdg.unk{background:transparent;color:var(--muted);border:1px solid var(--line2)}
++.cc.past{opacity:.85}.cc .b.done{background:rgba(61,220,132,.13);color:var(--rg)}.cc .b.cx{background:transparent;color:var(--rr)}.cc .b.unk{background:transparent;color:var(--muted);border:1px solid var(--line2)}.cc .w{font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+ .bdg.wait{background:transparent;color:var(--muted);border:1px solid var(--line2)}
+ .day.has .dot{background:var(--accent)}
+ .day.has.completed .dot{background:var(--good)}
+@@ -367,8 +376,14 @@
  <script>
  const STORE = /*__DATA__*/null;
  const EXTRA = /*__EXTRA__*/null;
@@ -40,7 +47,7 @@
  const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
  const W = Object.entries(STORE.workouts).map(([key,w])=>({key,...w})).sort((a,b)=>(a.date+a.title).localeCompare(b.date+b.title));
  let local={}; try{local=JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){}
-@@ -590,7 +604,28 @@
+@@ -590,10 +605,31 @@
  
  const recCls=p=>p>=67?"g":(p>=34?"y":"r");
  let PT_PAIRS=new Map();
@@ -69,8 +76,12 @@
 +const classesHiddenAll=()=>CLS.filter(c=>!PT_PAIRS.has(ckey(c)) && classHidden(c)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
  const WW=(EXTRA&&EXTRA.workout_whoop)||{};
  const ctitle=c=>{const t=c.class||"",co=(c.coach||"").trim(); if(!co) return t; const r=t.replace(new RegExp("\\s*[-–—·|:]\\s*"+co.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*$","i"),"").trim(); return r||t;};
- const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":"res";
-@@ -682,9 +717,37 @@
+-const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":"res";
++const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":/unknown/i.test(st)?"unk":"res";
+ const tcase=t=>String(t||"").toLowerCase().replace(/\b([a-z])/g,m=>m.toUpperCase()).replace(/\bThis\b(?= (Gym|Strength|Pilates|Hiit|Ride|Row))/g,"This");
+ const blbl=st=>/COMPLETED/.test(st)?"Completed":tcase(st); // past, not cancelled = done
+ function whoopLine(s,short){if(!s) return ""; const dur=s.duration?s.duration.replace(/^0:/,""):"";
+@@ -682,9 +718,42 @@
  function postedHtml(c){if(c.posted==null) return "";
    if(!c.posted) return `<div class="posted none">Workout not posted yet</div>`;
    return `<div class="posted"><div class="ph">Posted workout${c.posted_coach?` · listed coach ${esc(c.posted_coach)}`:""}</div>${esc(c.posted)}</div>`;}
@@ -78,8 +89,13 @@
 +function badgeStatus(c){return c.cancel_source==="user"?(c.csv_status||c.status||""):(c.status||"");}
 +function userCancelLine(c){
 +  const user=c.cancel_source==="user"||String((c.user_override&&c.user_override.status)||"").toLowerCase()==="cancelled";
-+  if(!user||!/RESERV/i.test(c.csv_status||"")) return "";
-+  return `<p class="clsnote">You reported this cancelled. The gym list still says reserved.</p>`;
++  const verified=c.provider_cancellation_verified===true||(c.user_override&&c.user_override.provider_cancellation_verified===true);
++  if(!user||verified) return "";
++  const base=String(c.provider_status||c.csv_status||"");
++  let gym="The gym list status is unknown.";
++  if(/RESERV/i.test(base)) gym="The gym list still says reserved.";
++  else if(base&&!/unknown/i.test(base)) gym=`The gym list says ${blbl(base).toLowerCase()}.`;
++  return `<p class="clsnote">You reported this cancelled. The provider has not confirmed it. ${gym}</p>`;
 +}
 +function classAttrs(c){
 +  const ov=c.user_override||{};
@@ -110,7 +126,7 @@
  // ---------- workout tab ----------
  function strip(){
    const ws=wkStart(sel);
-@@ -740,10 +803,12 @@
+@@ -740,10 +809,12 @@
    ${rest?`<div class="rest">Rest <b data-tick="${esc(Lw.rest_at)}">${fmtT((Date.now()-Date.parse(Lw.rest_at))/1000)}</b></div>`:""}</div>`;}
  function workoutView(){
    const list=W.filter(w=>w.date===sel), cls=classesOn(sel);
@@ -125,7 +141,7 @@
        const next=W.find(w=>w.date>sel);
        h+=`<div class="card empty" style="margin-top:16px"><b>Rest day</b>${next?`Next up: ${DN[pd(next.date).getDay()]} · ${esc(next.title)} <br><br><button class="pill" data-day="${next.date}">Open ${esc(next.title)}</button>`:"Nothing scheduled."}</div>`;
      }
-@@ -753,7 +818,7 @@
+@@ -753,7 +824,7 @@
    list.forEach(w=>{
      const st=statusOf(w), p=progress(w);
      const freeChip=(w.free||/Free/i.test(w.source||""))?`<span class="tagchip free">Free</span>`:"";
@@ -134,7 +150,7 @@
        <div class="date">${pd(w.date).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"})}</div>
        <h2>${esc(w.title)}</h2><div style="display:flex;align-items:center;gap:6px"><span class="pill ${st}">${statusText[st]||st}</span><button class="icon-btn" style="width:28px;height:28px;background:var(--surface2)" data-more="${esc(w.key)}" aria-label="More">${ICON.more}</button></div>
        ${ptMeta(w)?`<div class="date">${esc(ptMeta(w))}</div>`:""}
-@@ -803,15 +868,15 @@
+@@ -803,15 +874,15 @@
        ${w.date!==w.orig?`<div class="from">Moved from ${DN[pd(w.orig).getDay()]}</div>`:""}${(w.tags||[]).length?`<span class="opt" title="${esc(w.tags.join(" · "))}">optional</span>`:""}
      ${pill}${log||start}</div>
      <button class="more" data-more="${esc(w.key)}" aria-label="More options">${ICON.more}</button></div>`;}
@@ -153,7 +169,7 @@
  }
  
  // ---------- drag & drop (pointer events: mouse + touch) ----------
-@@ -1269,10 +1334,10 @@
+@@ -1269,10 +1340,10 @@
    const load=weekLoadFacts(wk), volText=weekVolumeText(load);
    let h=`<div class="card"><h3>This Week</h3><div class="mini"><div class="ring" style="width:64px;height:64px">${ring(load.logged,load.planned,64,6)}<div class="c"><b style="font-size:14px">${load.planned?(load.logged/load.planned*100).toFixed(1):"0.0"}%</b></div></div>
     <div><div style="font-weight:650">${load.logged} logged of ${load.planned} planned sets</div><div class="date">${load.comp}/${load.workouts} workouts logged</div>${volText?`<div class="date weekly-volume">${volText}</div>`:""}</div></div>`;
@@ -166,7 +182,7 @@
    const rk=Object.keys(REC).filter(d=>d<=TODAY).sort(); if(rk.length){const ld=rk[rk.length-1],rv=REC[ld];
      h+=`<div class="date" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span class="recdot ${recCls(rv)}" style="margin-left:0"></span>Latest WHOOP recovery ${Number(rv).toFixed(1)}% · ${pd(ld).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</div>`;}
    if(!wk.length&&!items.length) h+=`<div class="date">Nothing scheduled this week.</div>`;
-@@ -1717,6 +1782,14 @@
+@@ -1717,6 +1788,14 @@
  
  document.addEventListener("click",ev=>{if(ev.target.closest("[data-gohist]")) return; const b=ev.target.closest("[data-hxtog]"); if(!b) return; ev.stopPropagation(); ev.preventDefault(); const k=b.dataset.hxtog; const o=!hxOpen.has(k); o?hxOpen.add(k):hxOpen.delete(k); b.classList.toggle("open",o); b.setAttribute("aria-expanded",o); b.querySelector(".hxc").textContent=o?"▴":"▾";},true);
  document.addEventListener("click",ev=>{const b=ev.target.closest("[data-cancelcls]"); if(b){ev.stopPropagation(); ev.preventDefault(); cancelClass(b.dataset.cancelcls);}},true);

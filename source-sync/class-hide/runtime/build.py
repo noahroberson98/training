@@ -13,7 +13,7 @@ from datetime import date, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-from common import actual_sets, apply_user_class_override, eff_date, fmt_dur, load_user_overrides  # noqa: E402
+from common import actual_sets, apply_user_class_override, eff_date, fmt_dur, load_user_overrides, provider_feed_status  # noqa: E402
 from whoop_pair import load_sessions, pair  # noqa: E402
 
 CSV_COLS = ["date", "workout_title", "status", "label", "exercise", "sets", "reps", "duration",
@@ -152,8 +152,12 @@ def update_class_history(current, hist_path=CLASS_HIST, now=None, cancels=None, 
         seen.add(k)
         prev = hist.get(k, {})
         e = dict(prev, **{x: c[x] for x in ("date", "time", "class", "type", "coach", "source") if c.get(x) or x not in prev})
-        e["csv_status"] = c["status"]
-        e["status"] = c["status"]
+        baseline, basis = provider_feed_status(prev, c.get("status"), (overrides or {}).get(k))
+        e["feed_status"] = c.get("status")
+        e["csv_status"] = baseline
+        e["provider_status"] = baseline
+        e["provider_status_basis"] = basis
+        e["status"] = baseline if str(baseline).lower() != "unknown" else (prev.get("status") or "unknown")
         seen_at = _read_time(c, c.get("_mtime") or now).isoformat(timespec="seconds")
         e.setdefault("first_seen", seen_at)
         if seen_at > e.get("last_seen", ""):

@@ -3,7 +3,7 @@
   "synthetic": true,
   "scenarios": {
     "current": {
-      "bytes": 167108,
+      "bytes": 168002,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",
@@ -40,7 +40,7 @@
       }
     },
     "reimport-reserved": {
-      "bytes": 167118,
+      "bytes": 168012,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",
@@ -77,7 +77,7 @@
       }
     },
     "reimport-missing": {
-      "bytes": 167044,
+      "bytes": 167831,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",
@@ -169,7 +169,7 @@ PASS baked hides are in Hidden By You
   actual:   ["2099-01-01|10:00|APEX", "2099-01-02|10:00|APEX"]
 PASS stale reserved row keeps user-cancel provenance
   expected: {"status": "CANCELLED", "csv": "RESERVED", "cancel": "user", "provider": "false", "store": "built"}
-  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}
+  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved"}
 PASS missing feed row is hidden and not completed
   expected: "CANCELLED/RESERVED/false"
   actual:   {"status": "CANCELLED", "csv": "RESERVED", "provider": "false"}
@@ -181,13 +181,13 @@ PASS booked class name is fully readable at 390px
   actual:   {"text": "THIS STRENGTH", "viewport": {"w": 390, "h": 844, "dpr": 2}, "name": {"x": 104, "y": 405, "w": 248, "h": 21.8, "right": 352, "bottom": 426.7}, "textW": 114.7, "textH": 20, "clientWidth": 248, "scrollWidth": 248, "whiteSpace": "normal", "overflow": "visible", "textOverflow": "clip", "clipped": false, "overlaps": {"[data-hidecls]": false, "[data-cancelcls]": false, ".bdg": false}, "parts": {".src": {"x": 104, "y": 385.6, "w": 248, "h": 17.4, "right": 352, "bottom": 403}, "[data-hidecls]": {"x": 104, "y": 456.5, "w": 58.1, "h": 38.3, "right": 162.1, "bottom": 494.8}, "[data-cancelcls]": {"x": 170.1, "y": 459.9, "w": 93.8, "h": 31.4, "right": 264, "bottom": 491.3}, ".bdg": {"x": 112, "y": 502.8, "w": 81.9, "h": 26.8, "right": 193.9, "bottom": 529.6}}, "hits": {"[data-hidecls]": {"w": 58.1, "h": 38.3, "reached": true}, "[data-cancelcls]": {"w": 93.8, "h": 31.4, "reached": true}}}
 PASS user-cancelled workout keeps its set
   expected: "Row 40 lb × 8 and Skipped"
-  actual:   "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nThu, Jan 1, 2099\nAPEX\nSkipped\n1 logged · 3 planned sets\n1/3\nlogged\n1\nexercises\n8\nreps logged\n320\nVolume (lb)\nExercises\nA1\nRow\n📝\nTarget 3 × 8\nSet 1\n40 lb × 8\n✓\nSet 2\n lb × \nSet 3\n lb × \nLogging for Thu, Jan 1, 2099\nUndo Skip\nStart Free Workout"
+  actual:   "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\nThu, Jan 1, 2099\nAPEX\nSkipped\n1 logged · 3 planned sets\n1/3\nlogged\n1\nexercises\n8\nreps logged\n320\nVolume (lb)\nExercises\nA1\nRow\n📝\nTarget 3 × 8\nSet 1\n40 lb × 8\n✓\nSet 2\n lb × \nSet 3\n lb × \nLogging for Thu, Jan 1, 2099\nUndo Skip\nStart Free Workout"
 PASS locked workout status and set stay
   expected: {"locked": "true", "status": "completed", "set": "185 lb × 5"}
-  actual:   {"locked": "true", "status": "completed", "text": "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nClasses\n9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nclass\nHide\nCancel class\nReserved\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nSat, Jan 3, 2099\nStrength\nCompleted\n1 logged · 1 planned sets\n1/1\nlogged\n1\nexercises\n5\nreps logged\n925\nVolume (lb)\nStart Workout\nExercises\nB1\nSquat\n📝\nTarget 1 × 5\nSet 1\n185 lb × 5\n✓\n+ Add Set\nStart Workout\nLogging for Sat, Jan 3, 2099\nCompleted · Summary\nStart Free Workout"}
+  actual:   {"locked": "true", "status": "completed", "text": "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nClasses\n9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nclass\nHide\nCancel class\nReserved\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\nSat, Jan 3, 2099\nStrength\nCompleted\n1 logged · 1 planned sets\n1/1\nlogged\n1\nexercises\n5\nreps logged\n925\nVolume (lb)\nStart Workout\nExercises\nB1\nSquat\n📝\nTarget 1 × 5\nSet 1\n185 lb × 5\n✓\n+ Add Set\nStart Workout\nLogging for Sat, Jan 3, 2099\nCompleted · Summary\nStart Free Workout"}
 PASS upper body session and PT resume stay
   expected: "Bench Press, 135 lb × 8, Personal Training, Easy Bike"
-  actual:   {"visible": "Jan 5 – Jan 11, 2099\nM\n5\nT\n6\nW\n7\nT\n8\nF\n9\nS\n10\nS\n11\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nTue, Jan 6, 2099\nUpper Body\nCompleted\n2:00 PM CT · Personal Training · Coach Example · Reserved\n3 logged · 3 planned sets\n3/3\nlogged\n1\nexercises\n22\nreps logged\n3,030\nVolume (lb)\nW · 1 movements\nExercises\nA1\nBench Press\n📝\nTarget 3 × 8\nSet 1\n135 lb × 8\n✓\nSet 2\n135 lb × 8\n✓\nSet 3\n145 lb × 6\n✓\n+ Add Set\nWorkout time 1:00:00\nLogging for Tue, Jan 6, 2099\nCompleted · Summary\nStart Free Workout", "warm": "W · 1 movementsWEasy Bike1 sets"}
+  actual:   {"visible": "Jan 5 – Jan 11, 2099\nM\n5\nT\n6\nW\n7\nT\n8\nF\n9\nS\n10\nS\n11\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved\nTue, Jan 6, 2099\nUpper Body\nCompleted\n2:00 PM CT · Personal Training · Coach Example · Reserved\n3 logged · 3 planned sets\n3/3\nlogged\n1\nexercises\n22\nreps logged\n3,030\nVolume (lb)\nW · 1 movements\nExercises\nA1\nBench Press\n📝\nTarget 3 × 8\nSet 1\n135 lb × 8\n✓\nSet 2\n135 lb × 8\n✓\nSet 3\n145 lb × 6\n✓\n+ Add Set\nWorkout time 1:00:00\nLogging for Tue, Jan 6, 2099\nCompleted · Summary\nStart Free Workout", "warm": "W · 1 movementsWEasy Bike1 sets"}
 PASS hide moves that booking under Hidden By You
   expected: "hidden"
   actual:   "hidden"
@@ -211,7 +211,7 @@ PASS failed hide leaves the class listed and readable
   actual:   {"warn": "Not saved on this phone. Visibility has not changed.", "booked": 1, "geom": {"text": "THIS STRENGTH", "viewport": {"w": 390, "h": 844, "dpr": 2}, "name": {"x": 104, "y": 405, "w": 248, "h": 21.8, "right": 352, "bottom": 426.7}, "textW": 114.7, "textH": 20, "clientWidth": 248, "scrollWidth": 248, "whiteSpace": "normal", "overflow": "visible", "textOverflow": "clip", "clipped": false, "overlaps": {"[data-hidecls]": false, "[data-cancelcls]": false, ".bdg": false}, "parts": {".src": {"x": 104, "y": 385.6, "w": 248, "h": 17.4, "right": 352, "bottom": 403}, "[data-hidecls]": {"x": 104, "y": 456.5, "w": 58.1, "h": 38.3, "right": 162.1, "bottom": 494.8}, "[data-cancelcls]": {"x": 170.1, "y": 459.9, "w": 93.8, "h": 31.4, "right": 264, "bottom": 491.3}, ".bdg": {"x": 112, "y": 502.8, "w": 81.9, "h": 26.8, "right": 193.9, "bottom": 529.6}}, "hits": {"[data-hidecls]": {"w": 58.1, "h": 38.3, "reached": true}, "[data-cancelcls]": {"w": 93.8, "h": 31.4, "reached": true}}}}
 PASS failed undo of a built-hidden row keeps that hide
   expected: {"warn": "Not saved on this phone. Visibility has not changed.", "hidden": "true", "store": "built", "storage_unchanged": true}
-  actual:   {"warn": "Not saved on this phone. Visibility has not changed.", "card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}, "before": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}", "after": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}"}
+  actual:   {"warn": "Not saved on this phone. Visibility has not changed.", "card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved"}, "before": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}", "after": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}"}
 PASS a later successful save clears the warning and hides the class
   expected: {"warn": 0, "hidden": true}
   actual:   {"warn": 0, "store": {"2099-01-03|09:00|THIS STRENGTH": {"hidden": true}}, "hidden": 1}
@@ -223,19 +223,19 @@ PASS the next successful undo clears the warning
   actual:   0
 PASS undo changes visibility only
   expected: {"hidden": "false", "store": "phone", "status": "CANCELLED", "provider": "false", "set": true}
-  actual:   {"card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "false", "undo": "", "hide": "Hide", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved"}, "set": true}
+  actual:   {"card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "false", "undo": "", "hide": "Hide", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nHide\nReserved"}, "set": true}
 PASS phone hide of the undone row survives reload
   expected: 1
   actual:   1
 PASS same browser keeps the phone hide across a rebuilt reserved feed
   expected: "phone/hidden/RESERVED"
-  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}
+  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved"}
 PASS rebuilt page does not hide the other booking
   expected: 1
   actual:   1
 PASS empty browser follows the built shared hide
   expected: "built/hidden/CANCELLED/RESERVED"
-  actual:   {"storage": null, "card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}}
+  actual:   {"storage": null, "card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The provider has not confirmed it. The gym list still says reserved.\n\nUndo\nReserved"}}
 PASS missing rows stay hidden and not completed
   expected: "CANCELLED not COMPLETED"
   actual:   {"missing": "CANCELLED", "stale": "CANCELLED", "other": 1}

@@ -72,7 +72,8 @@ main,.aside{min-width:0}
 .bdg.res{background:var(--cls-soft);color:var(--cls)}
 .wh{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}.wh b{color:var(--text,#e8ecf3);font-weight:650}.wh .wl{color:var(--rg);font-weight:700;letter-spacing:.06em;font-size:12px}
 .bdg.done{background:rgba(61,220,132,.13);color:var(--rg)}.bdg.cx{background:transparent;color:var(--rr);border:1px solid var(--line2)}
-.cc.past{opacity:.85}.cc .b.done{background:rgba(61,220,132,.13);color:var(--rg)}.cc .b.cx{background:transparent;color:var(--rr)}.cc .w{font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.bdg.unk{background:transparent;color:var(--muted);border:1px solid var(--line2)}
+.cc.past{opacity:.85}.cc .b.done{background:rgba(61,220,132,.13);color:var(--rg)}.cc .b.cx{background:transparent;color:var(--rr)}.cc .b.unk{background:transparent;color:var(--muted);border:1px solid var(--line2)}.cc .w{font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
 .bdg.wait{background:transparent;color:var(--muted);border:1px solid var(--line2)}
 .day.has .dot{background:var(--accent)}
 .day.has.completed .dot{background:var(--good)}
@@ -628,7 +629,7 @@ const classesOn=d=>CLS.filter(c=>c.date===d && !PT_PAIRS.has(ckey(c)) && !classH
 const classesHiddenAll=()=>CLS.filter(c=>!PT_PAIRS.has(ckey(c)) && classHidden(c)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
 const WW=(EXTRA&&EXTRA.workout_whoop)||{};
 const ctitle=c=>{const t=c.class||"",co=(c.coach||"").trim(); if(!co) return t; const r=t.replace(new RegExp("\\s*[-–—·|:]\\s*"+co.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*$","i"),"").trim(); return r||t;};
-const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":"res";
+const bcls=st=>/WAIT/.test(st)?"wait":/COMPLETED/.test(st)?"done":/CANCEL/.test(st)?"cx":/unknown/i.test(st)?"unk":"res";
 const tcase=t=>String(t||"").toLowerCase().replace(/\b([a-z])/g,m=>m.toUpperCase()).replace(/\bThis\b(?= (Gym|Strength|Pilates|Hiit|Ride|Row))/g,"This");
 const blbl=st=>/COMPLETED/.test(st)?"Completed":tcase(st); // past, not cancelled = done
 function whoopLine(s,short){if(!s) return ""; const dur=s.duration?s.duration.replace(/^0:/,""):"";
@@ -720,8 +721,13 @@ function postedHtml(c){if(c.posted==null) return "";
 function badgeStatus(c){return c.cancel_source==="user"?(c.csv_status||c.status||""):(c.status||"");}
 function userCancelLine(c){
   const user=c.cancel_source==="user"||String((c.user_override&&c.user_override.status)||"").toLowerCase()==="cancelled";
-  if(!user||!/RESERV/i.test(c.csv_status||"")) return "";
-  return `<p class="clsnote">You reported this cancelled. The gym list still says reserved.</p>`;
+  const verified=c.provider_cancellation_verified===true||(c.user_override&&c.user_override.provider_cancellation_verified===true);
+  if(!user||verified) return "";
+  const base=String(c.provider_status||c.csv_status||"");
+  let gym="The gym list status is unknown.";
+  if(/RESERV/i.test(base)) gym="The gym list still says reserved.";
+  else if(base&&!/unknown/i.test(base)) gym=`The gym list says ${blbl(base).toLowerCase()}.`;
+  return `<p class="clsnote">You reported this cancelled. The provider has not confirmed it. ${gym}</p>`;
 }
 function classAttrs(c){
   const ov=c.user_override||{};
