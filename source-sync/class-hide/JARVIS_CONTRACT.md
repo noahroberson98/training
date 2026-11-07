@@ -40,10 +40,10 @@ Undo changes `hidden` only. It must leave the cancellation note, the logged sets
 
 ## Phone storage is not the file
 
-The page writes `localStorage` key `tpDash.classHide.v1` on that browser. That survives a reload and a rebuilt page opened in the same browser. It does not write `data/user_overrides.json` and it does not update another device. A new browser with empty storage follows the built `hidden` flag from the last build that read the file. There is no cross-device sync in this change.
+The page writes `localStorage` key `tpDash.classHide.v1` on that browser. A saved choice there wins, including Undo setting hidden false on a row the last build hid. That does not write `data/user_overrides.json` and it does not update another device. A browser with no saved choice follows the built `hidden` flag. There is no cross-device sync in this change.
 
 ## What the page must show
 
-Hide and Undo are Title Case buttons. After Hide, the row is under "Hidden By You" and Undo is on that row. The sentence is "You reported this cancelled. The gym list still says reserved." It must not say the gym cancelled it. A failed save leaves the row where it was and says "Not saved on this phone. The class is still listed." The as-of time on the fixture page is Jan 3, 2099, 11:46 AM CT. No new freshness field is written.
+Hide and Undo are Title Case buttons. After Hide, the row is under "Hidden By You" and Undo is on that row. The class name wraps on its own full-width line. Hide, Cancel, and the badge sit on the next line and do not cover the name. The scope sentence is exactly: "Hide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice." The row sentence is "You reported this cancelled. The gym list still says reserved." It must not say the gym cancelled it. A failed Hide or failed Undo leaves the row where it was and says "Not saved on this phone. Visibility has not changed." The fixture build stamp is Jan 3, 2099, 11:46 AM CT. It is not a new feed read. No new freshness field is written.
 
 The review fixture is `assembled/current.html`, generated from the real template and the synthetic dataset. `class-hide.html` is an older standalone demo and is not this contract's page. The published `index.html` does not contain this control.

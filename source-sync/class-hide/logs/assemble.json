@@ -3,7 +3,7 @@
   "synthetic": true,
   "scenarios": {
     "current": {
-      "bytes": 166640,
+      "bytes": 167108,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",
@@ -40,7 +40,7 @@
       }
     },
     "reimport-reserved": {
-      "bytes": 166650,
+      "bytes": 167118,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",
@@ -77,7 +77,7 @@
       }
     },
     "reimport-missing": {
-      "bytes": 166576,
+      "bytes": 167044,
       "classes": {
         "2099-01-01|10:00|APEX": {
           "status": "CANCELLED",

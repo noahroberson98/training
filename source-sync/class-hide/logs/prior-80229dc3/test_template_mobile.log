@@ -1,0 +1,236 @@
+{
+  "built": "Jan 3, 2099, 11:46 AM CT",
+  "synthetic": true,
+  "scenarios": {
+    "current": {
+      "bytes": 166640,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    },
+    "reimport-reserved": {
+      "bytes": 166650,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    },
+    "reimport-missing": {
+      "bytes": 166576,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    }
+  },
+  "workouts": {
+    "2099-01-01|APEX": {
+      "status": "skipped",
+      "status_locked": false,
+      "user_cancel_source": "user",
+      "provider_cancellation_verified": false,
+      "sets": [
+        [
+          40,
+          8
+        ]
+      ]
+    },
+    "2099-01-03|Strength": {
+      "status": "completed",
+      "status_locked": true,
+      "user_cancel_source": null,
+      "provider_cancellation_verified": null,
+      "sets": [
+        [
+          185,
+          5
+        ]
+      ]
+    },
+    "2099-01-06|Upper Body": {
+      "status": "completed",
+      "status_locked": false,
+      "user_cancel_source": null,
+      "provider_cancellation_verified": null,
+      "sets": [
+        [
+          135,
+          8
+        ],
+        [
+          135,
+          8
+        ],
+        [
+          145,
+          6
+        ]
+      ]
+    }
+  }
+}
+PASS other booking listed
+  expected: 1
+  actual:   1
+PASS baked hides are in Hidden By You
+  expected: ["2099-01-01|10:00|APEX", "2099-01-02|10:00|APEX"]
+  actual:   ["2099-01-01|10:00|APEX", "2099-01-02|10:00|APEX"]
+PASS stale reserved row keeps user-cancel provenance
+  expected: {"status": "CANCELLED", "csv": "RESERVED", "cancel": "user", "provider": "false", "store": "built"}
+  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}
+PASS missing feed row is hidden and not completed
+  expected: "CANCELLED/RESERVED/false"
+  actual:   {"status": "CANCELLED", "csv": "RESERVED", "provider": "false"}
+PASS persistence boundary is on the page
+  expected: "This phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden."
+  actual:   "This phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden."
+PASS user-cancelled workout keeps its set
+  expected: "Row 40 lb × 8 and Skipped"
+  actual:   "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nThu, Jan 1, 2099\nAPEX\nSkipped\n1 logged · 3 planned sets\n1/3\nlogged\n1\nexercises\n8\nreps logged\n320\nVolume (lb)\nExercises\nA1\nRow\n📝\nTarget 3 × 8\nSet 1\n40 lb × 8\n✓\nSet 2\n lb × \nSet 3\n lb × \nLogging for Thu, Jan 1, 2099\nUndo Skip\nStart Free Workout"
+PASS locked workout status and set stay
+  expected: {"locked": "true", "status": "completed", "set": "185 lb × 5"}
+  actual:   {"locked": "true", "status": "completed", "text": "Dec 29 – Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nClasses\n9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nclass\nHide\nCancel class\nReserved\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nSat, Jan 3, 2099\nStrength\nCompleted\n1 logged · 1 planned sets\n1/1\nlogged\n1\nexercises\n5\nreps logged\n925\nVolume (lb)\nStart Workout\nExercises\nB1\nSquat\n📝\nTarget 1 × 5\nSet 1\n185 lb × 5\n✓\n+ Add Set\nStart Workout\nLogging for Sat, Jan 3, 2099\nCompleted · Summary\nStart Free Workout"}
+PASS upper body session and PT resume stay
+  expected: "Bench Press, 135 lb × 8, Personal Training, Easy Bike"
+  actual:   {"visible": "Jan 5 – Jan 11, 2099\nM\n5\nT\n6\nW\n7\nT\n8\nF\n9\nS\n10\nS\n11\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nTue, Jan 6, 2099\nUpper Body\nCompleted\n2:00 PM CT · Personal Training · Coach Example · Reserved\n3 logged · 3 planned sets\n3/3\nlogged\n1\nexercises\n22\nreps logged\n3,030\nVolume (lb)\nW · 1 movements\nExercises\nA1\nBench Press\n📝\nTarget 3 × 8\nSet 1\n135 lb × 8\n✓\nSet 2\n135 lb × 8\n✓\nSet 3\n145 lb × 6\n✓\n+ Add Set\nWorkout time 1:00:00\nLogging for Tue, Jan 6, 2099\nCompleted · Summary\nStart Free Workout", "warm": "W · 1 movementsWEasy Bike1 sets"}
+PASS hide moves that booking under Hidden By You
+  expected: "hidden"
+  actual:   "hidden"
+PASS undo is on the hidden row
+  expected: "Undo"
+  actual:   "Undo"
+PASS other hidden rows stay
+  expected: 2
+  actual:   2
+PASS hide survives reload in this browser
+  expected: "2099-01-03|09:00|THIS STRENGTH"
+  actual:   "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":true}}"
+PASS undo puts the booking back on this day
+  expected: "booked"
+  actual:   "booked"
+PASS failed save leaves the class listed
+  expected: {"warn": "Not saved on this phone. The class is still listed.", "booked": 1, "set": "185 lb × 5"}
+  actual:   {"warn": "Not saved on this phone. The class is still listed.", "booked": 1, "set": true}
+PASS undo changes visibility only
+  expected: {"hidden": "false", "store": "phone", "status": "CANCELLED", "provider": "false", "set": true}
+  actual:   {"card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "false", "undo": "", "hide": "Hide", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved"}, "set": true}
+PASS phone hide of the undone row survives reload
+  expected: 1
+  actual:   1
+PASS same browser keeps the phone hide across a rebuilt reserved feed
+  expected: "phone/hidden/RESERVED"
+  actual:   {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "phone", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}
+PASS rebuilt page does not hide the other booking
+  expected: 1
+  actual:   1
+PASS empty browser still hides the stale reserved row from the override file
+  expected: "built/CANCELLED/RESERVED"
+  actual:   {"storage": null, "card": {"status": "CANCELLED", "csv": "RESERVED", "source": "synthetic feed", "cancel": "user", "provider": "false", "store": "built", "hidden": "true", "undo": "Undo", "hide": "", "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"}}
+PASS missing rows stay hidden and not completed
+  expected: "CANCELLED not COMPLETED"
+  actual:   {"missing": "CANCELLED", "stale": "CANCELLED", "other": 1}
+PASS history still lists the logged exercises
+  expected: ["Bench Press", "Row", "Squat", "135"]
+  actual:   {"names": ["Select an exercise", "Bench Press", "Row", "Squat"], "detail": "Bench Press\n1 session · Previous Jan 6\n174 lb\nEst. 1RM\nPrevious (Jan 6): 135×8, 135×8, 145×6\nTarget: 145×8\nTue, Jan 6\nUpper Body · Target 3 × 8 · —\nSET\tTARGET\tLBS\tREPS\n1\t8\t135\t8\n2\t8\t135\t8\n3\t8\t145\t6\nVolume 3,030 lb"}
+PASS week card stays locked and Hide removes it from the week column
+  expected: "locked then hidden"
+  actual:   {"lock": 1, "hidden": 1}
+PASS row identity before hide
+  expected: ["2099-01-01|10:00|APEX", "2099-01-02|10:00|APEX", "2099-01-03|09:00|THIS STRENGTH"]
+  actual:   ["2099-01-03|09:00|THIS STRENGTH", "2099-01-01|10:00|APEX", "2099-01-02|10:00|APEX"]
+PASS no page error, dialog, or off-machine request
+  expected: []
+  actual:   {"errors": [], "blocked": [], "dialogs": []}
+ALL PASS

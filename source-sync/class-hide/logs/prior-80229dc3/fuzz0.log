@@ -1,0 +1,21 @@
+base sanitized
+c275bcb411c9163331484579df545a270420caa087d30b96087ab4f6ec295b6d  scripts/build.py
+1f2002bd7a6da1e88811b90d9d97c3e51c5be09b02de6615fe01bdafc26f14bd  scripts/common.py
+7845696c424caa07fcd4bd32674a27de2e7270d1ae90e8a0d52faa0a29b87093  scripts/merge.py
+d11572a04a38f337040e970a9f4372c6dd3d08ecba9409b8fffb14524b48000c  scripts/template.html
+4b79dfa1c773cf7a479de0f86f77eef6fe5382adb28a843cab0439edc2fb8b0c  scripts/whoop_pair.py
+
+===== apply template.html fuzz 0 =====
+patching file scripts/template.html
+===== apply build.py fuzz 0 =====
+patching file scripts/build.py
+===== apply merge.py fuzz 0 =====
+patching file scripts/merge.py
+===== apply common.py fuzz 0 =====
+patching file scripts/common.py
+
+result vs runtime
+TEMPLATE_MATCH
+BUILD_MATCH
+MERGE_MATCH
+COMMON_MATCH

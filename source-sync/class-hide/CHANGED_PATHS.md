@@ -18,6 +18,11 @@ Parent commit `c7f12ffa1754f3a0cac9e90e666a46f57685ad1a` on `cursor/class-hide-u
 - `source-sync/class-hide/shots/mobile-hidden.png`
 - `source-sync/class-hide/shots/mobile-undo.png`
 - `source-sync/class-hide/shots/mobile-save-failed.png`
+- `source-sync/class-hide/shots/mobile-undo-save-failed.png`
+- `source-sync/class-hide/logs/test_template_mobile-attempt1.log`
+- `source-sync/class-hide/logs/test_template_mobile-round2.log`
+- `source-sync/class-hide/logs/network.json`
+- `source-sync/class-hide/logs/prior-80229dc3/`
 - `source-sync/class-hide/BRIEF.md`
 - `source-sync/class-hide/JARVIS_CONTRACT.md`
 - `source-sync/class-hide/PINS.md`

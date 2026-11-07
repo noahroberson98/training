@@ -47,12 +47,72 @@ INIT = r"""
 })();
 """
 blocked = []
+seen = []
 APEX = "2099-01-01|10:00|APEX"
 MISSING = "2099-01-02|10:00|APEX"
 OTHER = "2099-01-03|09:00|THIS STRENGTH"
 SENTENCE = "You reported this cancelled. The gym list still says reserved."
-FAIL = "Not saved on this phone. The class is still listed."
-SCOPE = "This phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden."
+FAIL = "Not saved on this phone. Visibility has not changed."
+SCOPE = "Hide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice."
+GEOM = """el => {
+  const box = node => {
+    if (!node) return null;
+    const r = node.getBoundingClientRect();
+    const n = v => Math.round(v * 10) / 10;
+    return {x: n(r.x), y: n(r.y), w: n(r.width), h: n(r.height), right: n(r.right), bottom: n(r.bottom)};
+  };
+  const overlap = (a, b) => !!(a && b && a.x < b.right - 0.5 && a.right > b.x + 0.5 && a.y < b.bottom - 0.5 && a.bottom > b.y + 0.5);
+  el.scrollIntoView({block: "center"});
+  const s = getComputedStyle(el);
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const tr = range.getBoundingClientRect();
+  const name = box(el);
+  const card = el.closest(".cls,.cc");
+  const parts = {};
+  if (card) {
+    for (const sel of [".src", "[data-hidecls]", "[data-undocls]", "[data-cancelcls]", ".bdg", ".b"]) {
+      const node = card.querySelector(sel);
+      if (node) parts[sel] = box(node);
+    }
+  }
+  const hits = {};
+  for (const sel of ["[data-hidecls]", "[data-undocls]", "[data-cancelcls]"]) {
+    const node = card && card.querySelector(sel);
+    if (!node) continue;
+    node.scrollIntoView({block: "center"});
+    const r = node.getBoundingClientRect();
+    const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    hits[sel] = {w: Math.round(r.width * 10) / 10, h: Math.round(r.height * 10) / 10, reached: !!(top && (top === node || node.contains(top)))};
+  }
+  const overlaps = {};
+  for (const [k, b] of Object.entries(parts)) {
+    if (k === ".src") continue;
+    overlaps[k] = overlap(name, b);
+  }
+  return {
+    text: el.textContent,
+    viewport: {w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio},
+    name, textW: Math.round(tr.width * 10) / 10, textH: Math.round(tr.height * 10) / 10,
+    clientWidth: el.clientWidth, scrollWidth: el.scrollWidth,
+    whiteSpace: s.whiteSpace, overflow: s.overflow, textOverflow: s.textOverflow,
+    clipped: tr.width > el.getBoundingClientRect().width + 1.5 || el.scrollWidth > el.clientWidth + 1,
+    overlaps, parts, hits
+  };
+}"""
+
+
+def identity_ok(g, text):
+    if not g or g.get("text") != text or g.get("clipped") or g.get("textOverflow") == "ellipsis":
+        return False
+    if g.get("whiteSpace") == "nowrap" or (g.get("name") or {}).get("w", 0) < 140:
+        return False
+    if any(g.get("overlaps", {}).values()):
+        return False
+    hits = g.get("hits") or {}
+    if not hits or any(not h.get("reached") or h.get("w", 0) < 20 or h.get("h", 0) < 20 for h in hits.values()):
+        return False
+    return g.get("viewport", {}).get("w") == 390
 
 
 def card(page, key, root):
@@ -83,6 +143,7 @@ with sync_playwright() as pw:
     ctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2)
     ctx.add_init_script(INIT)
     def route(r):
+        seen.append({"url": r.request.url, "method": r.request.method})
         if r.request.url.startswith("http://127.0.0.1"):
             r.continue_()
         else:
@@ -101,7 +162,11 @@ with sync_playwright() as pw:
     check(baked["status"] == "CANCELLED" and baked["csv"] == "RESERVED" and baked["source"] == "synthetic feed" and baked["cancel"] == "user" and baked["provider"] == "false" and baked["store"] == "built" and SENTENCE in baked["text"] and baked["undo"].strip() == "Undo", "stale reserved row keeps user-cancel provenance", {"status": "CANCELLED", "csv": "RESERVED", "cancel": "user", "provider": "false", "store": "built"}, baked)
     missing = attrs(page, MISSING)
     check(missing["status"] == "CANCELLED" and missing["status"] != "COMPLETED" and missing["csv"] == "RESERVED" and missing["provider"] == "false", "missing feed row is hidden and not completed", "CANCELLED/RESERVED/false", {"status": missing["status"], "csv": missing["csv"], "provider": missing["provider"]})
-    check(page.locator("#hideScope").inner_text() == SCOPE, "persistence boundary is on the page", SCOPE, page.locator("#hideScope").inner_text())
+    scope = page.locator("#hideScope").inner_text()
+    visible = page.locator("body").inner_text()
+    check(scope == SCOPE and "user_overrides.json" not in visible and ".json" not in visible, "scope note is the owner sentence with no filename", SCOPE, scope)
+    before_geom = page.locator("#booked .cname").evaluate(GEOM)
+    check(identity_ok(before_geom, "THIS STRENGTH"), "booked class name is fully readable at 390px", "THIS STRENGTH wraps, no ellipsis, actions do not cover it", before_geom)
     page.screenshot(path=str(shots / "mobile-before.png"), full_page=True)
 
     open_day(page, "current", "2099-01-01")
@@ -131,6 +196,8 @@ with sync_playwright() as pw:
     check(card(page, OTHER, "#hidden").count() == 1 and OTHER in (stored or ""), "hide survives reload in this browser", OTHER, stored)
     card(page, OTHER, "#hidden").locator("[data-undocls]").click()
     check(card(page, OTHER, "#booked").count() == 1 and card(page, OTHER, "#hidden").count() == 0, "undo puts the booking back on this day", "booked", "booked" if card(page, OTHER, "#booked").count() else "hidden")
+    undo_geom = page.locator("#booked .cname").evaluate(GEOM)
+    check(identity_ok(undo_geom, "THIS STRENGTH"), "undo state class name is fully readable at 390px", "THIS STRENGTH wraps, no ellipsis, actions do not cover it", undo_geom)
     page.screenshot(path=str(shots / "mobile-undo.png"), full_page=True)
 
     page.evaluate("() => { window.__failStorage = true; }")
@@ -138,9 +205,32 @@ with sync_playwright() as pw:
     warn = page.locator("#classHideWarn").inner_text() if page.locator("#classHideWarn").count() else ""
     still = card(page, OTHER, "#booked").count()
     main_after = page.locator("#main").inner_text()
-    check(warn == FAIL and still == 1 and "185 lb × 5" in main_after and "Completed" in main_after, "failed save leaves the class listed", {"warn": FAIL, "booked": 1, "set": "185 lb × 5"}, {"warn": warn, "booked": still, "set": "185 lb × 5" in main_after})
+    fail_geom = page.locator("#booked .cname").evaluate(GEOM)
+    check(warn == FAIL and still == 1 and "185 lb × 5" in main_after and "Completed" in main_after and identity_ok(fail_geom, "THIS STRENGTH"), "failed hide leaves the class listed and readable", {"warn": FAIL, "booked": 1, "name": "THIS STRENGTH"}, {"warn": warn, "booked": still, "geom": fail_geom})
     page.screenshot(path=str(shots / "mobile-save-failed.png"), full_page=True)
+
+    before_undo = page.evaluate("() => localStorage.getItem('tpDash.classHide.v1')")
+    card(page, APEX, "#hidden").locator("[data-undocls]").click()
+    undo_warn = page.locator("#classHideWarn").inner_text() if page.locator("#classHideWarn").count() else ""
+    after_undo = page.evaluate("() => localStorage.getItem('tpDash.classHide.v1')")
+    built_fail = attrs(page, APEX)
+    check(undo_warn == FAIL and card(page, APEX, "#hidden").count() == 1 and card(page, APEX, "#booked").count() == 0 and after_undo == before_undo and built_fail["status"] == "CANCELLED" and built_fail["csv"] == "RESERVED" and built_fail["cancel"] == "user" and built_fail["provider"] == "false" and built_fail["hidden"] == "true" and built_fail["store"] == "built", "failed undo of a built-hidden row keeps that hide", {"warn": FAIL, "hidden": "true", "store": "built", "storage_unchanged": True}, {"warn": undo_warn, "card": built_fail, "before": before_undo, "after": after_undo})
+    page.screenshot(path=str(shots / "mobile-undo-save-failed.png"), full_page=True)
     page.evaluate("() => { window.__failStorage = false; }")
+    card(page, OTHER, "#booked").locator("[data-hidecls]").click()
+    cleared = page.locator("#classHideWarn").count()
+    phone_store = page.evaluate("() => JSON.parse(localStorage.getItem('tpDash.classHide.v1')||'{}')")
+    check(cleared == 0 and phone_store.get(OTHER, {}).get("hidden") is True and card(page, OTHER, "#hidden").count() == 1, "a later successful save clears the warning and hides the class", {"warn": 0, "hidden": True}, {"warn": cleared, "store": phone_store, "hidden": card(page, OTHER, "#hidden").count()})
+    page.evaluate("() => { window.__failStorage = true; }")
+    phone_before = page.evaluate("() => localStorage.getItem('tpDash.classHide.v1')")
+    card(page, OTHER, "#hidden").locator("[data-undocls]").click()
+    phone_warn = page.locator("#classHideWarn").inner_text() if page.locator("#classHideWarn").count() else ""
+    phone_after = page.evaluate("() => localStorage.getItem('tpDash.classHide.v1')")
+    phone_card = attrs(page, OTHER)
+    check(phone_warn == FAIL and phone_after == phone_before and card(page, OTHER, "#hidden").count() == 1 and phone_card["hidden"] == "true" and phone_card["store"] == "phone" and phone_card["status"] == "RESERVED" and phone_card["csv"] == "RESERVED" and phone_card["provider"] == "false", "failed undo of a phone-hidden row keeps that choice", {"warn": FAIL, "hidden": "true", "store": "phone"}, {"warn": phone_warn, "before": phone_before, "after": phone_after, "card": phone_card})
+    page.evaluate("() => { window.__failStorage = false; }")
+    card(page, OTHER, "#hidden").locator("[data-undocls]").click()
+    check(page.locator("#classHideWarn").count() == 0 and card(page, OTHER, "#booked").count() == 1, "the next successful undo clears the warning", 0, page.locator("#classHideWarn").count())
 
     card(page, APEX, "#hidden").locator("[data-undocls]").click()
     phone = attrs(page, APEX, "#hidden") if card(page, APEX, "#hidden").count() else {}
@@ -166,7 +256,7 @@ with sync_playwright() as pw:
     open_day(page2, "reimport-reserved", "2099-01-03")
     bare = page2.evaluate("() => localStorage.getItem('tpDash.classHide.v1')")
     again = attrs(page2, APEX)
-    check(bare in (None, "null") and again["store"] == "built" and again["status"] == "CANCELLED" and again["csv"] == "RESERVED" and again["provider"] == "false", "empty browser still hides the stale reserved row from the override file", "built/CANCELLED/RESERVED", {"storage": bare, "card": again})
+    check(bare in (None, "null") and again["store"] == "built" and again["hidden"] == "true" and again["status"] == "CANCELLED" and again["csv"] == "RESERVED" and again["provider"] == "false", "empty browser follows the built shared hide", "built/hidden/CANCELLED/RESERVED", {"storage": bare, "card": again})
     open_day(page2, "reimport-missing", "2099-01-03")
     gone = attrs(page2, MISSING)
     gone1 = attrs(page2, APEX)
@@ -181,6 +271,8 @@ with sync_playwright() as pw:
     check("Bench Press" in names and "Row" in names and "Squat" in names and "135" in hist, "history still lists the logged exercises", ["Bench Press", "Row", "Squat", "135"], {"names": names, "detail": hist})
     open_day(page2, "current", "2099-01-03", "week")
     page2.wait_for_selector(".cc[data-key='2099-01-03|09:00|THIS STRENGTH']")
+    week_geom = page2.locator(".cc[data-key='2099-01-03|09:00|THIS STRENGTH'] .cname").evaluate(GEOM)
+    check(identity_ok(week_geom, "THIS STRENGTH"), "week class name is fully readable at 390px", "THIS STRENGTH wraps, no ellipsis, Hide does not cover it", week_geom)
     week_locked = page2.locator(".cc[data-key='2099-01-03|09:00|THIS STRENGTH'] .lock").count()
     page2.locator(".cc[data-key='2099-01-03|09:00|THIS STRENGTH'] [data-hidecls]").click()
     check(week_locked == 1 and card(page2, OTHER, "#hidden").count() == 1 and page2.locator(".cc[data-key='2099-01-03|09:00|THIS STRENGTH']").count() == 0, "week card stays locked and Hide removes it from the week column", "locked then hidden", {"lock": week_locked, "hidden": card(page2, OTHER, "#hidden").count()})
@@ -192,6 +284,7 @@ with sync_playwright() as pw:
 
 httpd.shutdown()
 (HERE / "logs").mkdir(exist_ok=True)
-(HERE / "logs" / "template-mobile.json").write_text(json.dumps({"pass": ok, "checks": proof, "blocked": blocked, "errors": errors}, indent=2) + "\n")
+(HERE / "logs" / "template-mobile.json").write_text(json.dumps({"pass": ok, "checks": proof, "blocked": blocked, "errors": errors, "requests": seen}, indent=2) + "\n")
+(HERE / "logs" / "network.json").write_text(json.dumps({"blocked": blocked, "requests": seen}, indent=2) + "\n")
 print("ALL PASS" if ok else "SOME FAILED")
 sys.exit(0 if ok else 1)

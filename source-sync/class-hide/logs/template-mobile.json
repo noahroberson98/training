@@ -53,15 +53,95 @@
       "pass": true
     },
     {
-      "check": "persistence boundary is on the page",
-      "expected": "This phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.",
-      "actual": "This phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.",
+      "check": "scope note is the owner sentence with no filename",
+      "expected": "Hide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.",
+      "actual": "Hide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.",
+      "pass": true
+    },
+    {
+      "check": "booked class name is fully readable at 390px",
+      "expected": "THIS STRENGTH wraps, no ellipsis, actions do not cover it",
+      "actual": {
+        "text": "THIS STRENGTH",
+        "viewport": {
+          "w": 390,
+          "h": 844,
+          "dpr": 2
+        },
+        "name": {
+          "x": 104,
+          "y": 405,
+          "w": 248,
+          "h": 21.8,
+          "right": 352,
+          "bottom": 426.7
+        },
+        "textW": 114.7,
+        "textH": 20,
+        "clientWidth": 248,
+        "scrollWidth": 248,
+        "whiteSpace": "normal",
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "clipped": false,
+        "overlaps": {
+          "[data-hidecls]": false,
+          "[data-cancelcls]": false,
+          ".bdg": false
+        },
+        "parts": {
+          ".src": {
+            "x": 104,
+            "y": 385.6,
+            "w": 248,
+            "h": 17.4,
+            "right": 352,
+            "bottom": 403
+          },
+          "[data-hidecls]": {
+            "x": 104,
+            "y": 456.5,
+            "w": 58.1,
+            "h": 38.3,
+            "right": 162.1,
+            "bottom": 494.8
+          },
+          "[data-cancelcls]": {
+            "x": 170.1,
+            "y": 459.9,
+            "w": 93.8,
+            "h": 31.4,
+            "right": 264,
+            "bottom": 491.3
+          },
+          ".bdg": {
+            "x": 112,
+            "y": 502.8,
+            "w": 81.9,
+            "h": 26.8,
+            "right": 193.9,
+            "bottom": 529.6
+          }
+        },
+        "hits": {
+          "[data-hidecls]": {
+            "w": 58.1,
+            "h": 38.3,
+            "reached": true
+          },
+          "[data-cancelcls]": {
+            "w": 93.8,
+            "h": 31.4,
+            "reached": true
+          }
+        }
+      },
       "pass": true
     },
     {
       "check": "user-cancelled workout keeps its set",
       "expected": "Row 40 lb \u00d7 8 and Skipped",
-      "actual": "Dec 29 \u2013 Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nThu, Jan 1, 2099\nAPEX\nSkipped\n1 logged \u00b7 3 planned sets\n1/3\nlogged\n1\nexercises\n8\nreps logged\n320\nVolume (lb)\nExercises\nA1\nRow\n\ud83d\udcdd\nTarget 3 \u00d7 8\nSet 1\n40 lb \u00d7 8\n\u2713\nSet 2\n lb \u00d7 \nSet 3\n lb \u00d7 \nLogging for Thu, Jan 1, 2099\nUndo Skip\nStart Free Workout",
+      "actual": "Dec 29 \u2013 Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nThu, Jan 1, 2099\nAPEX\nSkipped\n1 logged \u00b7 3 planned sets\n1/3\nlogged\n1\nexercises\n8\nreps logged\n320\nVolume (lb)\nExercises\nA1\nRow\n\ud83d\udcdd\nTarget 3 \u00d7 8\nSet 1\n40 lb \u00d7 8\n\u2713\nSet 2\n lb \u00d7 \nSet 3\n lb \u00d7 \nLogging for Thu, Jan 1, 2099\nUndo Skip\nStart Free Workout",
       "pass": true
     },
     {
@@ -74,7 +154,7 @@
       "actual": {
         "locked": "true",
         "status": "completed",
-        "text": "Dec 29 \u2013 Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nClasses\n9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nclass\nHide\nCancel class\nReserved\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nSat, Jan 3, 2099\nStrength\nCompleted\n1 logged \u00b7 1 planned sets\n1/1\nlogged\n1\nexercises\n5\nreps logged\n925\nVolume (lb)\nStart Workout\nExercises\nB1\nSquat\n\ud83d\udcdd\nTarget 1 \u00d7 5\nSet 1\n185 lb \u00d7 5\n\u2713\n+ Add Set\nStart Workout\nLogging for Sat, Jan 3, 2099\nCompleted \u00b7 Summary\nStart Free Workout"
+        "text": "Dec 29 \u2013 Jan 4, 2099\nM\n29\nT\n30\nW\n31\nT\n1\nF\n2\nS\n3\nS\n4\nClasses\n9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nclass\nHide\nCancel class\nReserved\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nSat, Jan 3, 2099\nStrength\nCompleted\n1 logged \u00b7 1 planned sets\n1/1\nlogged\n1\nexercises\n5\nreps logged\n925\nVolume (lb)\nStart Workout\nExercises\nB1\nSquat\n\ud83d\udcdd\nTarget 1 \u00d7 5\nSet 1\n185 lb \u00d7 5\n\u2713\n+ Add Set\nStart Workout\nLogging for Sat, Jan 3, 2099\nCompleted \u00b7 Summary\nStart Free Workout"
       },
       "pass": true
     },
@@ -82,7 +162,7 @@
       "check": "upper body session and PT resume stay",
       "expected": "Bench Press, 135 lb \u00d7 8, Personal Training, Easy Bike",
       "actual": {
-        "visible": "Jan 5 \u2013 Jan 11, 2099\nM\n5\nT\n6\nW\n7\nT\n8\nF\n9\nS\n10\nS\n11\nHidden By You\n\nThis phone remembers Hide and Undo in this browser. It does not write user_overrides.json and it does not change another device. A rebuilt page hides a class when that file says hidden.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nTue, Jan 6, 2099\nUpper Body\nCompleted\n2:00 PM CT \u00b7 Personal Training \u00b7 Coach Example \u00b7 Reserved\n3 logged \u00b7 3 planned sets\n3/3\nlogged\n1\nexercises\n22\nreps logged\n3,030\nVolume (lb)\nW \u00b7 1 movements\nExercises\nA1\nBench Press\n\ud83d\udcdd\nTarget 3 \u00d7 8\nSet 1\n135 lb \u00d7 8\n\u2713\nSet 2\n135 lb \u00d7 8\n\u2713\nSet 3\n145 lb \u00d7 6\n\u2713\n+ Add Set\nWorkout time 1:00:00\nLogging for Tue, Jan 6, 2099\nCompleted \u00b7 Summary\nStart Free Workout",
+        "visible": "Jan 5 \u2013 Jan 11, 2099\nM\n5\nT\n6\nW\n7\nT\n8\nF\n9\nS\n10\nS\n11\nHidden By You\n\nHide and Undo change visibility only in this browser. Undo does not restore a reservation or change your shared saved choice. Rebuilt pages use that shared choice only when this browser has no saved choice.\n\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\n10:00\nAM CT\nTHIS Gym\nAPEX\nJan 2, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved\nTue, Jan 6, 2099\nUpper Body\nCompleted\n2:00 PM CT \u00b7 Personal Training \u00b7 Coach Example \u00b7 Reserved\n3 logged \u00b7 3 planned sets\n3/3\nlogged\n1\nexercises\n22\nreps logged\n3,030\nVolume (lb)\nW \u00b7 1 movements\nExercises\nA1\nBench Press\n\ud83d\udcdd\nTarget 3 \u00d7 8\nSet 1\n135 lb \u00d7 8\n\u2713\nSet 2\n135 lb \u00d7 8\n\u2713\nSet 3\n145 lb \u00d7 6\n\u2713\n+ Add Set\nWorkout time 1:00:00\nLogging for Tue, Jan 6, 2099\nCompleted \u00b7 Summary\nStart Free Workout",
         "warm": "W \u00b7 1 movementsWEasy Bike1 sets"
       },
       "pass": true
@@ -118,17 +198,247 @@
       "pass": true
     },
     {
-      "check": "failed save leaves the class listed",
+      "check": "undo state class name is fully readable at 390px",
+      "expected": "THIS STRENGTH wraps, no ellipsis, actions do not cover it",
+      "actual": {
+        "text": "THIS STRENGTH",
+        "viewport": {
+          "w": 390,
+          "h": 844,
+          "dpr": 2
+        },
+        "name": {
+          "x": 104,
+          "y": 405,
+          "w": 248,
+          "h": 21.8,
+          "right": 352,
+          "bottom": 426.7
+        },
+        "textW": 114.7,
+        "textH": 20,
+        "clientWidth": 248,
+        "scrollWidth": 248,
+        "whiteSpace": "normal",
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "clipped": false,
+        "overlaps": {
+          "[data-hidecls]": false,
+          "[data-cancelcls]": false,
+          ".bdg": false
+        },
+        "parts": {
+          ".src": {
+            "x": 104,
+            "y": 385.6,
+            "w": 248,
+            "h": 17.4,
+            "right": 352,
+            "bottom": 403
+          },
+          "[data-hidecls]": {
+            "x": 104,
+            "y": 456.5,
+            "w": 58.1,
+            "h": 38.3,
+            "right": 162.1,
+            "bottom": 494.8
+          },
+          "[data-cancelcls]": {
+            "x": 170.1,
+            "y": 459.9,
+            "w": 93.8,
+            "h": 31.4,
+            "right": 264,
+            "bottom": 491.3
+          },
+          ".bdg": {
+            "x": 112,
+            "y": 502.8,
+            "w": 81.9,
+            "h": 26.8,
+            "right": 193.9,
+            "bottom": 529.6
+          }
+        },
+        "hits": {
+          "[data-hidecls]": {
+            "w": 58.1,
+            "h": 38.3,
+            "reached": true
+          },
+          "[data-cancelcls]": {
+            "w": 93.8,
+            "h": 31.4,
+            "reached": true
+          }
+        }
+      },
+      "pass": true
+    },
+    {
+      "check": "failed hide leaves the class listed and readable",
       "expected": {
-        "warn": "Not saved on this phone. The class is still listed.",
+        "warn": "Not saved on this phone. Visibility has not changed.",
         "booked": 1,
-        "set": "185 lb \u00d7 5"
+        "name": "THIS STRENGTH"
       },
       "actual": {
-        "warn": "Not saved on this phone. The class is still listed.",
+        "warn": "Not saved on this phone. Visibility has not changed.",
         "booked": 1,
-        "set": true
+        "geom": {
+          "text": "THIS STRENGTH",
+          "viewport": {
+            "w": 390,
+            "h": 844,
+            "dpr": 2
+          },
+          "name": {
+            "x": 104,
+            "y": 405,
+            "w": 248,
+            "h": 21.8,
+            "right": 352,
+            "bottom": 426.7
+          },
+          "textW": 114.7,
+          "textH": 20,
+          "clientWidth": 248,
+          "scrollWidth": 248,
+          "whiteSpace": "normal",
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "clipped": false,
+          "overlaps": {
+            "[data-hidecls]": false,
+            "[data-cancelcls]": false,
+            ".bdg": false
+          },
+          "parts": {
+            ".src": {
+              "x": 104,
+              "y": 385.6,
+              "w": 248,
+              "h": 17.4,
+              "right": 352,
+              "bottom": 403
+            },
+            "[data-hidecls]": {
+              "x": 104,
+              "y": 456.5,
+              "w": 58.1,
+              "h": 38.3,
+              "right": 162.1,
+              "bottom": 494.8
+            },
+            "[data-cancelcls]": {
+              "x": 170.1,
+              "y": 459.9,
+              "w": 93.8,
+              "h": 31.4,
+              "right": 264,
+              "bottom": 491.3
+            },
+            ".bdg": {
+              "x": 112,
+              "y": 502.8,
+              "w": 81.9,
+              "h": 26.8,
+              "right": 193.9,
+              "bottom": 529.6
+            }
+          },
+          "hits": {
+            "[data-hidecls]": {
+              "w": 58.1,
+              "h": 38.3,
+              "reached": true
+            },
+            "[data-cancelcls]": {
+              "w": 93.8,
+              "h": 31.4,
+              "reached": true
+            }
+          }
+        }
       },
+      "pass": true
+    },
+    {
+      "check": "failed undo of a built-hidden row keeps that hide",
+      "expected": {
+        "warn": "Not saved on this phone. Visibility has not changed.",
+        "hidden": "true",
+        "store": "built",
+        "storage_unchanged": true
+      },
+      "actual": {
+        "warn": "Not saved on this phone. Visibility has not changed.",
+        "card": {
+          "status": "CANCELLED",
+          "csv": "RESERVED",
+          "source": "synthetic feed",
+          "cancel": "user",
+          "provider": "false",
+          "store": "built",
+          "hidden": "true",
+          "undo": "Undo",
+          "hide": "",
+          "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+        },
+        "before": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}",
+        "after": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":false}}"
+      },
+      "pass": true
+    },
+    {
+      "check": "a later successful save clears the warning and hides the class",
+      "expected": {
+        "warn": 0,
+        "hidden": true
+      },
+      "actual": {
+        "warn": 0,
+        "store": {
+          "2099-01-03|09:00|THIS STRENGTH": {
+            "hidden": true
+          }
+        },
+        "hidden": 1
+      },
+      "pass": true
+    },
+    {
+      "check": "failed undo of a phone-hidden row keeps that choice",
+      "expected": {
+        "warn": "Not saved on this phone. Visibility has not changed.",
+        "hidden": "true",
+        "store": "phone"
+      },
+      "actual": {
+        "warn": "Not saved on this phone. Visibility has not changed.",
+        "before": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":true}}",
+        "after": "{\"2099-01-03|09:00|THIS STRENGTH\":{\"hidden\":true}}",
+        "card": {
+          "status": "RESERVED",
+          "csv": "RESERVED",
+          "source": "synthetic feed",
+          "cancel": "",
+          "provider": "false",
+          "store": "phone",
+          "hidden": "true",
+          "undo": "Undo",
+          "hide": "",
+          "text": "9:00\nAM CT\nTHIS Gym\nTHIS STRENGTH\nJan 3, 2099\nUndo\nReserved"
+        }
+      },
+      "pass": true
+    },
+    {
+      "check": "the next successful undo clears the warning",
+      "expected": 0,
+      "actual": 0,
       "pass": true
     },
     {
@@ -187,8 +497,8 @@
       "pass": true
     },
     {
-      "check": "empty browser still hides the stale reserved row from the override file",
-      "expected": "built/CANCELLED/RESERVED",
+      "check": "empty browser follows the built shared hide",
+      "expected": "built/hidden/CANCELLED/RESERVED",
       "actual": {
         "storage": null,
         "card": {
@@ -236,6 +546,78 @@
       "pass": true
     },
     {
+      "check": "week class name is fully readable at 390px",
+      "expected": "THIS STRENGTH wraps, no ellipsis, Hide does not cover it",
+      "actual": {
+        "text": "THIS STRENGTH",
+        "viewport": {
+          "w": 390,
+          "h": 844,
+          "dpr": 2
+        },
+        "name": {
+          "x": 103,
+          "y": 414.3,
+          "w": 228,
+          "h": 16.3,
+          "right": 331,
+          "bottom": 430.6
+        },
+        "textW": 99.1,
+        "textH": 18,
+        "clientWidth": 228,
+        "scrollWidth": 228,
+        "whiteSpace": "normal",
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "clipped": false,
+        "overlaps": {
+          "[data-hidecls]": false,
+          "[data-cancelcls]": false,
+          ".b": false
+        },
+        "parts": {
+          "[data-hidecls]": {
+            "x": 257.5,
+            "y": 438.6,
+            "w": 58.1,
+            "h": 38.3,
+            "right": 315.6,
+            "bottom": 476.9
+          },
+          "[data-cancelcls]": {
+            "x": 103,
+            "y": 449,
+            "w": 57.7,
+            "h": 23.4,
+            "right": 160.7,
+            "bottom": 472.4
+          },
+          ".b": {
+            "x": 176.7,
+            "y": 450,
+            "w": 72.8,
+            "h": 21.4,
+            "right": 249.5,
+            "bottom": 471.4
+          }
+        },
+        "hits": {
+          "[data-hidecls]": {
+            "w": 58.1,
+            "h": 38.3,
+            "reached": true
+          },
+          "[data-cancelcls]": {
+            "w": 57.7,
+            "h": 23.4,
+            "reached": true
+          }
+        }
+      },
+      "pass": true
+    },
+    {
       "check": "week card stays locked and Hide removes it from the week column",
       "expected": "locked then hidden",
       "actual": {
@@ -270,5 +652,59 @@
     }
   ],
   "blocked": [],
-  "errors": []
+  "errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-01",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-06",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-01",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=workout&day=2099-01-01",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/reimport-reserved.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/reimport-reserved.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/reimport-missing.html?tab=workout&day=2099-01-03",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=history&day=2099-01-06",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:37893/current.html?tab=week&day=2099-01-03",
+      "method": "GET"
+    }
+  ]
 }
