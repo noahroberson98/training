@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "sessions": {
+    "2099-01-01|10:00|APEX": {
+      "session_key": "2099-01-01|10:00|APEX",
+      "date": "2099-01-01",
+      "time": "10:00",
+      "class": "APEX",
+      "status": "cancelled",
+      "attendance": "skipped",
+      "hidden": true,
+      "source": "Synthetic User",
+      "reported_at": "2099-01-03T11:45:00-06:00",
+      "provider_cancellation_verified": false,
+      "note": "Synthetic user report only. Not a provider cancellation."
+    }
+  }
+}
