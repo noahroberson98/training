@@ -1,0 +1,35 @@
+# Run from the extracted review root. Do not publish.
+# $PWD is captured before any cd. The patch redirect uses that root, not the directory entered by cd.
+
+REVIEW_ROOT="$(pwd)"
+test -f "$REVIEW_ROOT/patches/persist-save-status.patch"
+test -f "$REVIEW_ROOT/scripts/template.5ad77b37.html"
+test -f "$REVIEW_ROOT/scripts/preview_current.py"
+rm -rf /tmp/gen-review
+mkdir -p /tmp/gen-review/scripts
+cp "$REVIEW_ROOT/scripts/template.5ad77b37.html" /tmp/gen-review/scripts/template.html
+(cd /tmp/gen-review && patch -p1 --fuzz=0 < "$REVIEW_ROOT/patches/persist-save-status.patch")
+echo PATCH_EXIT:$?
+sha256sum /tmp/gen-review/scripts/template.html
+python3 "$REVIEW_ROOT/scripts/reconstruct_review.py" /tmp/gen-review/scripts/template.html "$REVIEW_ROOT/before/index.html" /tmp/rebuilt-review.html
+echo REBUILD_EXIT:$?
+cmp /tmp/rebuilt-review.html "$REVIEW_ROOT/corrected/index.html"
+echo CMP_EXIT:$?
+python3 "$REVIEW_ROOT/tests/test_e1rm_persist.py" "$REVIEW_ROOT/before/index.html" /tmp/recipe-persist-before
+echo PERSIST_BEFORE_EXIT:$?
+python3 "$REVIEW_ROOT/tests/test_e1rm_persist.py" "$REVIEW_ROOT/corrected/index.html" /tmp/recipe-persist-after
+echo PERSIST_AFTER_EXIT:$?
+python3 "$REVIEW_ROOT/tests/test_e1rm_reach.py" "$REVIEW_ROOT/corrected/index.html" /tmp/recipe-reach
+echo REACH_EXIT:$?
+python3 "$REVIEW_ROOT/tests/test_e1rm_exact.py" "$REVIEW_ROOT/corrected/index.html" /tmp/recipe-exact
+echo EXACT_EXIT:$?
+HISTORY_PATCH="$REVIEW_ROOT/patches/template.html.patch" python3 "$REVIEW_ROOT/tests/test_e1rm_history.py"
+echo HISTORY_EXIT:$?
+
+# Expected template hash after the patch:
+# 6ba16a81216e470d9eb8961805068fb19677cd69f4948d96609d4dc221635c08
+# corrected/index.html stays
+# 9582f97c6315444cac28a047aa889b3f6c71eca785cca9abc339bae36c2c4ffe
+# The 7:03 PM CT line is the frozen build clock, not a new TrainingPeaks read.
+# Persist-before is expected to exit 1. The other tests are expected to exit 0.
+# Both persistence logs keep the Playwright CancelledError from the aborted hang.

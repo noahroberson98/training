@@ -280,14 +280,36 @@ with sync_playwright() as pw:
     row.locator("[data-fr]").fill("4")
     row.locator("[data-logrow]").click()
     page.wait_for_timeout(300)
-    page.locator("[data-addrow]").first.click()
+    add = page.locator("[data-addrow]").first
+    add.scroll_into_view_if_needed()
+    ex_id = add.get_attribute("data-addrow")
+    ex = add.locator("xpath=ancestor::div[contains(@class,'ex')][1]")
+    before_rows = ex.locator(".srow").count()
+    wrong_id = page.evaluate("""() => {
+      const rows = [...document.querySelectorAll('.srow')].filter(r => r.querySelector('[data-fw]'));
+      const b = rows.length ? rows[rows.length - 1].querySelector('[data-logrow]') : null;
+      return b ? b.dataset.logrow : '';
+    }""")
+    check(bool(ex_id) and wrong_id != ex_id, "negative control: the global last editable row is not the clicked Add Set exercise")
+    others_before = page.evaluate("""(id) => {
+      const i = id.indexOf('::'); const k = id.slice(0, i); const e = id.slice(i + 2);
+      const bag = ((local[k] || {}).exercises) || {};
+      const out = {};
+      Object.keys(bag).forEach(name => { if (name !== e) out[name] = JSON.stringify((bag[name].sets || []).map(s => [s.weight_lb, s.reps])); });
+      return {e, name: document.querySelector('[data-addrow]').closest('.ex').querySelector('.nm').textContent, out};
+    }""", ex_id)
+    add.click()
     page.wait_for_timeout(300)
-    added = page.locator(".srow").filter(has=page.locator("[data-fw]")).last
+    after_rows = ex.locator(".srow").count()
+    check(after_rows == before_rows + 1, "Add Set adds one row on the clicked exercise")
+    added = ex.locator(".srow").nth(after_rows - 1)
+    check(added.locator("[data-logrow]").get_attribute("data-logrow") == ex_id, "the new row belongs to the clicked exercise")
     added.scroll_into_view_if_needed()
     added.locator("[data-fw]").fill("95")
     added.locator("[data-fr]").fill("5")
     added.locator("[data-logrow]").click()
     page.wait_for_timeout(300)
+    print("ADDSET exercise " + others_before["name"] + " id " + ex_id + " rows " + str(before_rows) + "->" + str(after_rows))
     typed = page.evaluate("""(id) => {
       const k = id.slice(0, id.indexOf('::'));
       const sets = Object.values((local[k] || {}).exercises || {}).flatMap(x => x.sets || []);
@@ -304,8 +326,16 @@ with sync_playwright() as pw:
             return False
     check(any(same_weight(s, quick["w"]) for s in typed["sets"]), "quick log kept the typed weight in memory")
     check(any(s.get("weight_lb") == 80 and s.get("reps") == 4 for s in typed["sets"]), "the row inputs logged 80×4")
-    check(any(s.get("weight_lb") == 95 and s.get("reps") == 5 for s in typed["sets"]), "the rendered Add Set row kept 95×5")
-    check(typed["rawHas"] and "95" in (stored_logs(page) or ""), "both new sets were written through localStorage")
+    placed = page.evaluate("""(id) => {
+      const i = id.indexOf('::'); const k = id.slice(0, i); const e = id.slice(i + 2);
+      const bag = ((local[k] || {}).exercises) || {};
+      const mine = ((bag[e] || {}).sets || []).map(s => [s.weight_lb, s.reps]);
+      const others = {};
+      Object.keys(bag).forEach(name => { if (name !== e) others[name] = JSON.stringify((bag[name].sets || []).map(s => [s.weight_lb, s.reps])); });
+      return {mine, others};
+    }""", ex_id)
+    check(placed["mine"][-1:] == [[95, 5]], "95×5 is the set on the clicked exercise, not merely somewhere in the workout")
+    check(placed["others"] == others_before["out"], "other exercises on that workout did not gain the 95×5 row")
     check(typed["nov"] is None, "the new sets were not written onto the Nov 6 workout")
     check(sorted(six(page)) == SIX, "the supplied six source sets stay single")
     check(typed["started"] is not None, "the first typed set on a workout with no recorded window starts a local clock")
@@ -313,10 +343,11 @@ with sync_playwright() as pw:
     check([nov["s"], nov["e"]] == WINDOW and nov["eff"] == WINDOW, "that new clock is not the Nov 6 recorded window")
     page.reload(wait_until="networkidle")
     kept = page.evaluate("""(id) => {
-      const k = id.slice(0, id.indexOf('::'));
-      const sets = Object.values((local[k] || {}).exercises || {}).flatMap(x => x.sets || []);
-      return sets.some(s => s.weight_lb == 95 && s.reps == 5);
-    }""", quick["id"])
+      const i = id.indexOf('::'); const e = id.slice(i + 2); const k = id.slice(0, i);
+      const mine = ((((local[k] || {}).exercises || {})[e] || {}).sets || []);
+      const ab = Object.values((local[k] || {}).exercises || {}).filter(x => (x.sets || []).some(s => s.weight_lb == 95 && s.reps == 5));
+      return mine.length && mine[mine.length - 1].weight_lb == 95 && mine[mine.length - 1].reps == 5 && ab.length == 1;
+    }""", ex_id)
     check(kept and sorted(six(page)) == SIX, "reload keeps the new sets and the six source sets")
     snap(page, "desktop-first-typed-set.png", 1280, 900, 1)
     ctx.close()

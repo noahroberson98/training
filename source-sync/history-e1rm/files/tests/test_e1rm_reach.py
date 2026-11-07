@@ -113,6 +113,20 @@ def hit(page, sel):
 def readable(info):
     return info.get("ok") and info.get("inView") and info.get("sw", 0) <= info.get("cw", 0) + 1 and info.get("left", -1) >= -1 and info.get("right", 9999) <= info.get("vw", 0) + 1
 
+def prove_actions(page, tag):
+    """Scroll Copy summary and Done into view after a successful retry. The frame taken before this scroll is not claimed to show them."""
+    page.locator("#sheet .acts").evaluate("el => el.scrollIntoView({block:'center', inline:'nearest'})")
+    posts = state["hits"]
+    focused = []
+    for sel, name in (("#sumCopy", "Copy summary"), ("#sumClose", "Done")):
+        page.locator(sel).focus()
+        info = hit(page, sel)
+        active = page.evaluate("() => document.activeElement && document.activeElement.id")
+        focused.append(active)
+        check(readable(info) and active == sel[1:], tag + " after successful retry " + name + " is scrolled into view, focused, and is the pointer hit")
+    print("ACTIONS %s post=%d focus=%s" % (tag, posts, ",".join(focused)))
+    return posts
+
 with sync_playwright() as pw:
     browser = pw.chromium.launch(executable_path=CHROME, args=["--no-sandbox"])
     for width, height, scale, tag in ((1280, 900, 1, "desktop"), (390, 844, 2, "mobile")):
@@ -150,7 +164,10 @@ with sync_playwright() as pw:
         check("Saved on this phone only." in page.locator("#sumSync").inner_text(), tag + " summary label says saved after Retry Save")
         window = page.evaluate("""() => { const w=W.find(x=>x.key==='2026-11-06|Upper Body'); return [w.started_at, w.ended_at, (local[w.key]||{}).completed_at||null]; }""")
         check(window[0:2] == WINDOW and window[2], tag + " recorded window stays 11:33 and completed_at is set")
+        print("RETRY %s post_before_scroll=%d" % (tag, state["hits"]))
         snap(page, tag + "-summary-retry.png", width, height, scale)
+        prove_actions(page, tag + " summary")
+        snap(page, tag + "-summary-retry-actions.png", width, height, scale)
         ctx.close()
 
         ctx = browser.new_context(viewport={"width": width, "height": height}, device_scale_factor=scale)
@@ -190,7 +207,18 @@ with sync_playwright() as pw:
         page.click("#sumRetry")
         page.wait_for_timeout(200)
         check(state["hits"] == hits and "Saved on this phone." in page.locator("#toastMsg").inner_text(), tag + " Retry Save after the email persists without another send")
+        print("RETRY %s after200 post_before_scroll=%d" % (tag, state["hits"]))
         snap(page, tag + "-after-200-retry.png", width, height, scale)
+        prove_actions(page, tag + " after200")
+        snap(page, tag + "-after-200-actions.png", width, height, scale)
+        page.click("#sumCopy")
+        page.wait_for_timeout(200)
+        check(state["hits"] == hits, tag + " Copy summary after the durable retry does not send")
+        page.locator("#sumClose").scroll_into_view_if_needed()
+        page.click("#sumClose")
+        page.wait_for_timeout(400)
+        check(state["hits"] == hits, tag + " Done after the durable retry does not send again")
+        print("ACTIONS %s after200 post_after_copy_done=%d" % (tag, state["hits"]))
         ctx.close()
 
         ctx = browser.new_context(viewport={"width": width, "height": height}, device_scale_factor=scale)
@@ -207,14 +235,27 @@ with sync_playwright() as pw:
           return {key:w.key, date:w.date};
         }""")
         page.goto(base + "/exact.html?tab=workout&day=%s" % target["date"], wait_until="networkidle")
-        page.locator("[data-addrow]").first.scroll_into_view_if_needed()
-        page.locator("[data-addrow]").first.click()
+        add = page.locator("[data-addrow]").first
+        add.scroll_into_view_if_needed()
+        ex_id = add.get_attribute("data-addrow")
+        ex = add.locator("xpath=ancestor::div[contains(@class,'ex')][1]")
+        before_rows = ex.locator(".srow").count()
+        wrong_id = page.evaluate("""() => {
+          const rows = [...document.querySelectorAll('.srow')].filter(r => r.querySelector('[data-fw]'));
+          const b = rows.length ? rows[rows.length - 1].querySelector('[data-logrow]') : null;
+          return b ? b.dataset.logrow : '';
+        }""")
+        check(bool(ex_id) and wrong_id != ex_id, tag + " negative control: global last editable row is not the clicked Add Set exercise")
+        add.click()
         page.wait_for_timeout(200)
-        row = page.locator(".srow").filter(has=page.locator("[data-fw]")).last
-        row.scroll_into_view_if_needed()
-        row.locator("[data-fw]").fill("95")
-        row.locator("[data-fr]").fill("5")
-        row.locator("[data-logrow]").click()
+        after_rows = ex.locator(".srow").count()
+        check(after_rows == before_rows + 1, tag + " Add Set adds one row on the clicked exercise")
+        added = ex.locator(".srow").nth(after_rows - 1)
+        check(added.locator("[data-logrow]").get_attribute("data-logrow") == ex_id, tag + " the new row belongs to the clicked exercise")
+        added.scroll_into_view_if_needed()
+        added.locator("[data-fw]").fill("95")
+        added.locator("[data-fr]").fill("5")
+        added.locator("[data-logrow]").click()
         page.wait_for_timeout(300)
         page.locator("[data-wend]").first.evaluate("el => el.scrollIntoView({block:'center', inline:'nearest'})")
         laid = page.evaluate("""() => {

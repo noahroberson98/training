@@ -61,10 +61,11 @@ cp files/tests/test_e1rm_persist.py tests/test_e1rm_persist.py
 cp files/scripts/reconstruct_review.py scripts/reconstruct_review.py
 mkdir -p tests/fixtures
 cp files/tests/fixtures/history_example.json tests/fixtures/history_example.json
-HISTORY_PATCH="$PWD/patches/template.html.patch" python3 tests/test_e1rm_history.py
+REVIEW_ROOT="$(pwd)"
+HISTORY_PATCH="$REVIEW_ROOT/patches/template.html.patch" python3 tests/test_e1rm_history.py
 ```
 
-Run that from the handoff directory so `patches/template.html.patch` resolves. If the test instead runs inside the generator checkout, set `HISTORY_PATCH` to the absolute path of that same patch. The test does not print the token. Without the patch file it still checks that a sentinel token is cleared and that a patch mentioning `FS_TOKEN` would fail, and it prints a NOTE that the patch file was not beside the checkout.
+Capture `REVIEW_ROOT` before any `cd`. A later `patch < "$PWD/patches/..."` inside `(cd somewhere && ...)` points at the directory you entered, not the review root. The packaged commands are in `VERIFY.txt`. Run that file from the extracted review root. The test does not print the token. Without the patch file it still checks that a sentinel token is cleared and that a patch mentioning `FS_TOKEN` would fail, and it prints a NOTE that the patch file was not beside the checkout.
 
 `test_e1rm_current.py` takes the exact sanitized page and does not rebuild it:
 
