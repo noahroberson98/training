@@ -1,3 +1,7 @@
+# Tests after the Style corrections
+
+H1–H4 and S1–S2 are covered by `test_e1rm_history.py` and `test_e1rm_current.py`, including an escaped `<img>` / `&` / quote canary in a point tooltip, a logged single with no Brzycki value, and a mixed-unit caption that does not claim every table row is on the chart. The current-data test also checks the snapshot build clock `Nov 6, 2026 6:27 PM CT`, the historical-preview label, the six `t240u#` ids, and that the dormant cancellation-relay block is absent from the preview the same way `build.py` removes it when the feature is off. The relay source block in the template still matches the run12 template byte for byte.
+
 # Tests run after the run12 merge
 
 `python3 tests/test_e1rm_history.py` passed, including the check that a High Incline Press load is not doubled and that assumed pounds stay on the pound series at the stored weight.

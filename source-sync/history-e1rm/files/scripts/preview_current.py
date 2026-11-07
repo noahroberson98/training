@@ -20,6 +20,22 @@ def extract_raw(html, name):
     return raw[:end]
 
 
+def built_label(source_html):
+    """Use the source page's own CT clock when it is actually printed there."""
+    m = re.search(r"built ([A-Z][a-z]{2} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M CT)", source_html)
+    if m:
+        return m.group(1) + " · historical preview, not for publication"
+    return "historical preview, not for publication"
+
+
+def strip_dormant_relay(html, extra_raw):
+    """Match build.py: the issue-link branch is removed when the feature is off."""
+    extra = json.loads(extra_raw)
+    if not (extra.get("features") or {}).get("cancel_relay"):
+        html = re.sub(r"/\*RELAY\*/.*?/\*/RELAY\*/", "", html, flags=re.S)
+    return html
+
+
 def render_page(template, source_html):
     store = extract_raw(source_html, "STORE")
     extra = extract_raw(source_html, "EXTRA")
@@ -28,12 +44,13 @@ def render_page(template, source_html):
     html = template.replace("/*__DATA__*/null", store, 1).replace("/*__EXTRA__*/null", extra, 1)
     if store not in html or extra not in html:
         raise SystemExit("STORE or EXTRA was not kept byte for byte")
-    html = html.replace("__BUILT__", "current-data-preview")
+    html = strip_dormant_relay(html, extra)
+    html = html.replace("__BUILT__", built_label(source_html))
     html = re.sub(r'const FS_TOKEN="[^"]*"', 'const FS_TOKEN=""', html, count=1)
     html = html.replace("https://formsubmit.co/ajax/", "./blocked-outbound/")
     html = html.replace("https://api.github.com", "./blocked-outbound")
-    html = html.replace("<title>Training · Noah</title>", "<title>Training · current data nonpublishable preview</title>")
-    banner = "<!-- current data nonpublishable preview; not a release; send and sync blocked -->\n"
+    html = html.replace("<title>Training · Noah</title>", "<title>Training · historical preview, not for publication</title>")
+    banner = "<!-- historical preview, not for publication; recorded data; send and sync blocked -->\n"
     if not html.startswith(banner):
         html = banner + html
     if "formsubmit.co" in html or "api.github.com" in html or "REDACTED_FORMSUBMIT_ALIAS" in html:
@@ -49,7 +66,7 @@ OPEN_HTML = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Current data nonpublishable preview — Training History</title>
+<title>Historical preview, not for publication — Training History</title>
 <style>
   body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:#111;color:#eee}
   header,section{padding:16px 20px}
@@ -63,7 +80,7 @@ OPEN_HTML = """<!DOCTYPE html>
 </head>
 <body>
 <header>
-  <strong>Current data, nonpublishable preview.</strong> Not a release. Send and sync stay on this origin and fail.
+  <strong>Historical preview, not for publication.</strong> Recorded data from the sanitized snapshot. Not a release and not a live JARVIS review. Send and sync stay on this origin and fail.
 </header>
 <section>
   <p class="note">This iframe embeds the History page the way a host page can embed the dashboard. It is a local preview, not a live JARVIS review. STORE and EXTRA are the sanitized current snapshot.</p>

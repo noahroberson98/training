@@ -152,6 +152,15 @@
       "exercises": [
         {"label": "A", "block": "A", "name": "Example Push Up", "sets": 1, "reps": 10, "weight_lb": null, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"reps": 10}]}}
       ]
+    },
+    "2026-10-11|Example Canary": {
+      "date": "2026-10-11",
+      "title": "Example <img alt=\"x\"> & \"Quote\"",
+      "type": "Strength",
+      "status": "completed",
+      "exercises": [
+        {"label": "A", "block": "A", "name": "Example <img alt=\"x\"> & \"Quote\" Press", "sets": 1, "reps": 5, "weight_lb": 80, "warmup": false, "other_load": null, "note": null, "actuals": {"sets": [{"weight_lb": 80, "reps": 5}]}}
+      ]
     }
   }
 }

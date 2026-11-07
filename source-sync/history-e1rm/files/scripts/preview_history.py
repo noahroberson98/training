@@ -74,7 +74,9 @@ def render_page(template, store, extra=None):
     extra = EXTRA if extra is None else extra
     data = json.dumps(store, ensure_ascii=False).replace("</", "<\\/")
     extra_s = json.dumps(extra, ensure_ascii=False).replace("</", "<\\/")
-    html = template.replace("/*__DATA__*/null", data).replace("/*__EXTRA__*/null", extra_s).replace("__BUILT__", "example")
+    html = template.replace("/*__DATA__*/null", data).replace("/*__EXTRA__*/null", extra_s).replace("__BUILT__", "example fixture · historical preview, not for publication")
+    if not (extra or EXTRA).get("features", {}).get("cancel_relay"):
+        html = re.sub(r"/\*RELAY\*/.*?/\*/RELAY\*/", "", html, flags=re.S)
     html = re.sub(r'const FS_TOKEN="[^"]*"', 'const FS_TOKEN=""', html)
     html = html.replace("https://formsubmit.co/ajax/", "./blocked-outbound/")
     html = html.replace("https://api.github.com", "./blocked-outbound")

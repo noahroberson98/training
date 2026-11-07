@@ -23,7 +23,7 @@ Only finite, positive, whole-rep loads are used. Plan-filled reps, round taps, w
 - Repair branch `cursor/pt-upper-one-session-c4c3` at `7d00bb7417ada9aecb4523dd0189b91068c8d8fd` (run12), merged into this History branch
 - Run8 package SHA256, still the earlier template base: `85814fb15404ba2db14cc0b4ada91339296e86a344c2ff784149342fa4c742d8`
 - Updated repair template SHA256, the History patch preimage: `d5946907beb0dbaff8b1d20a8b7d5c33710423270ac0e9ee9af6aa384529a7f5`
-- History template SHA256: `f265531e90db7e5804aa58df6f1eb67a31e462edd337e82259e7f8a08a3caf71`
+- History template SHA256: `5ad77b37042ab419d10c0823915e6376a7277276e9210b7e2db212a7f29fc555`
 - `build.py` baseline `1506ec0b0ebefedcbad5200581cacc5858f8d6ac16c6a682465deec6e2f90034` is unchanged
 
 Run12 adds known-load volume with a missing-load count, and shows “Pounds assumed” only when the stored unit note says the pounds were assumed. Incline weight is not doubled. The History patch keeps those behaviors.

@@ -38,7 +38,7 @@ check(abs(epley(200, 1) - 200 * 31 / 30) < 1e-9, "Epley at 1 rep would inflate, 
 cases = [
     ("ten", {"weight_lb": 100, "reps": 10}, {"name": "Bench"}, dict(ok=True, method="epley", primary=epley(100, 10), brzycki=brzycki(100, 10), confidence="estimate", unit="lb", basis="stored_lb")),
     ("six", {"weight_lb": 100, "reps": 6}, {"name": "Bench"}, dict(ok=True, primary=120.0, brzycki=brzycki(100, 6), confidence="estimate")),
-    ("single", {"weight_lb": 200, "reps": 1}, {"name": "Bench"}, dict(ok=True, method="actual_single", primary=200.0, brzycki=200.0, confidence="actual_single")),
+    ("single", {"weight_lb": 200, "reps": 1}, {"name": "Bench"}, dict(ok=True, method="actual_single", primary=200.0, brzycki=None, confidence="actual_single")),
     ("eleven", {"weight_lb": 90, "reps": 11}, {"name": "Bench"}, dict(ok=True, method="epley", primary=epley(90, 11), brzycki=None, confidence="estimate")),
     ("twelve", {"weight_lb": 90, "reps": 12}, {"name": "Bench"}, dict(ok=True, primary=epley(90, 12), brzycki=None, confidence="estimate")),
     ("thirteen", {"weight_lb": 40, "reps": 13}, {"name": "Bench"}, dict(ok=True, primary=epley(40, 13), brzycki=None, confidence="low")),
@@ -169,7 +169,17 @@ with sync_playwright() as pw:
     check("126.7" in text and "Low confidence" in text and "Since Oct 22" in text, "latest and change use real session values")
     check("Example note. Not a real log." in text, "session note is kept as text")
     aside = page.locator("#aside").inner_text()
-    check("Best estimates" in aside and "200×10" not in aside and "50×8" not in aside, "aside uses estimates and skips plan-filled and assisted loads")
+    check("Best Estimates" in aside and "200×10" not in aside and "50×8" not in aside, "aside uses estimates and skips plan-filled and assisted loads")
+    check(rows[2]["brz"] == "", "a logged single does not get a Brzycki comparison")
+    panel = page.inner_text("#e1rm-panel")
+    check("Brzycki is only shown for 2–10 reps." in panel, "Brzycki policy is 2–10 reps")
+    check("Failure/effort status is not consistently recorded or independently verified." in panel, "effort caveat does not claim the log is silent")
+    check("does not say a set was to failure" not in panel, "old failure caveat is gone")
+    check("2026" in panel and "Logged Only" in page.inner_text("body"), "year context and Title Case filter")
+    style = page.evaluate("""()=>{const th=document.querySelector('.e1rm-table th.num'); const td=document.querySelector('.e1rm-table td.num'); return {tf:th&&getComputedStyle(th).textTransform, al:td&&getComputedStyle(td).textAlign};}""")
+    check(style["tf"] == "none" and style["al"] == "right", "numeric headers are not forced uppercase and numbers align right: %s" % style)
+    tips = page.eval_on_selector_all("#e1rm-panel svg title", "els => els.map(e => e.textContent)")
+    check(tips and all(("Epley" in t or "Logged single" in t) and "2026" in t and "×" in t for t in tips), "every point has an exact tooltip")
     check("45×10" not in text and "200×10" not in text, "warm-up and plan-filled loads are not charted as the top set")
     check(page.locator("[data-wend]").count() == 0, "History does not show End Workout")
     page.select_option("#ex-pick", "example-empty-press")
@@ -190,6 +200,14 @@ with sync_playwright() as pw:
     page.select_option("#ex-pick", "example-mixed-row")
     mixed = page.inner_text("#e1rm-panel")
     check("another unit" in mixed and "No earlier session" in mixed, "mixed units are not compared as one trend")
+    cap = page.locator("#e1rm-panel caption").inner_text()
+    check("not on the chart" in cap and "The same numbers are in the chart" not in cap, "mixed-unit caption does not claim every table row is charted")
+    page.select_option("#ex-pick", "example-img-alt-x-quote-press")
+    page.wait_for_selector("[data-e1rm-state=chart]")
+    svg = page.inner_html("#e1rm-panel svg")
+    check(page.locator("#e1rm-panel svg img").count() == 0 and "&lt;img" in svg and "&amp;" in svg, "tooltip markup escapes the canary once")
+    tip_text = page.eval_on_selector("#e1rm-panel svg title", "e => e.textContent")
+    check("<img" in tip_text and "&" in tip_text and '"' in tip_text, "tooltip text keeps the canary characters")
     page.select_option("#ex-pick", "example-conflict-press")
     check(page.get_attribute("#e1rm-panel", "data-e1rm-state") == "empty", "conflicting units produce no estimate")
     page.select_option("#ex-pick", "example-push-up")
