@@ -1,0 +1,78 @@
+--- a/scripts/template.html
++++ b/scripts/template.html
+@@ -136,0 +137,5 @@
++.status-stack{position:sticky;top:0;z-index:100;display:flex;flex-direction:column;background:#0b0b0f}
++.savefail{background:#2a1414;color:#ffd2cc;padding:10px 14px;font-size:13px;line-height:1.45;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
++.savefail[hidden]{display:none}
++.savefail p{margin:0;flex:1 1 12rem;min-width:0;overflow-wrap:anywhere}
++.savefail button{flex:none;background:#1c1c24;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:8px 12px;font-weight:650;cursor:pointer}
+@@ -286,3 +291,4 @@
+-.toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-140%);opacity:0;z-index:80;
+-  background:#262631;border:1px solid var(--line2);border-radius:999px;padding:8px 8px 8px 18px;display:flex;gap:10px;align-items:center;
+-  box-shadow:0 16px 40px rgba(0,0,0,.55);font-size:14px;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;white-space:nowrap}
++.toast{position:static;left:auto;top:auto;transform:none;opacity:1;z-index:auto;box-sizing:border-box;width:auto;max-inline-size:calc(100vw - 24px);margin:8px 12px;
++  background:#262631;border:1px solid var(--line2);border-radius:16px;padding:8px 14px;display:none;gap:10px;align-items:flex-start;flex-wrap:wrap;
++  box-shadow:none;font-size:14px;white-space:normal;overflow-wrap:anywhere}
++#toastMsg{min-width:0;flex:1 1 12rem}
+@@ -290 +296 @@
+-.toast:not(.on){visibility:hidden}
++.toast:not(.on){display:none}
+@@ -292 +298 @@
+-.toast.on{transform:translate(-50%,0);opacity:1;visibility:visible}
++.toast.on{display:flex;opacity:1;visibility:visible}
+@@ -324,0 +331,2 @@
++.sum-retry{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:14px;border-radius:14px;border:1px solid var(--line2);background:#1c1c24;color:var(--text);font-weight:700;font-size:15px;cursor:pointer}
++.sum-retry[hidden]{display:none}
+@@ -337,0 +346,4 @@
++<div id="statusStack" class="status-stack">
++<div id="saveFail" class="savefail" hidden role="alert"><p id="saveFailMsg"></p><button type="button" id="saveRetry">Retry Save</button></div>
++<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
++</div>
+@@ -355 +366,0 @@
+-<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
+@@ -364 +375,25 @@
+-const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(local))}catch(e){}};
++let localPersist={ok:true};
++let persistReady=false;
++const localUnsavedText="Not saved on this phone. Storage failed, so edits stay in this open page until Retry Save succeeds. A reload drops them. A workout already emailed is not marked sent on this phone, so Done could send it again after a reload. Nothing resends by itself.";
++function paintSaveState(){
++  const box=document.getElementById("saveFail");
++  const msg=document.getElementById("saveFailMsg");
++  if(msg) msg.textContent=localPersist.ok?"":localUnsavedText;
++  if(box) box.hidden=!!localPersist.ok;
++  if(!persistReady) return;
++  const sb=document.getElementById("sumSync");
++  if(sb) sb.textContent=syncLabel();
++  const sumRetry=document.getElementById("sumRetry");
++  if(sumRetry) sumRetry.hidden=!!localPersist.ok;
++  if(!localPersist.ok){
++    const b=document.getElementById("syncBadge");
++    if(b){b.style.display=""; b.className="sbadge err"; b.textContent="Not saved"; b.title=localUnsavedText; b.onclick=null;}
++  }else if(SYNC.badge){SYNC.badge();}
++}
++const saveLocal=()=>{
++  try{localStorage.setItem(LS,JSON.stringify(local)); localPersist={ok:true};}
++  catch(e){localPersist={ok:false};}
++  paintSaveState();
++  return localPersist.ok;
++};
++document.addEventListener("click",ev=>{const btn=ev.target&&ev.target.closest&&ev.target.closest("#saveRetry,#sumRetry"); if(!btn) return; ev.preventDefault(); ev.stopPropagation(); const ok=saveLocal(); showToast(ok?"Saved on this phone.":"Still not saved on this phone.",null);},true);
+@@ -1461 +1496 @@
+-const syncLabel=()=>SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.";
++const syncLabel=()=>!localPersist.ok?localUnsavedText:(SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.");
+@@ -1471 +1506 @@
+-    if(r.ok){L.fs_sent=sig; saveLocal(); if(onStatus) onStatus("ok"); showToast("Workout emailed ✓",null); return true;}
++    if(r.ok){L.fs_sent=sig; const saved=saveLocal(); if(onStatus) onStatus(saved?"ok":"local-unsaved"); showToast(saved?"Workout emailed ✓":"Workout emailed. Not saved on this phone.",null); return true;}
+@@ -1543 +1578 @@
+-   <div class="syncbar" id="sumSync">${syncLabel()}</div><div class="acts"><button class="sec" id="sumCopy">Copy summary</button><button class="sec" id="sumClose">Done</button></div></div>`;
++   <div class="syncbar" id="sumSync">${syncLabel()}</div><button type="button" class="sum-retry" id="sumRetry"${localPersist.ok?" hidden":""}>Retry Save</button><div class="acts"><button class="sec" id="sumCopy">Copy summary</button><button class="sec" id="sumClose">Done</button></div></div>`;
+@@ -1562 +1597 @@
+-    if(ok){bg.remove(); return;}
++    if(ok&&localPersist.ok){bg.remove(); return;}
+@@ -1564,0 +1600 @@
++    paintSaveState();
+@@ -1654 +1690 @@
+-  function badge(){const b=document.getElementById("syncBadge"); if(!b) return; if(!cfg().token){b.style.display=""; b.className="sbadge err"; b.textContent="Not syncing"; b.title="Tap to connect"; b.onclick=()=>openForm(); return;} b.onclick=null;
++  function badge(){const b=document.getElementById("syncBadge"); if(!b) return; if(!localPersist.ok){paintSaveState(); return;} if(!cfg().token){b.style.display=""; b.className="sbadge err"; b.textContent="Not syncing"; b.title="Tap to connect"; b.onclick=()=>openForm(); return;} b.onclick=null;
+@@ -1679,0 +1716 @@
++persistReady=true;
