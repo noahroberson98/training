@@ -1,3 +1,7 @@
+# Save-failure layout
+
+`test_e1rm_reach.py` is the browser matrix for the three presentation defects. It uses real pointer clicks and `elementFromPoint` at 390×844 and 1280×900. It does not use `click(force=True)`, an injected button, or a direct handler dispatch. Retry Save is inside the open summary. A failed retry and a successful retry while that dialog is open do not send. The toast wraps inside the viewport. The warning is opaque and does not cover End Workout. The rendered `+ Add Set` control is `data-addrow`. Logging that row on the Oct 23 workout does not move the Nov 6 recorded window.
+
 # Persistence status
 
 `test_e1rm_persist.py` expects an honest unsaved state when `localStorage.setItem` throws. On the unchanged safe page `42b5a430…` that test exits 1. The summary still says “Saved on this phone only.” There is no retry control. Quota and blocked-storage writes stay in memory and do not land in storage. The same test on the corrected review page exits 0: the failure is visible, retry persists the in-memory sent mark without another send, a reload does not send by itself, and Done after a failed persist can send again because the mark was not durable. Local 500, local 200, a thrown request, and the 12 second abort do not mark sent when delivery fails. Playwright logs `CancelledError` from the route callback when the page aborts the hanging request. The assertions still pass.

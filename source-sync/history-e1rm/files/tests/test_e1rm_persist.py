@@ -16,7 +16,7 @@ from pathlib import Path
 
 UNSAVED = "Not saved on this phone."
 SAVED = "Saved on this phone only."
-EMAIL_UNSAVED = "Workout emailed. Not saved on this phone, so this sent mark is only in this open page."
+EMAIL_UNSAVED = "Workout emailed. Not saved on this phone."
 KEY = "2026-11-06|Upper Body"
 WINDOW = ["2026-11-06T15:00:38.635Z", "2026-11-06T15:12:12.324Z"]
 INIT = r"""
@@ -191,9 +191,12 @@ with sync_playwright() as pw:
     check(stored_logs(page) in (None, "null", "{}"), "the sent mark was not durable while storage threw")
     check(visible_failure(visible(page)), "after delivery the page still says it is not saved")
     snap(page, "desktop-emailed-not-saved.png", 1280, 900, 1)
-    page.click("[data-complete='%s']" % KEY)
-    page.wait_for_selector("#sumClose")
-    page.click("#sumClose")
+    if page.locator("#sheet").count():
+        page.click("#sumClose")
+    else:
+        page.click("[data-complete='%s']" % KEY)
+        page.wait_for_selector("#sumClose")
+        page.click("#sumClose")
     page.wait_for_timeout(400)
     check(state["hits"] == 2, "the same open page does not send again while the sent mark is in memory")
     hits_before_reload = state["hits"]
@@ -227,7 +230,11 @@ with sync_playwright() as pw:
     check(has_retry, "a retry save control is on the page")
     if has_retry:
         page.evaluate("() => sessionStorage.setItem('__storageMode','ok')")
-        page.click("#saveRetry")
+        if page.locator("#sheet #sumRetry").count():
+            page.locator("#sumRetry").scroll_into_view_if_needed()
+            page.click("#sumRetry")
+        else:
+            page.click("#saveRetry")
         page.wait_for_timeout(200)
         raw = stored_logs(page) or ""
         mem = memory(page)
@@ -273,13 +280,13 @@ with sync_playwright() as pw:
     row.locator("[data-fr]").fill("4")
     row.locator("[data-logrow]").click()
     page.wait_for_timeout(300)
-    page.evaluate("""(id) => {
-      const b = document.createElement("button");
-      b.id = "probe-add";
-      b.dataset.addset = id;
-      document.body.appendChild(b);
-    }""", quick["id"])
-    page.evaluate("() => document.getElementById('probe-add').click()")
+    page.locator("[data-addrow]").first.click()
+    page.wait_for_timeout(300)
+    added = page.locator(".srow").filter(has=page.locator("[data-fw]")).last
+    added.scroll_into_view_if_needed()
+    added.locator("[data-fw]").fill("95")
+    added.locator("[data-fr]").fill("5")
+    added.locator("[data-logrow]").click()
     page.wait_for_timeout(300)
     typed = page.evaluate("""(id) => {
       const k = id.slice(0, id.indexOf('::'));
@@ -297,7 +304,7 @@ with sync_playwright() as pw:
             return False
     check(any(same_weight(s, quick["w"]) for s in typed["sets"]), "quick log kept the typed weight in memory")
     check(any(s.get("weight_lb") == 80 and s.get("reps") == 4 for s in typed["sets"]), "the row inputs logged 80×4")
-    check(any(s.get("weight_lb") == 95 and s.get("reps") == 5 for s in typed["sets"]), "the prompt handler kept 95×5; no rendered button uses data-addset, so this click is on a test-added button")
+    check(any(s.get("weight_lb") == 95 and s.get("reps") == 5 for s in typed["sets"]), "the rendered Add Set row kept 95×5")
     check(typed["rawHas"] and "95" in (stored_logs(page) or ""), "both new sets were written through localStorage")
     check(typed["nov"] is None, "the new sets were not written onto the Nov 6 workout")
     check(sorted(six(page)) == SIX, "the supplied six source sets stay single")
@@ -306,8 +313,8 @@ with sync_playwright() as pw:
     check([nov["s"], nov["e"]] == WINDOW and nov["eff"] == WINDOW, "that new clock is not the Nov 6 recorded window")
     page.reload(wait_until="networkidle")
     kept = page.evaluate("""(id) => {
-      const i = id.indexOf('::');
-      const sets = (((local[id.slice(0, i)] || {}).exercises || {})[id.slice(i + 2)] || {}).sets || [];
+      const k = id.slice(0, id.indexOf('::'));
+      const sets = Object.values((local[k] || {}).exercises || {}).flatMap(x => x.sets || []);
       return sets.some(s => s.weight_lb == 95 && s.reps == 5);
     }""", quick["id"])
     check(kept and sorted(six(page)) == SIX, "reload keeps the new sets and the six source sets")

@@ -11,8 +11,9 @@ Do not reset the local training-dashboard. Its git repo has no remote. This Hist
 | After `patches/template.html.patch` | `5ad77b37042ab419d10c0823915e6376a7277276e9210b7e2db212a7f29fc555` |
 | `patches/run12-known-load.patch` | `02c8c02d8c80124fdad53fa24839aed000b039382716a7627608c75b1179d41a` |
 | `patches/template.html.patch` | `ac5e2921a4bb097068cbdbf8d04538343c06e8a7e91d942d8a7520a36613a4cf` |
-| After `patches/persist-save-status.patch` | `a06e7b8d6057452db224ac1952f16c782c9d53d41d1811a8419942cdc041d018` |
-| `patches/persist-save-status.patch` | `5b0fda3a93e55ff70168467466ca8de2a8aeb971c003cd829e761b2e14ca292a` |
+| After `patches/persist-save-status.patch` | `6ba16a81216e470d9eb8961805068fb19677cd69f4948d96609d4dc221635c08` |
+| `patches/persist-save-status.patch` | `73d8aee5d072127532d2315e15ccd21de5b10921be1403366cd3a8cd6f3f02f5` |
+| `patches/persist-ui-from-a06.patch` | `68270f98fbe4e5544d78495b9faf74e8a9d7daab8711610649d9bf7a8cb74524` |
 
 The run12 patch is the known-load volume and “Pounds assumed” logic from repair commit `7d00bb7417ada9aecb4523dd0189b91068c8d8fd`, reconstructed onto the run8 template so a later generator rebuild keeps it. It does not add the History chart. The History patch is the diff from that updated template to the History template.
 
@@ -42,7 +43,9 @@ patch -p1 --fuzz=0 < patches/persist-save-status.patch
 sha256sum scripts/template.html
 ```
 
-The result must be `a06e7b8d6057452db224ac1952f16c782c9d53d41d1811a8419942cdc041d018`. Stop if a hunk fails or the hash differs. Do not rerun with fuzz. This patch does not contain the `FS_TOKEN` assignment or the send URL, so a production token on that one line stays byte for byte. It does not change `build.py` or `publish.sh`.
+The result must be `6ba16a81216e470d9eb8961805068fb19677cd69f4948d96609d4dc221635c08`. Stop if a hunk fails or the hash differs. Do not rerun with fuzz. Apply this patch once. Do not also apply an older persistence patch: `persist-save-status.patch` is the whole change from `5ad77b37`, including the save-status logic and the readable warning, wrapped toast, and summary Retry Save. It does not contain the `FS_TOKEN` assignment or the send URL, so a production token on that one line stays byte for byte. It does not change `build.py` or `publish.sh`.
+
+If the template is already the earlier persistence postimage `a06e7b8d6057452db224ac1952f16c782c9d53d41d1811a8419942cdc041d018`, do not reapply `persist-save-status.patch`. Apply only `patches/persist-ui-from-a06.patch` with `patch -p1 --fuzz=0`. The result is the same `6ba16a81…` file.
 
 `saveLocal` now returns whether `localStorage.setItem` worked. A thrown write keeps the edit in memory, shows “Not saved on this phone,” and does not say the phone save succeeded. Retry save tries the write again and does not send. A successful email whose sent mark could not be stored says so, and a reload can send again only if Done is tapped. Nothing resends by itself.
 

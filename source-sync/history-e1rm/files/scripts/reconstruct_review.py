@@ -14,11 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import preview_current as current
 
 CLOCK_RE = re.compile(r"built ([A-Z][a-z]{2} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M CT)")
-BANNER = (
-    "<!-- CURRENT DATA NONPUBLISHABLE PREVIEW. Corrected review reconstruction of the supplied build. "
-    "Same stored snapshot, not a new TrainingPeaks read. Outbound send and sync are disabled. "
-    "A failed local save is shown as not saved. -->\n"
-)
+BANNER = "<!-- CURRENT DATA NONPUBLISHABLE PREVIEW. Real recorded fitness data; not a release. Outbound send and sync are disabled. -->\n"
 
 
 def reconstruct(template, source_html):
@@ -32,12 +28,17 @@ def reconstruct(template, source_html):
     html = template.replace("/*__DATA__*/null", store, 1).replace("/*__EXTRA__*/null", extra, 1)
     html = current.strip_dormant_relay(html, extra)
     html = html.replace("__BUILT__", clocks[0])
-    html = re.sub(r'const FS_TOKEN="[^"]*"', 'const FS_TOKEN=""', html, count=1)
+    html = re.sub(
+        r'const FS_TOKEN="[^"]*"; // FormSubmit alias for \+workout \(not a credential; same as JARVIS\)',
+        'const FS_TOKEN=""; // review copy: live send destination removed',
+        html,
+        count=1,
+    )
     html = html.replace('fetch("https://formsubmit.co/ajax/"+FS_TOKEN,', 'fetch("./blocked-outbound",')
     html = html.replace("https://api.github.com", "./blocked-outbound")
     html = html.replace(
         "<title>Training · Noah</title>",
-        "<title>Training · persistence correction, nonpublishable preview</title>",
+        "<title>Training · current data nonpublishable preview</title>",
     )
     if not html.startswith("<!DOCTYPE html>\n"):
         raise SystemExit("template doctype changed")

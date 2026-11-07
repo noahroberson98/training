@@ -1,0 +1,55 @@
+--- a/scripts/template.html
++++ b/scripts/template.html
+@@ -137 +137,2 @@
+-.savefail{position:sticky;top:0;z-index:30;background:var(--bad-soft);color:var(--bad);padding:10px 14px;font-size:13px;line-height:1.45}
++.status-stack{position:sticky;top:0;z-index:100;display:flex;flex-direction:column;background:#0b0b0f}
++.savefail{background:#2a1414;color:#ffd2cc;padding:10px 14px;font-size:13px;line-height:1.45;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
+@@ -139 +140,2 @@
+-.savefail button{margin-left:8px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:4px 10px;font-weight:650;cursor:pointer}
++.savefail p{margin:0;flex:1 1 12rem;min-width:0;overflow-wrap:anywhere}
++.savefail button{flex:none;background:#1c1c24;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:8px 12px;font-weight:650;cursor:pointer}
+@@ -289,3 +291,4 @@
+-.toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-140%);opacity:0;z-index:80;
+-  background:#262631;border:1px solid var(--line2);border-radius:999px;padding:8px 8px 8px 18px;display:flex;gap:10px;align-items:center;
+-  box-shadow:0 16px 40px rgba(0,0,0,.55);font-size:14px;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;white-space:nowrap}
++.toast{position:static;left:auto;top:auto;transform:none;opacity:1;z-index:auto;box-sizing:border-box;width:auto;max-inline-size:calc(100vw - 24px);margin:8px 12px;
++  background:#262631;border:1px solid var(--line2);border-radius:16px;padding:8px 14px;display:none;gap:10px;align-items:flex-start;flex-wrap:wrap;
++  box-shadow:none;font-size:14px;white-space:normal;overflow-wrap:anywhere}
++#toastMsg{min-width:0;flex:1 1 12rem}
+@@ -293 +296 @@
+-.toast:not(.on){visibility:hidden}
++.toast:not(.on){display:none}
+@@ -295 +298 @@
+-.toast.on{transform:translate(-50%,0);opacity:1;visibility:visible}
++.toast.on{display:flex;opacity:1;visibility:visible}
+@@ -327,0 +331,2 @@
++.sum-retry{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:14px;border-radius:14px;border:1px solid var(--line2);background:#1c1c24;color:var(--text);font-weight:700;font-size:15px;cursor:pointer}
++.sum-retry[hidden]{display:none}
+@@ -341 +346,4 @@
+-<div id="saveFail" class="savefail" hidden role="alert"><span id="saveFailMsg"></span> <button type="button" id="saveRetry">Retry save</button></div>
++<div id="statusStack" class="status-stack">
++<div id="saveFail" class="savefail" hidden role="alert"><p id="saveFailMsg"></p><button type="button" id="saveRetry">Retry Save</button></div>
++<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
++</div>
+@@ -359 +366,0 @@
+-<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
+@@ -370 +377 @@
+-const localUnsavedText="Not saved on this phone. Storage failed, so edits stay in this open page until Retry save succeeds. A reload drops them. A workout already emailed is not marked sent on this phone, so Done could send it again after a reload. Nothing resends by itself.";
++const localUnsavedText="Not saved on this phone. Storage failed, so edits stay in this open page until Retry Save succeeds. A reload drops them. A workout already emailed is not marked sent on this phone, so Done could send it again after a reload. Nothing resends by itself.";
+@@ -378,0 +386,2 @@
++  const sumRetry=document.getElementById("sumRetry");
++  if(sumRetry) sumRetry.hidden=!!localPersist.ok;
+@@ -390 +399 @@
+-document.addEventListener("click",ev=>{const btn=ev.target&&ev.target.closest&&ev.target.closest("#saveRetry"); if(!btn) return; ev.preventDefault(); ev.stopPropagation(); const ok=saveLocal(); showToast(ok?"Saved on this phone.":"Still not saved on this phone.",null);},true);
++document.addEventListener("click",ev=>{const btn=ev.target&&ev.target.closest&&ev.target.closest("#saveRetry,#sumRetry"); if(!btn) return; ev.preventDefault(); ev.stopPropagation(); const ok=saveLocal(); showToast(ok?"Saved on this phone.":"Still not saved on this phone.",null);},true);
+@@ -1497 +1506 @@
+-    if(r.ok){L.fs_sent=sig; const saved=saveLocal(); if(onStatus) onStatus(saved?"ok":"local-unsaved"); showToast(saved?"Workout emailed ✓":"Workout emailed. Not saved on this phone, so this sent mark is only in this open page. A reload could send it again. Nothing resends by itself.",null); return true;}
++    if(r.ok){L.fs_sent=sig; const saved=saveLocal(); if(onStatus) onStatus(saved?"ok":"local-unsaved"); showToast(saved?"Workout emailed ✓":"Workout emailed. Not saved on this phone.",null); return true;}
+@@ -1569 +1578 @@
+-   <div class="syncbar" id="sumSync">${syncLabel()}</div><div class="acts"><button class="sec" id="sumCopy">Copy summary</button><button class="sec" id="sumClose">Done</button></div></div>`;
++   <div class="syncbar" id="sumSync">${syncLabel()}</div><button type="button" class="sum-retry" id="sumRetry"${localPersist.ok?" hidden":""}>Retry Save</button><div class="acts"><button class="sec" id="sumCopy">Copy summary</button><button class="sec" id="sumClose">Done</button></div></div>`;
+@@ -1588 +1597 @@
+-    if(ok){bg.remove(); return;}
++    if(ok&&localPersist.ok){bg.remove(); return;}
+@@ -1590,0 +1600 @@
++    paintSaveState();
