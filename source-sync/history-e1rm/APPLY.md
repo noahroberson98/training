@@ -11,6 +11,8 @@ Do not reset the local training-dashboard. Its git repo has no remote. This Hist
 | After `patches/template.html.patch` | `5ad77b37042ab419d10c0823915e6376a7277276e9210b7e2db212a7f29fc555` |
 | `patches/run12-known-load.patch` | `02c8c02d8c80124fdad53fa24839aed000b039382716a7627608c75b1179d41a` |
 | `patches/template.html.patch` | `ac5e2921a4bb097068cbdbf8d04538343c06e8a7e91d942d8a7520a36613a4cf` |
+| After `patches/persist-save-status.patch` | `a06e7b8d6057452db224ac1952f16c782c9d53d41d1811a8419942cdc041d018` |
+| `patches/persist-save-status.patch` | `5b0fda3a93e55ff70168467466ca8de2a8aeb971c003cd829e761b2e14ca292a` |
 
 The run12 patch is the known-load volume and “Pounds assumed” logic from repair commit `7d00bb7417ada9aecb4523dd0189b91068c8d8fd`, reconstructed onto the run8 template so a later generator rebuild keeps it. It does not add the History chart. The History patch is the diff from that updated template to the History template.
 
@@ -30,7 +32,19 @@ Stop if either `patch` reports a failed hunk or a hash does not match the table.
 
 If `scripts/template.html` already hashes to `d5946907beb0dbaff8b1d20a8b7d5c33710423270ac0e9ee9af6aa384529a7f5`, skip the run12 patch and apply only `template.html.patch`.
 
-Neither patch changes the `FS_TOKEN` line.
+Neither earlier patch changes the `FS_TOKEN` line.
+
+When the template already hashes to `5ad77b37042ab419d10c0823915e6376a7277276e9210b7e2db212a7f29fc555`, do not reapply the run12 or History patches. Apply only the persistence patch:
+
+```
+sha256sum scripts/template.html
+patch -p1 --fuzz=0 < patches/persist-save-status.patch
+sha256sum scripts/template.html
+```
+
+The result must be `a06e7b8d6057452db224ac1952f16c782c9d53d41d1811a8419942cdc041d018`. Stop if a hunk fails or the hash differs. Do not rerun with fuzz. This patch does not contain the `FS_TOKEN` assignment or the send URL, so a production token on that one line stays byte for byte. It does not change `build.py` or `publish.sh`.
+
+`saveLocal` now returns whether `localStorage.setItem` worked. A thrown write keeps the edit in memory, shows “Not saved on this phone,” and does not say the phone save succeeded. Retry save tries the write again and does not send. A successful email whose sent mark could not be stored says so, and a reload can send again only if Done is tapped. Nothing resends by itself.
 
 Then:
 
@@ -40,6 +54,8 @@ cp files/scripts/preview_current.py scripts/preview_current.py
 cp files/tests/test_e1rm_history.py tests/test_e1rm_history.py
 cp files/tests/test_e1rm_current.py tests/test_e1rm_current.py
 cp files/tests/test_e1rm_exact.py tests/test_e1rm_exact.py
+cp files/tests/test_e1rm_persist.py tests/test_e1rm_persist.py
+cp files/scripts/reconstruct_review.py scripts/reconstruct_review.py
 mkdir -p tests/fixtures
 cp files/tests/fixtures/history_example.json tests/fixtures/history_example.json
 HISTORY_PATCH="$PWD/patches/template.html.patch" python3 tests/test_e1rm_history.py

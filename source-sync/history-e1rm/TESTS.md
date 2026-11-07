@@ -1,3 +1,9 @@
+# Persistence status
+
+`test_e1rm_persist.py` expects an honest unsaved state when `localStorage.setItem` throws. On the unchanged safe page `42b5a430…` that test exits 1. The summary still says “Saved on this phone only.” There is no retry control. Quota and blocked-storage writes stay in memory and do not land in storage. The same test on the corrected review page exits 0: the failure is visible, retry persists the in-memory sent mark without another send, a reload does not send by itself, and Done after a failed persist can send again because the mark was not durable. Local 500, local 200, a thrown request, and the 12 second abort do not mark sent when delivery fails. Playwright logs `CancelledError` from the route callback when the page aborts the hanging request. The assertions still pass.
+
+The quick-log button, the typed set row, and the existing `data-addset` prompt handler were exercised on `2026-10-23|Upper Body`, not on the Nov 6 six-set workout. No rendered button uses `data-addset`; the test adds one so that handler runs. `+ Add Set` on screen is `data-addrow`. `saveMoves` and `saveFree` still swallow their own storage errors. Summary `completed_at` changes. The recorded Nov 6 start and end do not.
+
 # Test assumptions corrected after the fresh build
 
 Initial failures, unchanged product page:

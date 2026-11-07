@@ -254,9 +254,17 @@ with sync_playwright() as pw:
     other = page.evaluate("""()=>{
       const wk=W.filter(w=>wkStart(w.date)===wkStart(sel));
       const f=weekLoadFacts(wk);
-      return {text:weekVolumeText(f), lvol:f.lvol};
+      return {sel, text:weekVolumeText(f), lvol:f.lvol, known:f.known, logged:f.logged, missing:f.missing};
     }""")
-    check(other["text"] != week["text"] and other["lvol"] != 3330, "another week does not repeat this week's volume")
+    check(other["sel"] == "2026-10-28" and other["text"] == "Known-load volume 14,192.5 lb · 18 of 42 logged sets with recorded loads · 24 sets without recorded loads" and other["lvol"] == 14192.5 and other["known"] == 18 and other["logged"] == 42 and other["missing"] == 24, "Oct 26–Nov 1 known-load volume is 14192.5 from 18 of 42, 24 missing")
+    older = page.evaluate("""()=>{
+      const wk=W.filter(w=>wkStart(w.date)===wkStart('2026-10-19'));
+      const f=weekLoadFacts(wk);
+      let perPlan=0;
+      wk.forEach(w=>working(w).forEach(e=>allSets(w,e).forEach(s=>{if(s.per_plan&&knownLoadSet(s)) perPlan++;})));
+      return {text:weekVolumeText(f), lvol:f.lvol, perPlan};
+    }""")
+    check(older["lvol"] == 24093.5 and older["perPlan"] == 21 and "24,093.5" in older["text"], "Oct 19 week volume includes 21 per-plan sets and is not a pure actual-reps total")
     snap(page, "desktop-week-other.png", 1280, 900, 1)
     ctx.close()
 

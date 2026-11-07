@@ -1,0 +1,44 @@
+--- a/scripts/template.html
++++ b/scripts/template.html
+@@ -136,0 +137,3 @@
++.savefail{position:sticky;top:0;z-index:30;background:var(--bad-soft);color:var(--bad);padding:10px 14px;font-size:13px;line-height:1.45}
++.savefail[hidden]{display:none}
++.savefail button{margin-left:8px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:4px 10px;font-weight:650;cursor:pointer}
+@@ -337,0 +341 @@
++<div id="saveFail" class="savefail" hidden role="alert"><span id="saveFailMsg"></span> <button type="button" id="saveRetry">Retry save</button></div>
+@@ -364 +368,23 @@
+-const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(local))}catch(e){}};
++let localPersist={ok:true};
++let persistReady=false;
++const localUnsavedText="Not saved on this phone. Storage failed, so edits stay in this open page until Retry save succeeds. A reload drops them. A workout already emailed is not marked sent on this phone, so Done could send it again after a reload. Nothing resends by itself.";
++function paintSaveState(){
++  const box=document.getElementById("saveFail");
++  const msg=document.getElementById("saveFailMsg");
++  if(msg) msg.textContent=localPersist.ok?"":localUnsavedText;
++  if(box) box.hidden=!!localPersist.ok;
++  if(!persistReady) return;
++  const sb=document.getElementById("sumSync");
++  if(sb) sb.textContent=syncLabel();
++  if(!localPersist.ok){
++    const b=document.getElementById("syncBadge");
++    if(b){b.style.display=""; b.className="sbadge err"; b.textContent="Not saved"; b.title=localUnsavedText; b.onclick=null;}
++  }else if(SYNC.badge){SYNC.badge();}
++}
++const saveLocal=()=>{
++  try{localStorage.setItem(LS,JSON.stringify(local)); localPersist={ok:true};}
++  catch(e){localPersist={ok:false};}
++  paintSaveState();
++  return localPersist.ok;
++};
++document.addEventListener("click",ev=>{const btn=ev.target&&ev.target.closest&&ev.target.closest("#saveRetry"); if(!btn) return; ev.preventDefault(); ev.stopPropagation(); const ok=saveLocal(); showToast(ok?"Saved on this phone.":"Still not saved on this phone.",null);},true);
+@@ -1461 +1487 @@
+-const syncLabel=()=>SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.";
++const syncLabel=()=>!localPersist.ok?localUnsavedText:(SYNC.cfg().token?(SYNC.q().length?`Saving online… ${SYNC.q().length} waiting`:"Saved online ✓"):"Saved on this phone only. Turn on Online sync in ⚙ to save every change online.");
+@@ -1471 +1497 @@
+-    if(r.ok){L.fs_sent=sig; saveLocal(); if(onStatus) onStatus("ok"); showToast("Workout emailed ✓",null); return true;}
++    if(r.ok){L.fs_sent=sig; const saved=saveLocal(); if(onStatus) onStatus(saved?"ok":"local-unsaved"); showToast(saved?"Workout emailed ✓":"Workout emailed. Not saved on this phone, so this sent mark is only in this open page. A reload could send it again. Nothing resends by itself.",null); return true;}
+@@ -1654 +1680 @@
+-  function badge(){const b=document.getElementById("syncBadge"); if(!b) return; if(!cfg().token){b.style.display=""; b.className="sbadge err"; b.textContent="Not syncing"; b.title="Tap to connect"; b.onclick=()=>openForm(); return;} b.onclick=null;
++  function badge(){const b=document.getElementById("syncBadge"); if(!b) return; if(!localPersist.ok){paintSaveState(); return;} if(!cfg().token){b.style.display=""; b.className="sbadge err"; b.textContent="Not syncing"; b.title="Tap to connect"; b.onclick=()=>openForm(); return;} b.onclick=null;
+@@ -1679,0 +1706 @@
++persistReady=true;
