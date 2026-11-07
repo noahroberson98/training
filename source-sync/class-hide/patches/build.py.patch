@@ -1,0 +1,57 @@
+--- a/scripts/build.py
++++ b/scripts/build.py
+@@ -13,7 +13,7 @@
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ ROOT = os.path.dirname(HERE)
+ sys.path.insert(0, HERE)
+-from common import actual_sets, eff_date, fmt_dur  # noqa: E402
++from common import actual_sets, apply_user_class_override, eff_date, fmt_dur, load_user_overrides, provider_feed_status  # noqa: E402
+ from whoop_pair import load_sessions, pair  # noqa: E402
+ 
+ CSV_COLS = ["date", "workout_title", "status", "label", "exercise", "sets", "reps", "duration",
+@@ -137,7 +137,7 @@
+     return fallback
+ 
+ 
+-def update_class_history(current, hist_path=CLASS_HIST, now=None, cancels=None):
++def update_class_history(current, hist_path=CLASS_HIST, now=None, cancels=None, overrides=None):
+     """Durable THIS Gym class history (the reservations CSV only lists upcoming ones).
+     Every class seen is recorded; booked classes whose start passed and that left the CSV become
+     COMPLETED; a CANCELLED status in the CSV is kept as CANCELLED. Returns the merged class list."""
+@@ -152,8 +152,12 @@
+         seen.add(k)
+         prev = hist.get(k, {})
+         e = dict(prev, **{x: c[x] for x in ("date", "time", "class", "type", "coach", "source") if c.get(x) or x not in prev})
+-        e["csv_status"] = c["status"]
+-        e["status"] = c["status"]
++        baseline, basis = provider_feed_status(prev, c.get("status"), (overrides or {}).get(k))
++        e["feed_status"] = c.get("status")
++        e["csv_status"] = baseline
++        e["provider_status"] = baseline
++        e["provider_status_basis"] = basis
++        e["status"] = baseline if str(baseline).lower() != "unknown" else (prev.get("status") or "unknown")
+         seen_at = _read_time(c, c.get("_mtime") or now).isoformat(timespec="seconds")
+         e.setdefault("first_seen", seen_at)
+         if seen_at > e.get("last_seen", ""):
+@@ -191,6 +195,11 @@
+             e["status"] = "COMPLETED"
+         elif start <= now:
+             e["status"] = "MISSED"   # was only waitlisted; can't assume attended
++    for k, ov in (overrides or {}).items():
++        e = hist.get(k)
++        if not e:
++            continue  # absence is not a new class and is not a cancellation
++        apply_user_class_override(e, ov)
+     if hist_path:
+         tmp = hist_path + ".tmp"
+         with open(tmp, "w") as f:
+@@ -232,7 +241,8 @@
+     with open(store_path) as f:
+         store = json.load(f)
+     sessions = load_sessions(os.path.join(os.path.dirname(whoop_csv or FD) or FD, "whoop_sessions.csv"), whoop_csv)
+-    classes = update_class_history(read_classes(classes_csv), hist_path=class_hist, cancels=load_cancels())
++    classes = update_class_history(read_classes(classes_csv), hist_path=class_hist, cancels=load_cancels(),
++                                   overrides=load_user_overrides(os.path.join(ROOT, "data", "user_overrides.json")))
+     attach_posted(classes, os.path.join(FD, "thisgym_workouts.json"))
+     items = []
+     for c in classes:

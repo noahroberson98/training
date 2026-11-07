@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes · synthetic</title>
+<style>
+  :root { --bg:#0b0b0f; --card:#15151b; --line:rgba(255,255,255,.08); --text:#f4f4f5; --muted:#a1a1aa; --accent:#6d8bff; --bad:#ff7a70; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif; }
+  main { max-width:420px; margin:0 auto; padding:20px 16px 40px; }
+  h1 { font-size:28px; margin:0 0 6px; }
+  .asof { color:var(--muted); margin:0 0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin:0 0 10px; display:flex; gap:10px; align-items:center; }
+  .card b { display:block; }
+  .card span { color:var(--muted); font-size:13px; }
+  .card .grow { flex:1; min-width:0; }
+  button { background:#1c1c24; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-weight:650; }
+  button.accent { color:#0b0b0f; background:var(--accent); border:0; }
+  h2 { font-size:15px; color:var(--muted); margin:18px 0 8px; }
+  .warn { background:#2a1414; color:#ffd2cc; border-radius:12px; padding:10px 12px; margin:0 0 12px; }
+  .warn[hidden] { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Classes</h1>
+  <p class="asof" id="asof"></p>
+  <p class="warn" id="saveWarn" hidden>Not saved on this phone. The class is still listed.</p>
+  <div id="booked"></div>
+  <h2>Hidden By You</h2>
+  <div id="hidden"></div>
+  <button type="button" id="reimport">Reload Feed</button>
+</main>
+<script>
+const FEED = [
+  {date:"2099-01-01", time:"10:00", name:"APEX", csv_status:"RESERVED", source:"synthetic feed", in_feed:true},
+  {date:"2099-01-02", time:"10:00", name:"APEX", csv_status:"RESERVED", source:"synthetic feed", in_feed:false},
+  {date:"2099-01-03", time:"09:00", name:"THIS STRENGTH", csv_status:"RESERVED", source:"synthetic feed", in_feed:true}
+];
+const AS_OF = "Jan 3, 2099, 11:46 AM CT";
+const LS = "tpDash.classOverrides.v1";
+function key(c){ return c.date+"|"+c.time+"|"+c.name; }
+function load(){ try { return JSON.parse(localStorage.getItem(LS) || '{"sessions":{}}'); } catch(e){ return {sessions:{}}; } }
+function save(doc){
+  try { localStorage.setItem(LS, JSON.stringify(doc)); return true; }
+  catch(e){ return false; }
+}
+function when(c){
+  const [y,m,d] = c.date.split("-");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  let h = +c.time.slice(0,2), ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+  return months[+m-1]+" "+(+d)+", "+y+" · "+h+":"+c.time.slice(3)+" "+ap+" CT";
+}
+function row(c, ov){
+  const el = document.createElement("article");
+  el.className = "card";
+  el.dataset.key = key(c);
+  const user = ov && String(ov.status||"").toLowerCase()==="cancelled" && !ov.provider_cancellation_verified;
+  const note = user ? "You reported this cancelled. The gym list still says reserved." : "Gym list: Reserved.";
+  el.innerHTML = '<div class="grow"><b></b><span></span></div>';
+  el.querySelector("b").textContent = c.name;
+  el.querySelector("span").textContent = when(c)+" · "+note;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = ov && ov.hidden ? "Undo" : "Hide";
+  btn.addEventListener("click", () => toggle(c, !(ov && ov.hidden)));
+  el.appendChild(btn);
+  return el;
+}
+function toggle(c, hidden){
+  const doc = load();
+  const k = key(c);
+  const prev = doc.sessions[k] || {session_key:k, date:c.date, time:c.time, class:c.name, status:"cancelled", attendance:"skipped", provider_cancellation_verified:false, source:"Synthetic User"};
+  prev.hidden = hidden;
+  prev.status = "cancelled";
+  prev.provider_cancellation_verified = false;
+  doc.sessions[k] = prev;
+  const warn = document.getElementById("saveWarn");
+  if(!save(doc)){ warn.hidden = false; return; }
+  warn.hidden = true;
+  render();
+}
+function render(){
+  document.getElementById("asof").textContent = "As of "+AS_OF+" · 3 imported classes.";
+  const doc = load();
+  const booked = document.getElementById("booked");
+  const hidden = document.getElementById("hidden");
+  booked.replaceChildren(); hidden.replaceChildren();
+  FEED.forEach(c => {
+    const ov = doc.sessions[key(c)];
+    const el = row(c, ov);
+    if(ov && ov.hidden) hidden.appendChild(el);
+    else booked.appendChild(el);
+  });
+  if(!hidden.children.length){
+    const p = document.createElement("p");
+    p.className = "asof";
+    p.textContent = "No classes hidden by you.";
+    hidden.appendChild(p);
+  }
+}
+document.getElementById("reimport").addEventListener("click", render);
+render();
+</script>
+</body>
+</html>

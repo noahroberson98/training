@@ -1,0 +1,5 @@
+date,workout_title,status,label,exercise,sets,reps,duration,planned_weight_lb,other_load,coach_note,actual_weight_lb,actual_reps,actual_notes
+2099-01-01,APEX,completed,A1,Row,3,8,,,,,40,8,
+2099-01-03,Strength,completed,B1,Squat,1,5,,,,,185,5,
+2099-01-06,Upper Body,completed,A1,Bench Press,3,8,,,,,"135,135,145","8,8,6",
+2099-01-06,Upper Body,completed,W,Easy Bike,1,,,,,,,,

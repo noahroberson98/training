@@ -1,0 +1,28 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "case": "stale_reserved_feed_user_cancelled",
+      "key": "2099-01-01|10:00|APEX",
+      "expected_status": "CANCELLED",
+      "expected_hidden": true,
+      "provider_cancellation_verified": false
+    },
+    {
+      "case": "missing_feed_row_user_cancelled",
+      "key": "2099-01-02|10:00|APEX",
+      "expected_status": "CANCELLED",
+      "expected_hidden": true,
+      "must_not_become_completed": true,
+      "provider_cancellation_verified": false
+    },
+    {
+      "case": "unaffected_booking",
+      "key": "2099-01-03|09:00|THIS STRENGTH",
+      "expected_status": "RESERVED",
+      "expected_hidden": false
+    }
+  ],
+  "undo_requirement": "Undo changes visibility only; it must not turn a user cancellation into a provider reservation or remove logged sets.",
+  "contract_status": "Proposed fixture contract matching local data shape, not proof implemented consumers exist."
+}

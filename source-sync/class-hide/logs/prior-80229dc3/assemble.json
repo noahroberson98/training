@@ -1,0 +1,163 @@
+{
+  "built": "Jan 3, 2099, 11:46 AM CT",
+  "synthetic": true,
+  "scenarios": {
+    "current": {
+      "bytes": 166640,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    },
+    "reimport-reserved": {
+      "bytes": 166650,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    },
+    "reimport-missing": {
+      "bytes": 166576,
+      "classes": {
+        "2099-01-01|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-02|10:00|APEX": {
+          "status": "CANCELLED",
+          "csv_status": "RESERVED",
+          "hidden": true,
+          "cancel_source": "user",
+          "source": "synthetic feed",
+          "provider_cancellation_verified": false
+        },
+        "2099-01-03|09:00|THIS STRENGTH": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        },
+        "2099-01-06|14:00|Personal Training": {
+          "status": "RESERVED",
+          "csv_status": "RESERVED",
+          "hidden": null,
+          "cancel_source": null,
+          "source": "synthetic feed",
+          "provider_cancellation_verified": null
+        }
+      }
+    }
+  },
+  "workouts": {
+    "2099-01-01|APEX": {
+      "status": "skipped",
+      "status_locked": false,
+      "user_cancel_source": "user",
+      "provider_cancellation_verified": false,
+      "sets": [
+        [
+          40,
+          8
+        ]
+      ]
+    },
+    "2099-01-03|Strength": {
+      "status": "completed",
+      "status_locked": true,
+      "user_cancel_source": null,
+      "provider_cancellation_verified": null,
+      "sets": [
+        [
+          185,
+          5
+        ]
+      ]
+    },
+    "2099-01-06|Upper Body": {
+      "status": "completed",
+      "status_locked": false,
+      "user_cancel_source": null,
+      "provider_cancellation_verified": null,
+      "sets": [
+        [
+          135,
+          8
+        ],
+        [
+          135,
+          8
+        ],
+        [
+          145,
+          6
+        ]
+      ]
+    }
+  }
+}

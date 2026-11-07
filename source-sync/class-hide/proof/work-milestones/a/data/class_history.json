@@ -1,0 +1,38 @@
+{
+ "2099-01-01|10:00|APEX": {
+  "class": "APEX",
+  "coach": "",
+  "csv_status": "RESERVED",
+  "date": "2099-01-01",
+  "first_seen": "2026-11-07T18:43:11",
+  "last_seen": "2026-11-07T18:43:13",
+  "source": "synthetic feed",
+  "status": "RESERVED",
+  "time": "10:00",
+  "type": "class"
+ },
+ "2099-01-03|09:00|THIS STRENGTH": {
+  "class": "THIS STRENGTH",
+  "coach": "",
+  "csv_status": "RESERVED",
+  "date": "2099-01-03",
+  "first_seen": "2026-11-07T18:43:11",
+  "last_seen": "2026-11-07T18:43:13",
+  "source": "synthetic feed",
+  "status": "RESERVED",
+  "time": "09:00",
+  "type": "class"
+ },
+ "2099-01-06|14:00|Personal Training": {
+  "class": "Personal Training",
+  "coach": "Coach Example",
+  "csv_status": "RESERVED",
+  "date": "2099-01-06",
+  "first_seen": "2026-11-07T18:43:11",
+  "last_seen": "2026-11-07T18:43:13",
+  "source": "synthetic feed",
+  "status": "RESERVED",
+  "time": "14:00",
+  "type": "personal training"
+ }
+}

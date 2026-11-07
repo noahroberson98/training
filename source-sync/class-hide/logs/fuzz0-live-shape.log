@@ -1,0 +1,11 @@
+===== common.py =====
+patching file scripts/common.py
+===== build.py =====
+patching file scripts/build.py
+===== merge.py =====
+patching file scripts/merge.py
+===== template.html =====
+patching file scripts/template.html
+COMMON_OK
+BUILD_OK
+TPL_OK

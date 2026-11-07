@@ -1,0 +1,27 @@
+127.0.0.1 - - [07/Nov/2026 19:08:59] "GET /out.html?tab=workout&day=2099-06-01 HTTP/1.1" 200 -
+PASS user-mutated CANCELLED feed keeps the established provider baseline
+PASS raw feed column is recorded separately
+PASS display status is the user report
+PASS user report is not provider confirmation
+PASS the other booking provider status stays reserved
+PASS a feed change without a user report updates the baseline and does not verify the provider
+PASS that feed change is not labeled user or confirmed
+PASS no established baseline stays unknown instead of a hardcoded reserved or a copied cancel
+PASS missing baseline is still an unverified user report
+PASS an established provider cancel is not rewritten to reserved
+PASS an established cancel string is still not provider verification
+PASS row set stays one 40x8
+PASS locked strength stays completed
+PASS duplicate bench rows stay two occurrences
+PASS staged generators exit 0 through the synthetic symlink
+PASS symlink resolves only inside this temp tree
+PASS build.py keeps the provider baseline when the linked override is unverified
+PASS built page states the user report and the unverified gym list
+PASS built page keeps provider verification false
+PASS hidden card separates the user report from the gym list
+PASS live-shape name and explanation are readable at 390px
+PASS scope still says a local choice wins over the built choice
+PASS undo shows the row locally and leaves provider verification false
+PASS failed hide leaves the live-shape row visible
+PASS live-shape browser stays on the local file
+ALL PASS

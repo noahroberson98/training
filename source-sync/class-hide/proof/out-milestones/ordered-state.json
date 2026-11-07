@@ -1,0 +1,2138 @@
+[
+  {
+    "at": "2026-11-07T18:43:12.256120+00:00",
+    "step": "a-start-visible",
+    "note": "No user_overrides.json. APEX starts visible. This is before any Hide click.",
+    "page_sha": "332ee6288112ef5bd22eb08457af4fd81895c8cddb4e2aa4e3fd6900d0df99b3",
+    "feed_sha": "359aea787d58017faed7e024ecab52f6051910bf3a264a64bc7b407b354c012e",
+    "feed_written": "2026-11-07T18:43:11.994057+00:00",
+    "storage": null,
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "RESERVED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "false",
+      "store": "",
+      "cancel": "",
+      "parent": "booked",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\nHide\nCancel class\nReserved\nWorkout not posted yet"
+    },
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "RESERVED",
+        "cancel_source": null,
+        "provider_cancellation_verified": null,
+        "hidden_baked": null,
+        "user_override": null
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "RESERVED",
+        "cancel": ""
+      },
+      "canonical": {
+        "exists": false,
+        "sha256": null,
+        "bytes": 0
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:12.657190+00:00",
+    "step": "a-after-hide",
+    "click": {
+      "force": false,
+      "method": "locator.click",
+      "selector": "#booked [data-key='2099-01-01|10:00|APEX'] [data-hidecls]",
+      "hit": {
+        "w": 58.125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      }
+    },
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "RESERVED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+    },
+    "page_sha": "332ee6288112ef5bd22eb08457af4fd81895c8cddb4e2aa4e3fd6900d0df99b3",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "RESERVED",
+        "cancel_source": null,
+        "provider_cancellation_verified": null,
+        "hidden_baked": null,
+        "user_override": null
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "RESERVED",
+        "cancel": ""
+      },
+      "canonical": {
+        "exists": false,
+        "sha256": null,
+        "bytes": 0
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:12.985796+00:00",
+    "step": "a-after-reload",
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "RESERVED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+    },
+    "page_sha": "332ee6288112ef5bd22eb08457af4fd81895c8cddb4e2aa4e3fd6900d0df99b3",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "RESERVED",
+        "cancel_source": null,
+        "provider_cancellation_verified": null,
+        "hidden_baked": null,
+        "user_override": null
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "RESERVED",
+        "cancel": ""
+      },
+      "canonical": {
+        "exists": false,
+        "sha256": null,
+        "bytes": 0
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:13.372743+00:00",
+    "step": "a-after-rebuild-same-browser",
+    "note": "Real build.py and merge.py reran on a new RESERVED feed. Same browser storage.",
+    "page_sha": "295543d8a7b733dd8be3cf3a9d3628102ede6434141a471e75b0c01c2bdc064f",
+    "previous_page_sha": "332ee6288112ef5bd22eb08457af4fd81895c8cddb4e2aa4e3fd6900d0df99b3",
+    "feed_sha": "6e0aff87c6811bea7cc8382b312762768612e6df1d5a9db3061e09b0ab984ed0",
+    "previous_feed_sha": "359aea787d58017faed7e024ecab52f6051910bf3a264a64bc7b407b354c012e",
+    "feed_written": "2026-11-07T18:43:13.241599+00:00",
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "RESERVED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\nUndo\nReserved"
+    },
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "RESERVED",
+        "cancel_source": null,
+        "provider_cancellation_verified": null,
+        "hidden_baked": null,
+        "user_override": null
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "RESERVED",
+        "cancel": ""
+      },
+      "canonical": {
+        "exists": false,
+        "sha256": null,
+        "bytes": 0
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:13.738900+00:00",
+    "step": "a-after-undo",
+    "click": {
+      "force": false,
+      "method": "locator.click",
+      "selector": "#hidden [data-key='2099-01-01|10:00|APEX'] [data-undocls]",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      }
+    },
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "RESERVED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "false",
+      "store": "phone",
+      "cancel": "",
+      "parent": "booked",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\nHide\nCancel class\nReserved\nWorkout not posted yet"
+    },
+    "page_sha": "295543d8a7b733dd8be3cf3a9d3628102ede6434141a471e75b0c01c2bdc064f",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "RESERVED",
+        "cancel_source": null,
+        "provider_cancellation_verified": null,
+        "hidden_baked": null,
+        "user_override": null
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "RESERVED",
+        "cancel": ""
+      },
+      "canonical": {
+        "exists": false,
+        "sha256": null,
+        "bytes": 0
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:14.550151+00:00",
+    "step": "b-empty-browser-built-hide",
+    "note": "Setup only. The row is already hidden by the shared file consumed by build.py. This is not a Hide click.",
+    "page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "feed_sha": "94c76850c4c2f393b23e5af62ac614c4ba77155618451f77829beb3be50288b9",
+    "feed_written": "2026-11-07T18:43:14.309634+00:00",
+    "storage": null,
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "built",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:15.010905+00:00",
+    "step": "b-before-undo",
+    "note": "Same built page. Undo is required before a Hide click because the row is not visible yet.",
+    "storage": null,
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "built",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:15.103195+00:00",
+    "step": "b-local-false-overrides-built-true",
+    "click": {
+      "force": false,
+      "method": "locator.click",
+      "selector": "#hidden [data-key='2099-01-01|10:00|APEX'] [data-undocls]",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      }
+    },
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "false",
+      "store": "phone",
+      "cancel": "user",
+      "parent": "booked",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved\nWorkout not posted yet"
+    },
+    "page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:15.484298+00:00",
+    "step": "b-after-hide-click",
+    "note": "This Hide click happens only after Undo showed the row.",
+    "click": {
+      "force": false,
+      "method": "locator.click",
+      "selector": "#booked [data-key='2099-01-01|10:00|APEX'] [data-hidecls]",
+      "hit": {
+        "w": 58.125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      }
+    },
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:15.828082+00:00",
+    "step": "b-after-reload",
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:16.227485+00:00",
+    "step": "b-after-rebuild-same-browser",
+    "page_sha": "02b9f9228801f98d328c51541585aad470790ec65b1552573402a37b71dc5d35",
+    "previous_page_sha": "8b22b6662752ddb534a18528fe372c687d39358ed5b1295bc792eeefd6e958e7",
+    "feed_sha": "6ca310f71405fce624254ed83b3fc9df735f3a93e83edc2234fbc8d125ce8eb5",
+    "previous_feed_sha": "94c76850c4c2f393b23e5af62ac614c4ba77155618451f77829beb3be50288b9",
+    "feed_written": "2026-11-07T18:43:16.099153+00:00",
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":true}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "phone",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:16.586219+00:00",
+    "step": "b-after-undo-visible",
+    "click": {
+      "force": false,
+      "method": "locator.click",
+      "selector": "#hidden [data-key='2099-01-01|10:00|APEX'] [data-undocls]",
+      "hit": {
+        "w": 63.3125,
+        "h": 38.296875,
+        "reached": true,
+        "viewport": 390
+      }
+    },
+    "storage": "{\"2099-01-01|10:00|APEX\":{\"hidden\":false}}",
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "false",
+      "store": "phone",
+      "cancel": "user",
+      "parent": "booked",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nclass\n\nYou reported this cancelled. The gym list still says reserved.\n\nHide\nReserved\nWorkout not posted yet"
+    },
+    "page_sha": "02b9f9228801f98d328c51541585aad470790ec65b1552573402a37b71dc5d35",
+    "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  },
+  {
+    "at": "2026-11-07T18:43:17.048172+00:00",
+    "step": "b-second-empty-browser",
+    "note": "A different empty browser still follows the built shared hide. The phone Undo did not change the file.",
+    "page_sha": "02b9f9228801f98d328c51541585aad470790ec65b1552573402a37b71dc5d35",
+    "storage": null,
+    "card": {
+      "count": 1,
+      "key": "2099-01-01|10:00|APEX",
+      "status": "CANCELLED",
+      "csv": "RESERVED",
+      "provider": "false",
+      "hidden": "true",
+      "store": "built",
+      "cancel": "user",
+      "parent": "hidden",
+      "text": "10:00\nAM CT\nTHIS Gym\nAPEX\nJan 1, 2099\n\nYou reported this cancelled. The gym list still says reserved.\n\nUndo\nReserved"
+    },
+    "canonical_sha": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+    "session_key": "2099-01-01|10:00|APEX",
+    "milestone": {
+      "ok": true,
+      "problems": [],
+      "source": "loaded page script plus override file",
+      "completed_sets": [
+        {
+          "identity": "2099-01-01|APEX|A1|Row|0",
+          "workout": "2099-01-01|APEX",
+          "workout_status": "skipped",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Row",
+          "index": 0,
+          "weight_lb": 40,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 40,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-03|Strength|B1|Squat|0",
+          "workout": "2099-01-03|Strength",
+          "workout_status": "completed",
+          "status_locked": true,
+          "label": "B1",
+          "name": "Squat",
+          "index": 0,
+          "weight_lb": 185,
+          "reps": 5,
+          "full_set": {
+            "weight_lb": 185,
+            "reps": 5
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|0",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 0,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|1",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 1,
+          "weight_lb": 135,
+          "reps": 8,
+          "full_set": {
+            "weight_lb": 135,
+            "reps": 8
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        },
+        {
+          "identity": "2099-01-06|Upper Body|A1|Bench Press|2",
+          "workout": "2099-01-06|Upper Body",
+          "workout_status": "completed",
+          "status_locked": false,
+          "label": "A1",
+          "name": "Bench Press",
+          "index": 2,
+          "weight_lb": 145,
+          "reps": 6,
+          "full_set": {
+            "weight_lb": 145,
+            "reps": 6
+          },
+          "id": null,
+          "set_id": null,
+          "eid": null,
+          "id_fields_present": []
+        }
+      ],
+      "duplicate_sets": [
+        {
+          "identities": [
+            "2099-01-06|Upper Body|A1|Bench Press|0",
+            "2099-01-06|Upper Body|A1|Bench Press|1"
+          ],
+          "count": 2
+        }
+      ],
+      "strength": {
+        "status": "completed",
+        "status_locked": true
+      },
+      "apex": {
+        "csv_status": "RESERVED",
+        "status": "CANCELLED",
+        "cancel_source": "user",
+        "provider_cancellation_verified": false,
+        "hidden_baked": true,
+        "user_override": {
+          "status": "cancelled",
+          "attendance": "skipped",
+          "hidden": true,
+          "provider_cancellation_verified": false,
+          "source": "Synthetic User",
+          "reported_at": "2099-01-03T11:45:00-06:00"
+        }
+      },
+      "card": {
+        "csv": "RESERVED",
+        "provider": "false",
+        "status": "CANCELLED",
+        "cancel": "user"
+      },
+      "canonical": {
+        "exists": true,
+        "sha256": "b5603ec54333bbb3078cff8091201edd883ab150908daebabf3cee70bef85009",
+        "bytes": 482
+      }
+    },
+    "ok": true
+  }
+]

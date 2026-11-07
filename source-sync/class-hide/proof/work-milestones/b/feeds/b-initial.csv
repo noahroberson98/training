@@ -1,0 +1,4 @@
+date,time,class,type,coach,status,source,feed_write
+2099-01-01,10:00,APEX,class,,RESERVED,synthetic feed,2026-11-07T18:43:14.309634+00:00
+2099-01-03,09:00,THIS STRENGTH,class,,RESERVED,synthetic feed,2026-11-07T18:43:14.309634+00:00
+2099-01-06,14:00,Personal Training,personal training,Coach Example,RESERVED,synthetic feed,2026-11-07T18:43:14.309634+00:00

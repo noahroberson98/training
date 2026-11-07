@@ -1,0 +1,49 @@
+{
+ "2099-01-01|10:00|APEX": {
+  "cancel_source": "user",
+  "class": "APEX",
+  "coach": "",
+  "csv_status": "RESERVED",
+  "date": "2099-01-01",
+  "first_seen": "2026-11-07T18:43:14",
+  "hidden": true,
+  "last_seen": "2026-11-07T18:43:16",
+  "provider_cancellation_verified": false,
+  "source": "synthetic feed",
+  "status": "CANCELLED",
+  "time": "10:00",
+  "type": "class",
+  "user_override": {
+   "attendance": "skipped",
+   "hidden": true,
+   "provider_cancellation_verified": false,
+   "reported_at": "2099-01-03T11:45:00-06:00",
+   "source": "Synthetic User",
+   "status": "cancelled"
+  }
+ },
+ "2099-01-03|09:00|THIS STRENGTH": {
+  "class": "THIS STRENGTH",
+  "coach": "",
+  "csv_status": "RESERVED",
+  "date": "2099-01-03",
+  "first_seen": "2026-11-07T18:43:14",
+  "last_seen": "2026-11-07T18:43:16",
+  "source": "synthetic feed",
+  "status": "RESERVED",
+  "time": "09:00",
+  "type": "class"
+ },
+ "2099-01-06|14:00|Personal Training": {
+  "class": "Personal Training",
+  "coach": "Coach Example",
+  "csv_status": "RESERVED",
+  "date": "2099-01-06",
+  "first_seen": "2026-11-07T18:43:14",
+  "last_seen": "2026-11-07T18:43:16",
+  "source": "synthetic feed",
+  "status": "RESERVED",
+  "time": "14:00",
+  "type": "personal training"
+ }
+}

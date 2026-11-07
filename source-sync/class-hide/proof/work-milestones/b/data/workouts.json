@@ -1,0 +1,256 @@
+{
+  "schema": 1,
+  "example": true,
+  "workouts": {
+    "2099-01-01|APEX": {
+      "date": "2099-01-01",
+      "title": "APEX",
+      "type": "Strength",
+      "status": "skipped",
+      "status_note": null,
+      "session_key": "2099-01-01|10:00|APEX",
+      "exercises": [
+        {
+          "label": "A1",
+          "name": "Row",
+          "sets": 3,
+          "reps": 8,
+          "warmup": false,
+          "actuals": {
+            "sets": [
+              {
+                "weight_lb": 40,
+                "reps": 8
+              }
+            ]
+          }
+        }
+      ],
+      "revisions": [
+        {
+          "date": "2099-01-01",
+          "title": "APEX",
+          "type": "class",
+          "status": "completed",
+          "status_note": null,
+          "exercises": [
+            {
+              "label": "A1",
+              "name": "Row",
+              "sets": 3,
+              "reps": 8,
+              "warmup": false,
+              "actuals": {
+                "sets": [
+                  {
+                    "weight_lb": 40,
+                    "reps": 8
+                  }
+                ]
+              }
+            }
+          ],
+          "replaced_at": "2026-11-07T18:43:14+00:00"
+        },
+        {
+          "date": "2099-01-01",
+          "title": "APEX",
+          "type": "Strength",
+          "status": "skipped",
+          "status_note": null,
+          "exercises": [
+            {
+              "label": "A1",
+              "name": "Row",
+              "sets": 3,
+              "reps": 8,
+              "warmup": false,
+              "actuals": {
+                "sets": [
+                  {
+                    "weight_lb": 40,
+                    "reps": 8
+                  }
+                ]
+              }
+            }
+          ],
+          "replaced_at": "2026-11-07T18:43:16+00:00"
+        }
+      ],
+      "last_updated": "2026-11-07T18:43:16+00:00",
+      "user_cancel_source": "user",
+      "provider_cancellation_verified": false,
+      "user_hidden": true
+    },
+    "2099-01-03|Strength": {
+      "date": "2099-01-03",
+      "title": "Strength",
+      "type": "Strength",
+      "status": "completed",
+      "status_note": null,
+      "status_locked": true,
+      "session_key": "2099-01-03|09:00|THIS STRENGTH",
+      "exercises": [
+        {
+          "label": "B1",
+          "block": "B",
+          "name": "Squat",
+          "sets": 1,
+          "reps": 5,
+          "duration_s": null,
+          "weight_lb": null,
+          "other_load": null,
+          "note": null,
+          "warmup": false,
+          "actuals": {
+            "sets": [
+              {
+                "weight_lb": 185,
+                "reps": 5
+              }
+            ]
+          }
+        }
+      ],
+      "revisions": [
+        {
+          "date": "2099-01-03",
+          "title": "Strength",
+          "type": "Strength",
+          "status": "completed",
+          "status_note": null,
+          "exercises": [
+            {
+              "label": "B1",
+              "name": "Squat",
+              "sets": 1,
+              "reps": 5,
+              "warmup": false,
+              "actuals": {
+                "sets": [
+                  {
+                    "weight_lb": 185,
+                    "reps": 5
+                  }
+                ]
+              }
+            }
+          ],
+          "replaced_at": "2026-11-07T18:43:14+00:00"
+        }
+      ],
+      "last_updated": "2026-11-07T18:43:14+00:00"
+    },
+    "2099-01-06|Upper Body": {
+      "date": "2099-01-06",
+      "title": "Upper Body",
+      "type": "Strength",
+      "status": "completed",
+      "status_note": null,
+      "started_at": "2099-01-06T14:00:00-06:00",
+      "ended_at": "2099-01-06T15:00:00-06:00",
+      "exercises": [
+        {
+          "label": "A1",
+          "block": "A",
+          "name": "Bench Press",
+          "sets": 3,
+          "reps": 8,
+          "duration_s": null,
+          "weight_lb": null,
+          "other_load": null,
+          "note": null,
+          "warmup": false,
+          "actuals": {
+            "sets": [
+              {
+                "weight_lb": 135,
+                "reps": 8
+              },
+              {
+                "weight_lb": 135,
+                "reps": 8
+              },
+              {
+                "weight_lb": 145,
+                "reps": 6
+              }
+            ]
+          }
+        },
+        {
+          "label": "W",
+          "block": "W",
+          "name": "Easy Bike",
+          "sets": 1,
+          "reps": null,
+          "duration_s": null,
+          "weight_lb": null,
+          "other_load": null,
+          "note": null,
+          "warmup": true,
+          "actuals": null
+        }
+      ],
+      "revisions": [
+        {
+          "date": "2099-01-06",
+          "title": "Upper Body",
+          "type": "Strength",
+          "status": "completed",
+          "status_note": null,
+          "exercises": [
+            {
+              "label": "A1",
+              "name": "Bench Press",
+              "sets": 3,
+              "reps": 8,
+              "warmup": false,
+              "actuals": {
+                "sets": [
+                  {
+                    "weight_lb": 135,
+                    "reps": 8
+                  },
+                  {
+                    "weight_lb": 135,
+                    "reps": 8
+                  },
+                  {
+                    "weight_lb": 145,
+                    "reps": 6
+                  }
+                ]
+              }
+            },
+            {
+              "label": "W",
+              "name": "Easy Bike",
+              "sets": 1,
+              "warmup": true
+            }
+          ],
+          "replaced_at": "2026-11-07T18:43:14+00:00"
+        }
+      ],
+      "last_updated": "2026-11-07T18:43:14+00:00"
+    }
+  },
+  "merges": [
+    {
+      "at": "2026-11-07T18:43:14+00:00",
+      "batch": "batch.json",
+      "added": 0,
+      "updated": 3,
+      "unchanged": 0
+    },
+    {
+      "at": "2026-11-07T18:43:16+00:00",
+      "batch": "batch.json",
+      "added": 0,
+      "updated": 1,
+      "unchanged": 2
+    }
+  ]
+}

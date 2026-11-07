@@ -1,0 +1,47 @@
+--- a/scripts/merge.py
++++ b/scripts/merge.py
+@@ -21,7 +21,7 @@
+ """
+ import argparse, copy, hashlib, json, os, sys, tempfile
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+-from common import actual_sets, eff_date, fill_per_plan  # noqa: E402
++from common import actual_sets, eff_date, fill_per_plan, hold_user_workout_overrides, load_user_overrides  # noqa: E402
+ from datetime import datetime, timezone
+ 
+ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+@@ -132,9 +132,15 @@
+     os.replace(tmp, path)
+ 
+ 
+-def merge(store, batch, source_name="batch"):
++def merge(store, batch, source_name="batch", overrides=None):
+     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+     added = updated = unchanged = 0
++    preserved = {}
++    if overrides:
++        for w in store.get("workouts", {}).values():
++            sk = w.get("session_key")
++            if sk and sk in overrides:
++                preserved[sk] = copy.deepcopy(w.get("exercises"))
+     src = batch.get("source", "TrainingPeaks")
+     for raw in batch["workouts"]:
+         new = norm_workout(raw)
+@@ -187,6 +193,8 @@
+     if added or updated:
+         store.setdefault("merges", []).append(
+             {"at": now, "batch": source_name, "added": added, "updated": updated, "unchanged": unchanged})
++    if overrides:
++        hold_user_workout_overrides(store, overrides, preserved)
+     store["workouts"] = dict(sorted(store["workouts"].items()))
+     return added, updated, unchanged
+ 
+@@ -313,7 +321,8 @@
+         for m in missing:
+             print(f"  warning: not in store, skipped: {m}")
+         return
+-    added, updated, unchanged = merge(store, batch, os.path.basename(a.batch))
++    added, updated, unchanged = merge(store, batch, os.path.basename(a.batch),
++                                      overrides=load_user_overrides(os.path.join(ROOT, "data", "user_overrides.json")) or None)
+     assert len(store["workouts"]) >= before, "merge must never delete workouts"
+     save(a.store, store)
+     print(f"merged {os.path.basename(a.batch)}: {added} added, {updated} updated, "

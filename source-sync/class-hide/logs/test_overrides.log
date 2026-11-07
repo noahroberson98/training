@@ -1,0 +1,13 @@
+PASS stale reserved feed stays hidden and user-cancelled
+PASS stale feed keeps reserved status and source
+PASS user cancel is not a provider confirmation
+PASS missing feed row stays hidden and user-cancelled
+PASS missing row is not inferred completed
+PASS unrelated booking stays reserved and visible
+PASS undo shows the row without restoring a provider reservation
+PASS without an override, a past missing row still follows the existing completed rule
+PASS merge does not complete a user-cancelled session
+PASS merge keeps the logged set
+PASS a locked workout status is not rewritten
+PASS a workout with no override still merges
+ALL PASS

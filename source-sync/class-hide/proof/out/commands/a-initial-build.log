@@ -1,0 +1,9 @@
+$ /usr/bin/python3 scripts/build.py --store /agent/repos/training/source-sync/class-hide/proof/work/a/data/workouts.json --out /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial.html --csv /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial-workouts.csv --classes /agent/repos/training/source-sync/class-hide/proof/work/a/feeds/a-initial.csv --whoop /agent/repos/training/source-sync/class-hide/proof/work/a/whoop/whoop_daily.csv
+exit 0
+--- stdout ---
+read 3 THIS Gym classes, 0 WHOOP days
+wrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial.html (3 workouts, 4 exercises)
+wrote /agent/repos/training/source-sync/class-hide/proof/work/a/pages/a-initial-workouts.csv
+
+--- stderr ---
+
