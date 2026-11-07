@@ -468,12 +468,28 @@ function isActualSet(s){
   if(s.round===true) return true;
   return false;
 }
+function knownLoadSet(x){return !!(x&&x.weight_lb!=null&&x.reps!=null&&Number.isFinite(+x.weight_lb)&&Number.isFinite(+x.reps));}
 function progress(w){
-  let planned=0,done=0,logged=0,reps=0,vol=0,lvol=0,lreps=0;
+  let planned=0,done=0,logged=0,reps=0,vol=0,lvol=0,lreps=0,known=0;
   working(w).forEach(e=>{const sets=allSets(w,e).filter(isActualSet); const s=sets.length; const p=e.sets||0; planned+=p||s; logged+=s; done+=p?Math.min(s,p):s;
     if(e.reps!=null&&p) reps+=p*e.reps; if(e.weight_lb!=null&&e.reps!=null&&p) vol+=p*e.reps*e.weight_lb;
-    sets.forEach(x=>{if(x.reps!=null&&Number.isFinite(+x.reps)) lreps+=+x.reps; if(x.weight_lb!=null&&x.reps!=null) lvol+=(+x.weight_lb)*(+x.reps);});});
-  return {planned,done,logged,reps,vol,lvol,lreps};
+    sets.forEach(x=>{if(x.reps!=null&&Number.isFinite(+x.reps)) lreps+=+x.reps; if(knownLoadSet(x)){known++; lvol+=(+x.weight_lb)*(+x.reps);}});});
+  return {planned,done,logged,reps,vol,lvol,lreps,known,missing:logged-known};
+}
+function weekLoadFacts(wk){
+  const f={logged:0,planned:0,lvol:0,comp:0,known:0,missing:0,workouts:wk.length};
+  wk.forEach(w=>{const p=progress(w); f.logged+=p.logged; f.planned+=p.planned; f.lvol+=p.lvol; f.known+=p.known; f.missing+=p.missing; if(statusOf(w)==="completed") f.comp++;});
+  return f;
+}
+function weekVolumeText(f){
+  if(f.known>0&&f.missing>0) return `Known-load volume ${num(f.lvol)} lb · ${f.known} of ${f.logged} logged sets with recorded loads · ${f.missing} sets without recorded loads`;
+  if(f.known>0) return `Known-load volume ${num(f.lvol)} lb · ${f.known} of ${f.logged} logged sets with recorded loads`;
+  if(f.logged>0) return `No known-load volume · 0 of ${f.logged} logged sets with recorded loads · ${f.missing} sets without recorded loads`;
+  return "";
+}
+function unitAssumptionNote(e){
+  const note=String((e&&e.actuals&&e.actuals.unit_note)||"");
+  return /assum|omit/i.test(note)?"Pounds assumed":"";
 }
 function setsLine(w){const p=progress(w); return p.logged+" logged · "+p.planned+" planned sets";}
 const skipOf=(w,e)=>e.warmup?0:(local[w.key]?(LXr(w,e).skipped||0):((e.actuals||{}).skipped_sets||0));
@@ -639,6 +655,7 @@ function exRow(w,e){
     ${aliasAmbiguous(w,e)?`<div class="ex-note">Same weight and reps are also saved on the Personal Training log. Both are kept. There is no set id to tell a repeat from a second set.</div>`:""}
     ${lastTimeHtml(w,e)}
     <div class="srows">${rows}</div>
+    ${unitAssumptionNote(e)?`<div class="ex-note">${esc(unitAssumptionNote(e))}</div>`:""}
     ${L.note?`<div class="exnotes">📝 ${esc(L.note)}</div>`:""}
     ${off?"":`<button class="addset" data-addrow="${id}">+ Add Set</button>`}
   </div>`;
@@ -878,8 +895,11 @@ function sessCard(s,i,list,core){ // one past session as a workout-app card
   const head=`<div class="sh"><div class="t">${mdw(s.w.date)}</div>${s.sets.length?(core?`<span class="dlt eq">Done</span>`:(pr?`<span class="prb">PR</span> `:"")+deltaHtml(s,prev)):""}</div><div class="sub"><a href="#" data-day="${s.w.date}">${esc(s.w.title)}</a> · Target ${rxHtml(s.e)}</div>`;
   if(!s.sets.length){const raw=(local[s.w.key]&&local[s.w.key].status)||s.w.status; const msg=raw==="completed"?"No sets logged":raw==="skipped"?"Skipped":s.w.date>=TODAY?"Planned":"Not completed"; return `<div class="scard">${head}<div class="sempty">${msg}</div></div>`;}
   if(core){const n=coreNotes(s.w,s.e); return `<div class="scard">${head}${n?`<div class="sfoot">${esc(n)}</div>`:""}</div>`;}
-  const v=s.sets.reduce((a,x)=>a+(x.weight_lb||0)*(x.reps||0),0);
-  return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${v?`<div class="sfoot">Volume ${num(v)} lb</div>`:""}</div>`;}
+  const v=s.sets.reduce((a,x)=>a+(knownLoadSet(x)?(+x.weight_lb)*(+x.reps):0),0);
+  const known=s.sets.filter(knownLoadSet).length, missing=s.sets.filter(isActualSet).length-known;
+  const vol=known&&missing?`Known-load volume ${num(v)} lb · ${missing} sets without recorded loads`:known?`Volume ${num(v)} lb`:missing?`${missing} sets without recorded loads`:"";
+  const unit=unitAssumptionNote(s.e);
+  return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${vol?`<div class="sfoot">${vol}</div>`:""}${unit?`<div class="sfoot">${esc(unit)}</div>`:""}</div>`;}
 function historyView(){
   const S=sessions().map(x=>{const logged=x.items.filter(i=>i.sets.length); const all=x.items.flatMap(i=>i.sets);
     return {...x,logged,best:bestOf(all),last:x.items[x.items.length-1]}})
@@ -894,9 +914,10 @@ function historyView(){
     const nxt=up[up.length-1], tn=!core&&lastLogged?((nxt&&TOV(nxt.w.key,nxt.e))||tryNext(nxt?nxt.e:lastLogged.e,lastLogged.sets)):null;
     const hint=lastLogged?`<div class="hint2">Previous (${md(lastLogged.w.date)}): <b>${core?"Done":esc(lastLogged.sets.map(label).join(", "))}</b>${tn?`<br>Target${nxt?` (${md(nxt.w.date)})`:""}: <b>${esc(tn.t)}</b>`:""}</div>`:"";
     const bestLbl=core&&s.logged.length?"Done":s.best?esc(label(s.best)):"";
+    const assumed=s.items.some(i=>unitAssumptionNote(i.e));
     return `<div class="hitem" id="ex-${esc(k)}" data-name="${esc(norm(s.name))}"><div class="hrow" data-hist="${esc(k)}"><div class="x"><div>${esc(s.name)}</div><span>${s.logged.length?`${s.logged.length} session${s.logged.length>1?"s":""} · Previous ${md(lastLogged.w.date)}`:`${s.items.length} planned · next ${md(s.items.find(i=>i.w.date>=TODAY)?.w.date||s.last.w.date)}`}</span></div>
       ${core?"":spark(vals.filter(v=>v!=null).length?vals:[],isPlan)}
-      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
+      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>${assumed?`<span>Pounds assumed</span>`:""}`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
       <div class="hdetail ${openHist===k?"on":""}">${hint}${past.map((i,n)=>sessCard(i,n,past,core)).join("")}${up.length?`<div class="sfoot" style="margin-top:8px">Planned: ${up.map(i=>md(i.w.date)).reverse().join(", ")}</div>`:""}</div></div>`;};
   let h=`<div class="hsearch"><input id="hq" type="search" placeholder="Search exercises" value="${esc(histQ)}" autocomplete="off"><button data-hlogged class="${histOnlyLogged?"on":""}">Logged only</button></div>`;
   if(logged.length) h+=`<div class="sec-title hsec" style="margin-top:4px">Logged</div><div class="group">${logged.map(row).join("")}</div>`;
@@ -909,9 +930,9 @@ document.addEventListener("input",ev=>{if(ev.target.id==="hq"){histQ=ev.target.v
 // ---------- aside ----------
 function asideView(){
   const ws=wkStart(sel), wk=W.filter(w=>wkStart(w.date)===ws);
-  let logged=0,planned=0,lvol=0,comp=0; wk.forEach(w=>{const p=progress(w);logged+=p.logged;planned+=p.planned;lvol+=p.lvol; if(statusOf(w)==="completed")comp++;});
-  let h=`<div class="card"><h3>This Week</h3><div class="mini"><div class="ring" style="width:64px;height:64px">${ring(logged,planned,64,6)}<div class="c"><b style="font-size:14px">${planned?(logged/planned*100).toFixed(1):"0.0"}%</b></div></div>
-   <div><div style="font-weight:650">${logged} logged of ${planned} planned sets</div><div class="date">${comp}/${wk.length} workouts logged${lvol?` · ${num(lvol)} lb`:""}</div></div></div>`;
+  const load=weekLoadFacts(wk), volText=weekVolumeText(load);
+  let h=`<div class="card"><h3>This Week</h3><div class="mini"><div class="ring" style="width:64px;height:64px">${ring(load.logged,load.planned,64,6)}<div class="c"><b style="font-size:14px">${load.planned?(load.logged/load.planned*100).toFixed(1):"0.0"}%</b></div></div>
+   <div><div style="font-weight:650">${load.logged} logged of ${load.planned} planned sets</div><div class="date">${load.comp}/${load.workouts} workouts logged</div>${volText?`<div class="date weekly-volume">${volText}</div>`:""}</div></div>`;
   const items=[...wk.map(w=>({d:w.date,o:"1",w})),...CLS.filter(c=>wkStart(c.date)===ws && !PT_PAIRS.has(ckey(c))).map(c=>({d:c.date,o:"0"+c.time,c}))].sort((a,b)=>(a.d+a.o).localeCompare(b.d+b.o));
   items.forEach(it=>{const d=it.d; const dd=`<div class="d">${DN[pd(d).getDay()]}<b>${pd(d).getDate()}</b></div>`;
     if(it.w){const w=it.w,st=statusOf(w); h+=`<div class="wrow" data-day="${d}">${dd}<div class="x"><div>${esc(w.title)}</div><span>${w.date!==w.orig?`Moved from ${DN[pd(w.orig).getDay()]} · `:""}${working(w).length} exercises · ${esc(setsLine(w))}${ptMeta(w)?` · ${esc(ptMeta(w))}`:""}</span></div><span class="pill ${st}">${statusText[st]||st}</span></div>`;}
