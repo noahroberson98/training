@@ -32,6 +32,8 @@ Dumbbell and kettlebell names (`dumbbell`, `kettlebell`, `db`, `kb`) keep the st
 
 Kilograms and pounds are separate series. A change is shown only against the previous session in the same unit and basis. One session says there is nothing earlier to compare. No eligible set says there is no estimate, including when logged sets exist but were excluded, and it says why they were excluded.
 
+`actuals.unit_note` is provenance text. When it matches the repair rule (`assum` or `omit`), the exercise is labeled “Pounds assumed”. The stored `weight_lb` is still the number used. It is not converted and not doubled. A note that says an incline load was stored as written does not multiply that load. Week volume still uses the repair’s known-load count: a logged set adds to volume only when weight and reps are both finite, and the week line says how many logged sets have no recorded load.
+
 ## Identity
 
 Sessions stay on the workout key (`date` plus title). Two workouts on the same date are two points. Exercise identity is the existing normalized name. Different implements are not fuzzy-merged. Notes stay notes. They are not parsed into weight.

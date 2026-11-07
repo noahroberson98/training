@@ -81,15 +81,17 @@ const series = e1rmSeries([
   {key:"kg", date:"2026-10-16", title:"A", sets:[{weight_kg:40, reps:5}], exercise:{name:"Bench"}}
 ]);
 const fmt = [126.6666666667, 116.6666666667, 121, 66.6666666667, 129.8333333333, 124.1379310345].map(e1rmFmt);
-console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt}));
+const incline = e1rmEstimate({weight_lb:25, reps:8}, {name:"High Incline Press"});
+const assumed = e1rmSeries([{key:"2026-11-06|Upper Body", date:"2026-11-06", title:"Upper Body", assumed:true, sets:[{weight_lb:100, reps:8}], exercise:{name:"Machine Row"}}]);
+console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt, incline, assumed}));
 """ % json.dumps([{"set": s, "exercise": e} for _, s, e, _ in cases])
 node_path = Path(tempfile.mkdtemp()) / "e1rm-cases.js"
 # NaN cannot be JSON. Patch the missing-weight null case; add a NaN case in the script.
 node_src = node_src.replace(
-    'console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt}));',
+    'console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt, incline, assumed}));',
     'out.push(e1rmEstimate({weight_lb: NaN, reps: 8}, {name:"Bench"}));\n'
     'out.push(e1rmEstimate({weight_lb: Infinity, reps: 8}, {name:"Bench"}));\n'
-    'console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt}));'
+    'console.log(JSON.stringify({out, dedup, prefer, onlyLow, series, fmt, incline, assumed}));'
 )
 node_path.write_text(node_src)
 proc = subprocess.run(["node", str(node_path)], capture_output=True, text=True)
@@ -118,6 +120,10 @@ if got:
     check([x["date"] for x in ser["chart"]] == ["2026-10-01", "2026-10-08"], "same-unit sessions stay in date order")
     check(len(ser["held"]) == 1 and ser["held"][0]["unit"] == "kg", "a kilogram session is not plotted on the pound line")
     check(got["fmt"] == ["126.7", "116.7", "121", "66.7", "129.8", "124.1"], "display rounding " + str(got["fmt"]))
+    inc = got["incline"]
+    check(inc["ok"] and inc["basis"] == "stored_lb" and abs(inc["primary"] - epley(25, 8)) < 1e-6 and abs(inc["primary"] - epley(50, 8)) > 1, "incline load is not doubled")
+    ap = got["assumed"]["points"][0]
+    check(ap["assumed"] is True and ap["basis"] == "stored_lb" and abs(ap["primary"] - epley(100, 8)) < 1e-6, "assumed pounds stay on the pound series at the stored weight")
 
 # UI on the example page only
 tmp = tempfile.mkdtemp()

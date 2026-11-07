@@ -1,4 +1,14 @@
-# Tests run for this handoff
+# Tests run after the run12 merge
+
+`python3 tests/test_e1rm_history.py` passed, including the check that a High Incline Press load is not doubled and that assumed pounds stay on the pound series at the stored weight.
+
+`python3 tests/test_e1rm_current.py` passed against the sanitized current snapshot. STORE and EXTRA matched byte for byte. The page token was empty. Machine Row showed Oct 30 and Nov 6, with “Pounds assumed”. Nov 6 still had six logged actual sets on Machine Row and High Incline Press. AbMat Sit Up had no estimate. Opening History did not write the log or the clock. HTTP was aborted. No page errors.
+
+`tests/test_pt_session.py` was run on the run12 `index.html` and a local empty-finish draft of that same repair payload. Exit 0, `ALL PASSED`. Playwright again logged `asyncio.exceptions.CancelledError` from a route callback during the hanging finish. The timeout checks passed. The test file was not edited.
+
+`tests/test_logging.py` and `tests/test_counting.py` were passed that run12 page and exited 0. `tests/test_nan_pills.py` and `tests/test_fontsize.py` passed when that page was placed at the `dashboard.html` path they hard-code. The copy was deleted afterward. No portable run12 recipe beyond these existing tests was in the repository.
+
+No CI check has run. A local pass is not a CI pass. Style has not cleared a current-input production build. This was not a live JARVIS review.
 
 `python3 tests/test_e1rm_history.py` passed after the final template edit. It checks the formulas, 1-rep handling, rep limits, warm-ups, plan fills, missing and non-finite loads, kilogram versus pound series, dumbbell loads that are not doubled, assisted loads, stable-id dedupe, repeated sets without an id, same-day sessions, the example chart, the empty state, and that picking an exercise does not write `localStorage` or call the network.
 

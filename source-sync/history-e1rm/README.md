@@ -1,6 +1,6 @@
 # History progression and estimated 1RM
 
-Follow-up to the unmerged run8 repair. This directory is the generator handoff. It does not replace `index.html` and it is not a release.
+Follow-up to the unmerged repair. This directory is the generator handoff. It does not replace `index.html` and it is not a release.
 
 Apply it on the local training-dashboard after the approved run8 generator patches. The GitHub training repository only publishes generated HTML. A daily rebuild from an unpatched template would drop this History chart.
 
@@ -20,10 +20,12 @@ Only finite, positive, whole-rep loads are used. Plan-filled reps, round taps, w
 
 ## Dependency
 
-- Run8 head: `b59aa2b2b9774388efa3cb84b257beb64f274296` on `cursor/pt-upper-one-session-c4c3`
-- Run8 package SHA256: `85814fb15404ba2db14cc0b4ada91339296e86a344c2ff784149342fa4c742d8`
-- Current source kit SHA256: `4884a5a41e693ac51d4ce7c768e23319ca031d09a8d54cf9ece972ecb861e8b6`
-- Template baseline before this patch, after run8: raw historical `9a3927c79c8621d8380b05b0f5a1b48909d4d7e2baf32311a1618f7ea2f9194f`, patched template `e3a379d4a9dcf7c1b54b8a29096db52abb6840ca3171a89d11d2e6560c7913dd`
+- Repair branch `cursor/pt-upper-one-session-c4c3` at `7d00bb7417ada9aecb4523dd0189b91068c8d8fd` (run12), merged into this History branch
+- Run8 package SHA256, still the earlier template base: `85814fb15404ba2db14cc0b4ada91339296e86a344c2ff784149342fa4c742d8`
+- Updated repair template SHA256, the History patch preimage: `d5946907beb0dbaff8b1d20a8b7d5c33710423270ac0e9ee9af6aa384529a7f5`
+- History template SHA256: `f265531e90db7e5804aa58df6f1eb67a31e462edd337e82259e7f8a08a3caf71`
 - `build.py` baseline `1506ec0b0ebefedcbad5200581cacc5858f8d6ac16c6a682465deec6e2f90034` is unchanged
+
+Run12 adds known-load volume with a missing-load count, and shows “Pounds assumed” only when the stored unit note says the pounds were assumed. Incline weight is not doubled. The History patch keeps those behaviors.
 
 `APPLY.md` is the apply order. Do not reset the local generator. Its git repo has no remote, and several dirty files were not in the source kit.

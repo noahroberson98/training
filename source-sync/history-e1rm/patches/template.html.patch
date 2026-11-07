@@ -31,7 +31,7 @@
  .sess{display:flex;gap:12px;align-items:baseline;padding:7px 0;font-size:14px}
  .sess .dd{width:64px;color:var(--muted);flex:none}
  .sess .chips{margin:0}
-@@ -871,40 +895,271 @@
+@@ -888,11 +912,112 @@
    const tgt=x=>{const w=pw(x),r=pl(x); return w!=null&&r!=null?`${fv(w)}×${fv(r)}`:w!=null?`${fv(w)} lb`:r!=null?fv(r):"—";};
    const dn=(p,a)=>p!=null&&a!=null&&p!==a?`<b class="dev">${fv(a)}</b>`:fv(a);
    return `<table class="sgrid"><thead><tr><th class="c">Set</th><th>Target</th>${hasW?`<th class="r">lbs</th>`:""}<th class="r">Reps</th></tr></thead><tbody>${sets.map((x,j)=>`<tr><td class="c">${j+1}</td><td><small>${tgt(x)}</small></td>${hasW?`<td class="r">${dn(pw(x),x.weight_lb)}</td>`:""}<td class="r">${dn(pl(x),act(x))}</td></tr>`).join("")}</tbody></table>`;}
@@ -123,7 +123,7 @@
 +  (items||[]).forEach(it=>{
 +    const sess=e1rmSession(it.sets, it.exercise);
 +    Object.keys(sess.excluded).forEach(r=>{ excluded[r]=(excluded[r]||0)+sess.excluded[r]; });
-+    sess.points.forEach(p=>all.push(Object.assign({key:String(it.key||""),date:String(it.date||""),title:String(it.title||""),note:String(it.note||"")}, p)));
++    sess.points.forEach(p=>all.push(Object.assign({key:String(it.key||""),date:String(it.date||""),title:String(it.title||""),note:String(it.note||""),assumed:!!it.assumed}, p)));
 +  });
 +  all.sort((a,b)=>(a.date+"\n"+a.key+"\n"+a.group).localeCompare(b.date+"\n"+b.key+"\n"+b.group));
 +  const counts=new Map();
@@ -147,17 +147,21 @@
 +  const head=`<div class="sh"><div class="t">${mdw(s.w.date)}</div>${s.sets.length?(core?`<span class="dlt eq">Done</span>`:(pr?`<span class="prb">PR</span> `:"")+(curE.length&&prev?deltaHtml({sets:curE},{sets:elig(prev.sets)}):"")):""}</div><div class="sub"><a href="#" data-day="${s.w.date}">${esc(s.w.title)}</a> · Target ${rxHtml(s.e)}</div>`;
    if(!s.sets.length){const raw=(local[s.w.key]&&local[s.w.key].status)||s.w.status; const msg=raw==="completed"?"No sets logged":raw==="skipped"?"Skipped":s.w.date>=TODAY?"Planned":"Not completed"; return `<div class="scard">${head}<div class="sempty">${msg}</div></div>`;}
    if(core){const n=coreNotes(s.w,s.e); return `<div class="scard">${head}${n?`<div class="sfoot">${esc(n)}</div>`:""}</div>`;}
-   const v=s.sets.reduce((a,x)=>a+(x.weight_lb||0)*(x.reps||0),0);
-   return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${v?`<div class="sfoot">Volume ${num(v)} lb</div>`:""}</div>`;}
+   const v=s.sets.reduce((a,x)=>a+(knownLoadSet(x)?(+x.weight_lb)*(+x.reps):0),0);
+@@ -900,32 +1025,166 @@
+   const vol=known&&missing?`Known-load volume ${num(v)} lb · ${missing} sets without recorded loads`:known?`Volume ${num(v)} lb`:missing?`${missing} sets without recorded loads`:"";
+   const unit=unitAssumptionNote(s.e);
+   return `<div class="scard">${head}${setGrid(s.sets,prev&&prev.sets,s.e)}${vol?`<div class="sfoot">${vol}</div>`:""}${unit?`<div class="sfoot">${esc(unit)}</div>`:""}</div>`;}
 +function e1rmItems(s){
 +  const by=new Map();
 +  s.items.forEach(it=>{
 +    const k=it.w.key;
-+    if(!by.has(k)) by.set(k,{key:k,date:it.w.date,title:it.w.title||"",sets:[],exercise:{name:it.e.name,warmup:!!it.e.warmup,other_load:it.e.other_load||null,label:it.e.label||"",block:it.e.block||""},note:""});
++    if(!by.has(k)) by.set(k,{key:k,date:it.w.date,title:it.w.title||"",sets:[],exercise:{name:it.e.name,warmup:!!it.e.warmup,other_load:it.e.other_load||null,label:it.e.label||"",block:it.e.block||""},assumed:false,note:""});
 +    const g=by.get(k);
++    if(unitAssumptionNote(it.e)==="Pounds assumed") g.assumed=true;
 +    (it.sets||[]).forEach(x=>g.sets.push(x));
 +    const bag=local[it.w.key]&&local[it.w.key].exercises&&local[it.w.key].exercises[ek(it.e)];
-+    const n=[it.e.actuals&&it.e.actuals.notes, it.e.note, bag&&bag.note, bag&&bag.notes].filter(Boolean).join(" · ");
++    const n=[it.e.actuals&&it.e.actuals.unit_note, it.e.actuals&&it.e.actuals.notes, it.e.note, bag&&bag.note, bag&&bag.notes].filter(Boolean).join(" · ");
 +    if(n&&g.note.indexOf(n)<0) g.note=(g.note?g.note+" · ":"")+n;
 +  });
 +  return [...by.values()];
@@ -165,6 +169,7 @@
 +function e1rmUnit(p){ return p.unit==="kg"?"kg":"lb"; }
 +function e1rmSigned(d){ const a=e1rmFmt(Math.abs(d)); if(!a||a==="0") return "0"; return (d>0?"+":"−")+a; }
 +function e1rmBasisText(p){
++  if(p.basis==="assumed_lb") return "Pounds assumed. The stored note says these pounds were assumed. The number is not converted or doubled.";
 +  if(p.basis==="per_hand_unconfirmed"&&p.unit==="kg") return "Kilograms as logged. Dumbbell or kettlebell: the log does not say per hand or total, so this is not doubled and not converted.";
 +  if(p.basis==="per_hand_unconfirmed") return "Pounds as logged. Dumbbell or kettlebell: the log does not say per hand or total, so this is not doubled.";
 +  if(p.unit==="kg") return "Kilograms as logged. Not converted to pounds.";
@@ -177,8 +182,9 @@
 +}
 +function e1rmLatest(p){
 +  const u=e1rmUnit(p), top=`${e1rmFmt(p.topWeight)}×${p.topReps} ${u}`;
-+  if(p.method==="actual_single") return `Latest ${md(p.date)} · top set ${top} · logged single ${e1rmFmt(p.primary)} ${u}. Not a verified max.`;
-+  return `Latest ${md(p.date)} · top set ${top} · est. 1RM ${e1rmFmt(p.primary)} ${u} (Epley).${p.confidence==="low"?" Low confidence: above 12 reps.":""}`;
++  const assumed=p.assumed?" Pounds assumed.":"";
++  if(p.method==="actual_single") return `Latest ${md(p.date)} · top set ${top} · logged single ${e1rmFmt(p.primary)} ${u}. Not a verified max.${assumed}`;
++  return `Latest ${md(p.date)} · top set ${top} · est. 1RM ${e1rmFmt(p.primary)} ${u} (Epley).${p.confidence==="low"?" Low confidence: above 12 reps.":""}${assumed}`;
 +}
 +function e1rmChange(cur, prev){
 +  if(!prev) return "One logged session in this unit. No earlier session to compare.";
@@ -257,7 +263,8 @@
 +  const series=e1rmSeries(e1rmItems(selected));
 +  const chart=series.chart, last=chart[chart.length-1], prev=chart.length>1?chart[chart.length-2]:null;
 +  const dropped=e1rmExcludedText(series.excluded);
-+  const basis=last?e1rmBasisText(last):"Pounds as logged.";
++  const assumed=series.points.some(p=>p.assumed);
++  const basis=(last?e1rmBasisText(last):"Pounds as logged.")+(assumed?" Pounds assumed on a logged session. The stored number is not converted or doubled.":"");
 +  const held=series.held.length?` ${series.held.length} session${series.held.length>1?"s":""} in another unit or load basis ${series.held.length>1?"are":"is"} listed in the table and not drawn on this chart.` :"";
 +  if(!series.points.length){
 +    return `<div class="card e1rm-panel" id="e1rm-panel" data-e1rm-state="empty" data-name="${esc(norm(selected.name))}"><div class="e1rm-empty"><b>No estimated max</b><p>No logged set with a real weight and rep count for ${esc(selected.name)}. Planned loads, plan-filled reps, warm-ups, assisted loads, and missing numbers are not turned into a max or a trend.</p>${dropped?`<p>${esc(dropped)}</p>`:""}</div></div>`;
@@ -286,13 +293,14 @@
      const hint=lastLogged?`<div class="hint2">Previous (${md(lastLogged.w.date)}): <b>${core?"Done":esc(lastLogged.sets.map(label).join(", "))}</b>${tn?`<br>Target${nxt?` (${md(nxt.w.date)})`:""}: <b>${esc(tn.t)}</b>`:""}</div>`:"";
 -    const bestLbl=core&&s.logged.length?"Done":s.best?esc(label(s.best)):"";
 +    let bestCell;
-+    if(lastP){ const u=e1rmUnit(lastP); const sub=lastP.method==="actual_single"?"Single":lastP.confidence==="low"?"Low conf.":"Est. 1RM"; bestCell=`<b>${esc(e1rmFmt(lastP.primary))} ${u}</b><span>${sub}</span>`; }
+     const assumed=s.items.some(i=>unitAssumptionNote(i.e));
++    if(lastP){ const u=e1rmUnit(lastP); const sub=lastP.method==="actual_single"?"Single":lastP.confidence==="low"?"Low conf.":"Est. 1RM"; bestCell=`<b>${esc(e1rmFmt(lastP.primary))} ${u}</b><span>${sub}</span>${assumed?`<span>Pounds assumed</span>`:""}`; }
 +    else if(core&&s.logged.length) bestCell=`<b>Done</b><span>Previous</span>`;
 +    else if(s.logged.length) bestCell=`<b style="color:var(--muted);font-weight:600;font-size:14px">—</b><span>No load</span>`;
 +    else bestCell=`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`;
      return `<div class="hitem" id="ex-${esc(k)}" data-name="${esc(norm(s.name))}"><div class="hrow" data-hist="${esc(k)}"><div class="x"><div>${esc(s.name)}</div><span>${s.logged.length?`${s.logged.length} session${s.logged.length>1?"s":""} · Previous ${md(lastLogged.w.date)}`:`${s.items.length} planned · next ${md(s.items.find(i=>i.w.date>=TODAY)?.w.date||s.last.w.date)}`}</span></div>
 -      ${core?"":spark(vals.filter(v=>v!=null).length?vals:[],isPlan)}
--      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
+-      <div class="best">${bestLbl?`<b>${bestLbl}</b><span>${core?"Previous":"PR"}</span>${assumed?`<span>Pounds assumed</span>`:""}`:`<b style="color:var(--muted);font-weight:600;font-size:14px">${rxHtml((s.items.find(i=>i.w.date>=TODAY)||s.last).e).split(" · ")[0]}</b><span>Planned</span>`}</div></div>
 +      ${(core&&!series.chart.length)?"":spark(vals,false)}
 +      <div class="best">${bestCell}</div></div>
        <div class="hdetail ${openHist===k?"on":""}">${hint}${past.map((i,n)=>sessCard(i,n,past,core)).join("")}${up.length?`<div class="sfoot" style="margin-top:8px">Planned: ${up.map(i=>md(i.w.date)).reverse().join(", ")}</div>`:""}</div></div>`;};
@@ -314,7 +322,7 @@
  
  // ---------- aside ----------
  function asideView(){
-@@ -920,8 +1175,8 @@
+@@ -941,8 +1200,8 @@
      h+=`<div class="date" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span class="recdot ${recCls(rv)}" style="margin-left:0"></span>Latest WHOOP recovery ${Number(rv).toFixed(1)}% · ${pd(ld).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</div>`;}
    if(!wk.length&&!items.length) h+=`<div class="date">Nothing scheduled this week.</div>`;
    h+=`</div>`;
@@ -325,7 +333,7 @@
    return h;
  }
  
-@@ -937,7 +1192,7 @@
+@@ -958,7 +1217,7 @@
    const full=tab==="week"; document.getElementById("grid").classList.toggle("full",full); document.getElementById("app").classList.toggle("wide",full);
    document.getElementById("aside").classList.toggle("hide",full);
    document.getElementById("aside").innerHTML=full?"":asideView();

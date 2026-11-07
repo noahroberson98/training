@@ -32,7 +32,7 @@ OPEN_HTML = """<!DOCTYPE html>
 </head>
 <body>
 <header>
-  <strong>Synthetic local preview.</strong> Example sets only. Not a real training log and not a release. Send and sync stay on this origin and fail.
+  <strong>EXAMPLE preview. Not current data and not a release.</strong> These sets are not the current log. Send and sync stay on this origin and fail.
 </header>
 <section>
   <p class="note">Serve this folder with a local web server. The chart is example pounds and kilograms, not a live log. The iframe is the same page embedded the way JARVIS embeds the dashboard.</p>
