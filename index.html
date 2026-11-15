@@ -334,6 +334,10 @@ button.cxreq{font-family:inherit;cursor:pointer;background:transparent;color:var
 .rmsheet .acts .go{background:var(--text);color:#111;border-color:var(--text)}
 .rmsheet .acts .req{background:var(--accent);color:#0b0b0f;border-color:var(--accent)}
 .rmsheet .acts .back{background:transparent}
+.rmsheet.cfm .cfm-sets{font-size:16px;color:var(--text);margin:0 0 6px}.rmsheet.cfm .acts button{min-height:48px}.rmsheet.cfm .acts .back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.srow.skp .sv{color:var(--bad);font-weight:600}
+.nowss{font-size:13px;color:var(--muted);margin-top:4px}.nowss span.on{color:var(--accent);font-weight:700}
+.skipex-btn{display:block;width:100%;margin-top:8px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--bad);font-size:14px;font-weight:600;cursor:pointer}
 
 body.dragging .chev{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 body.dragging .chev.flip{background:var(--accent);color:#0b0b0f}
@@ -376,7 +380,7 @@ body.dragging .chev.flip{background:var(--accent);color:#0b0b0f}
     <button id="mSync">Online sync (token)…</button>
     <button id="mExport">Export browser logs (JSON)</button>
     <button id="mClear">Clear browser logs &amp; moves</button>
-    <div class="meta">Easiest: tell the bot in chat what you lifted, e.g. "RDL 165×10, 165×10, 165×8".<br>Data from TrainingPeaks · built Nov 15, 2026 11:37 AM CT</div>
+    <div class="meta">Easiest: tell the bot in chat what you lifted, e.g. "RDL 165×10, 165×10, 165×8".<br>Data from TrainingPeaks · built Nov 15, 2026 11:59 AM CT</div>
   </div>
   <div class="seg" id="tabs"><button data-tab="week" class="on">Week</button><button data-tab="workout">Day</button><button data-tab="history">History</button></div>
   <div class="grid" id="grid">
@@ -768,8 +772,9 @@ function exRow(w,e){
   const done=(nT&&(!e.sets||nT>=e.sets))||emptyDoneOnly(w,e); const id=esc(w.key+"::"+ek(e)); const off=statusOf(w)==="skipped";
   const pb=e.warmup?null:priorBest(w,e); const L=LXr(w,e);
   if(e.warmup) return `<div class="ex ${done?"done":""}"><div class="exh"><div class="lab">${esc(e.label)}</div><div class="name"><span class="nm">${esc(e.name)}</span></div></div><div class="rx">${rxHtml(e)}</div>${e.note?`<div class="ex-note">${esc(e.note)}</div>`:""}</div>`;
-  let rows=""; const R=rowsOf(w,e);
+  let rows=""; const R=rowsOf(w,e), skN=Math.min(skipOf(w,e)||0,Math.max(0,R-nT));
   for(let i=0;i<R;i++){const x=sets[i];
+    if(!x&&i>=R-skN){rows+=`<div class="srow skp"><span class="sn">Set ${i+1}</span><span class="sv">Skipped</span></div>`; continue;}
     if(x){const loc=i>=ss&&i-ss<(L.sets||[]).length; const pr=pb&&x.weight_lb!=null&&better(x,pb);
       rows+=`<div class="srow done"><span class="sn">Set ${i+1}</span><span class="sv">${x.weight_lb!=null?`${num(x.weight_lb)} lb × ${x.reps??"?"}`:x.round?`${e.reps??"✓"} reps · weight not logged`:esc(label(x))}${pr?` <span class="prb">PR</span>`:""}</span>${loc?`<button class="sdel" data-delset="${id}" data-i="${i-ss}" aria-label="Delete set">×</button>`:""}<span class="ck on">✓</span></div>`;}
     else{const f=prefill(w,e,i); rows+=`<div class="srow"><span class="sn">Set ${i+1}</span><span class="sin"><input inputmode="decimal" data-fw value="${f.wt??""}" placeholder="lb" aria-label="Weight lb"> lb × <input inputmode="numeric" data-fr value="${f.r??""}" placeholder="reps" aria-label="Reps"></span>${off?"":`<button class="ck" data-logrow="${id}" aria-label="Log set ${i+1}">✓</button>`}</div>`;}}
@@ -784,8 +789,18 @@ function exRow(w,e){
     ${nT?e1rmLiftLine(w,e,sets):""}
     ${unitAssumptionNote(e)?`<div class="ex-note">${esc(unitAssumptionNote(e))}</div>`:""}
     ${L.note?`<div class="exnotes">📝 ${esc(L.note)}</div>`:""}
-    ${off?"":`<button class="addset" data-addrow="${id}">+ Add Set</button>`}
+    ${off||skN?"":`<button class="addset" data-addrow="${id}">+ Add Set</button>`}
+    ${skipExHtml(w,e,id,nT)}
   </div>`;
+}
+// 11/15 Noah: "the skip exercise buttons disappeared" (per-set Skip Set was dropped in the 11/4 v3 layout). Skip Exercise marks the
+// remaining sets skipped (same skipped count the sync, ingest and review already use); Undo Skip clears it.
+function skipExHtml(w,e,id,nT){
+  if(e.warmup) return ""; const st=statusOf(w), sk=skipOf(w,e)||0, left=Math.max(0,rowsOf(w,e)-nT);
+  const chip=sk?`<span class="chip skipc">Skipped · ${sk} ${sk===1?"set":"sets"}</span>`:"";
+  if(/^(completed|skipped|unlogged)$/.test(st)) return chip?`<div class="skiprow">${chip}</div>`:"";
+  if(sk) return `<div class="skiprow">${chip}<button type="button" class="tbtn" data-unskipex="${id}">Undo Skip</button></div>`;
+  return left?`<button type="button" class="skipex-btn" data-skipex="${id}">Skip Exercise</button>`:"";
 }
 function tgtLine(w,e){const P=priorSessions(w,e,99); const nx=!isCore(e)&&/^(completed|done)$/.test(statusOf(w))?nextAfterTN(w,e):null; // done: show what's next, never a pre-session pick from an older (possibly mistyped) log
   const tn=!isCore(e)&&(P.length||nx)?(TOV(w.key,e)||nx||(P.length?repAwareTN(w,e)||tryNext(e,P[0].sets):null)):null;
@@ -793,13 +808,26 @@ function tgtLine(w,e){const P=priorSessions(w,e,99); const nx=!isCore(e)&&/^(com
   const sug=tn&&tn.why==="bw"?tn.t:e.weight_lb==null&&m?(m[2]&&e.reps!=null&&+m[2]!==+e.reps?`${m[1]} lb × ${m[2]}`:`${m[1]} lb`):null;
   const main=e.reps!=null?`${e.sets??"?"} × ${e.reps}`:e.duration_s!=null?`${e.sets??1} × ${dur(e.duration_s)}`:e.other_load&&/m$/.test(e.other_load)?`${e.sets??"?"} × ${e.other_load.replace(" ","")}`:e.sets?`${e.sets} sets`:"Extra";
   return `Target <b>${esc(main)}${wt!=null?` at ${esc(String(wt))} lb`:""}</b>${sug!=null?` · <span class="sug">${tn.why==="override"?"Your target":tn.next?"Next":"Suggested"} ${esc(sug)}</span>`:""}${e.other_load&&!/m$/.test(e.other_load)?` · ${esc(e.other_load)}`:""}`;}
+// 11/15 Noah: superset exercises (same letter, numbered: F1, F2) alternate in the top tracker: F1 set 1 -> F2 set 1 -> F1 set 2 ...
+const ssGroup=e=>{const m=/^([A-Za-z]+)\d+$/.exec(String(e&&e.label||"").trim()); return m?m[1].toUpperCase():null;};
+const trackNeed=(w,e)=>Math.max(0,rowsOf(w,e)-(skipOf(w,e)||0));   // skipped sets are not owed
+function trackNext(w){ // -> {k, group:[{e,i}]|null} for the tracker, or null when nothing is left
+  const ex=working(w), open=e=>allSets(w,e).length<trackNeed(w,e);
+  const first=ex.findIndex(open); if(first<0) return null;
+  const free=!!(w.free||/Free/i.test(w.source||""));   // free workouts number every added exercise A1, A2... in order: not supersets
+  const g=free?null:ssGroup(ex[first]); const mem=g?ex.map((e,i)=>({e,i})).filter(o=>ssGroup(o.e)===g):[];
+  if(mem.length<2) return {k:first,group:null};
+  const pick=mem.filter(o=>open(o.e)).sort((a,b)=>allSets(w,a.e).length-allSets(w,b.e).length||a.i-b.i)[0];
+  return {k:pick.i,group:mem};
+}
 function nowCard(w){ if(/^(completed|skipped)$/.test(statusOf(w))) return "";
   const ex=working(w); if(!ex.length) return w.free?`<div class="now"><div class="nowt">Add an exercise to log sets, or Finish with a workout note</div></div>`:`<div class="now"><div class="nowt">All sets logged · tap Finish Workout</div></div>`;
-  const k=ex.findIndex(e=>allSets(w,e).length<rowsOf(w,e)); if(k<0) return `<div class="now"><div class="nowt">All sets logged · tap Finish Workout</div></div>`;
-  const e=ex[k], n=allSets(w,e).length, f=prefill(w,e,n), id=esc(w.key+"::"+ek(e)), Lw=local[w.key]||{};
+  const nx=trackNext(w); if(!nx) return `<div class="now"><div class="nowt">All sets logged · tap Finish Workout</div></div>`;
+  const k=nx.k, e=ex[k], n=allSets(w,e).length, f=prefill(w,e,n), id=esc(w.key+"::"+ek(e)), Lw=local[w.key]||{};
+  const ssl=nx.group?`<div class="nowss" data-superset="${esc(ssGroup(e))}">Superset · ${nx.group.map(o=>`<span class="${o.i===k?"on":""}">${esc(o.e.label)} ${allSets(w,o.e).length}/${trackNeed(w,o.e)}</span>`).join(" ↔ ")}</div>`:"";
   const rest=validT(Lw.rest_at)&&(Date.now()-Date.parse(Lw.rest_at))<600000;
   const ls=lastSess(w,e);
-  return `<div class="now"><div class="nowp">Exercise ${k+1} of ${ex.length} · Set ${n+1} of ${rowsOf(w,e)}</div><div class="nown">${esc(e.label)} · ${esc(e.name)}</div>
+  return `<div class="now"><div class="nowp">Exercise ${k+1} of ${ex.length} · Set ${n+1} of ${rowsOf(w,e)}</div>${ssl}<div class="nown">${esc(e.label)} · ${esc(e.name)}</div>
   ${ls?`<div class="nowl">Last time ${esc(md(ls.w.date))}: ${esc(compactSets(ls.sets,ls.e))}</div>`:""}
   <div class="nowin"><input inputmode="decimal" data-qw value="${f.wt??""}" placeholder="lb" aria-label="Weight lb"> lb × <input inputmode="numeric" data-qr value="${f.r??""}" placeholder="reps" aria-label="Reps"></div>
   <button class="nowbtn" data-quicklog="${id}">Log Set ${n+1}${f.wt!=null?` · ${num(f.wt)} lb × ${f.r??"?"}`:""}</button>
@@ -1719,6 +1747,12 @@ function smartParse(t){
 const isBW=e=>e.weight_lb==null&&!e.other_load&&(/\b(ab|abs|core|plank|crunch|hollow|dead ?bug|sit.?up|leg raise|v.?up|russian twist|bird dog|push.?up|pull.?up|chin.?up|dip)s?\b/i.test(`${e.name} ${e.block||""} ${e.label}`));
 const LW=k=>(local[k]=local[k]||{exercises:{}});
 const LX=(k,e)=>{const w=LW(k); w.exercises=w.exercises||{}; return (w.exercises[e]=w.exercises[e]||{sets:[]});};
+document.addEventListener("click",ev=>{const t=ev.target.closest("[data-skipex],[data-unskipex]"); if(!t) return; ev.stopPropagation(); ev.preventDefault();
+  const [k,en]=(t.dataset.skipex||t.dataset.unskipex).split("::"); const w=W.find(x=>x.key===k); const e=w&&w.exercises.find(x=>ek(x)===en); if(!e) return;
+  const x=LX(k,en);
+  if(t.dataset.skipex){ x.skipped=Math.max(0,rowsOf(w,e)-allSets(w,e).length); touch(k,"skip exercise"); }
+  else { x.skipped=0; touch(k,"unskip exercise"); }
+  render();},true);
 document.addEventListener("click",ev=>{const t=ev.target.closest("[data-skipset],[data-unskip],[data-wskip],[data-wunskip]"); if(!t) return; ev.stopPropagation(); ev.preventDefault();
   if(t.dataset.wskip||t.dataset.wunskip){const k=t.dataset.wskip||t.dataset.wunskip, w=W.find(x=>x.key===k), L=LW(k);
     if(t.dataset.wskip){L.prev_status=L.status||null; L.status="skipped"; touch(k,"skip"); setTimeout(()=>showToast("Workout skipped",{type:"skip",key:k}),0);} else {L.status=(L.prev_status&&L.prev_status!=="skipped")?L.prev_status:"planned"; delete L.prev_status; touch(k,"unskip");}
@@ -1992,13 +2026,13 @@ function reopenWorkout(key){
   render();
   showToast("Workout Reopened",null);
 }
-function openSummary(key){
+function openSummary(key,opts){
   const w=W.find(x=>x.key===key); if(!w) return;
   local[w.key]=local[w.key]||{exercises:{}};
   document.querySelectorAll(".logrow textarea").forEach(ta=>{if(ta.dataset.w===w.key&&ta.value.trim()&&ta.value.trim()!==(local[w.key].exercises?.[ta.dataset.e]?.notes||"")) saveExNotes(w.key,ta.dataset.e,ta.value.trim());});
   const already=local[w.key].status==="completed"||statusOf(w)==="completed"||statusOf(w)==="unlogged";
   const issues=completeIssues(w);
-  if(issues.length&&!already&&!confirm("Before you complete:\n\n• "+issues.join("\n• ")+"\n\nComplete anyway? (You can edit after.)")) return;
+  if(issues.length&&!already&&!(opts&&opts.confirmed)&&!confirm("Before you complete:\n\n• "+issues.join("\n• ")+"\n\nComplete anyway? (You can edit after.)")) return; // the in-page confirm already showed these
   commitComplete(key);
   render();
   const S=summaryData(w);
@@ -2041,7 +2075,32 @@ function openSummary(key){
   document.getElementById("sumClose").addEventListener("click",close);
   bg.addEventListener("click",ev=>{if(ev.target===bg){if(sending) return; close();}});
 }
-document.addEventListener("click",ev=>{const b=ev.target.closest("[data-complete]"); if(b){ev.stopPropagation(); openSummary(b.dataset.complete);}},true);
+// 11/15 Noah: "too easy to click complete workout. Need an are you sure." First tap on Finish opens this; Cancel is the default
+// (focused; Escape / Enter on it / backdrop all cancel). Already-complete workouts go straight to their summary.
+function completeConfirmText(w){
+  const p=progress(w), sk=working(w).reduce((a,e)=>a+(skipOf(w,e)||0),0);
+  const notLogged=working(w).filter(e=>!allSets(w,e).length&&!skipOf(w,e)&&!emptyDoneOnly(w,e)).map(e=>e.name);
+  return {sets:p.planned?`${p.logged} of ${p.planned} sets logged`:`${p.logged} ${p.logged===1?"set":"sets"} logged`,
+    skipped:sk?`${sk} ${sk===1?"set":"sets"} skipped`:"", missing:notLogged.length?`Not logged: ${notLogged.join(", ")}`:""};
+}
+function openCompleteConfirm(key){
+  const w=W.find(x=>x.key===key); if(!w) return;
+  const T=completeConfirmText(w), issues=completeIssues(w), root=document.getElementById("rmRoot");
+  root.innerHTML=`<div class="rmsheet-bg" id="cfmBg" role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" aria-describedby="cfmSets"><div class="rmsheet cfm"><h2 id="cfmTitle">Complete workout?</h2>`
+    +`<p class="cfm-sets" id="cfmSets"><b>${esc(T.sets)}</b>${T.skipped?` · ${esc(T.skipped)}`:""}</p>${T.missing?`<p>${esc(T.missing)}</p>`:""}`
+    +`${issues.length?`<div class="warnbox"><b>Check these</b><ul>${issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`:""}`
+    +`<div class="acts"><button type="button" class="go" id="cfmYes">Complete Workout</button><button type="button" class="back" id="cfmNo">Cancel</button></div></div></div>`;
+  const close=()=>{root.innerHTML=""; document.removeEventListener("keydown",onKey,true);};
+  const onKey=ev=>{if(ev.key==="Escape"){ev.preventDefault(); close();}};
+  document.addEventListener("keydown",onKey,true);
+  document.getElementById("cfmNo").onclick=close;
+  document.getElementById("cfmYes").onclick=()=>{close(); openSummary(key,{confirmed:true});};
+  document.getElementById("cfmBg").addEventListener("click",ev=>{if(ev.target.id==="cfmBg") close();});
+  document.getElementById("cfmNo").focus();
+}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-complete]"); if(b){ev.stopPropagation(); const k=b.dataset.complete, w=W.find(x=>x.key===k);
+  const already=w&&(local[k]?.status==="completed"||/^(completed|unlogged)$/.test(statusOf(w)));
+  if(already) openSummary(k); else openCompleteConfirm(k);}},true);
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-reopen]"); if(b){ev.stopPropagation(); ev.preventDefault(); reopenWorkout(b.dataset.reopen);}},true);
 // ---------- cancel class: confirm (with fee rules) -> prefilled private GitHub issue; bot does the PushPress cancel ----------
 const FEAT=(EXTRA&&EXTRA.features)||{};
